@@ -12,6 +12,7 @@ on:
       - "metadata/**"
       - "schemas/**"
       - "r-pkg/amrr/**"
+      - "site/**"
       - ".github/workflows/build-publish.yml"
   workflow_dispatch:
 
@@ -43,15 +44,26 @@ jobs:
             any::DBI
             any::RSQLite
             any::digest
+            any::reactable
+            any::htmltools
+            any::knitr
+            any::rmarkdown
+      - uses: quarto-dev/quarto-actions/setup@v2
       - name: Install amrr
         run: R CMD INSTALL --no-docs r-pkg/amrr
       - name: Validate (Tier A gate)
         run: Rscript -e 'amrr::validate_registry(".")'
       - name: Build derived layer (Tier B)
         run: Rscript -e 'amrr::build_registry(".", out = "build")'
+      - name: Render catalog site (Tier C presentation)
+        run: quarto render site
+      - name: Assemble Pages artifact (HTML catalog + JSON, preserving fetch URLs)
+        run: |
+          cp -R build/. site/_site/
+          touch site/_site/.nojekyll
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: build
+          path: site/_site
       - id: deploy
         uses: actions/deploy-pages@v5

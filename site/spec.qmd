@@ -1,0 +1,99 @@
+---
+title: "The schema"
+subtitle: "The JSON Schema contracts that every sidecar must satisfy"
+---
+
+```{r}
+#| include: false
+source("_common.R")
+SCHEMA_DIR <- Sys.getenv("AMRR_SCHEMA_DIR", file.path("..", "schemas"))
+read_schema <- function(f) fromJSON(file.path(SCHEMA_DIR, f), simplifyVector = FALSE)
+
+esc <- function(x) htmltools::htmlEscape(x %||% "")
+
+# Render one property as a bordered field; recurse into nested objects / array items.
+render_field <- function(name, p, required, depth = 0) {
+  p <- p %||% list()
+  # Resolve the declared type / shape.
+  type <- p$type %||% (
+    if (!is.null(p$const)) "const" else
+    if (!is.null(p$enum)) "enum" else
+    if (!is.null(p[["$ref"]])) "$ref" else
+    if (!is.null(p$oneOf) || !is.null(p$anyOf)) "union" else "any")
+  if (is.list(type)) type <- paste(unlist(type), collapse = " | ")
+
+  meta <- sprintf("<span>%s</span>", esc(type))
+  if (required) meta <- paste0(meta, "<span class='amr-req'>required</span>")
+  if (!is.null(p$const)) meta <- paste0(meta, sprintf("<span>= <code>%s</code></span>", esc(p$const)))
+  if (!is.null(p$pattern)) meta <- paste0(meta, sprintf("<span><code>%s</code></span>", esc(p$pattern)))
+
+  enum_html <- ""
+  if (!is.null(p$enum)) {
+    enum_html <- sprintf("<div class='amr-enum'>%s</div>",
+      paste(sprintf("<code>%s</code>", vapply(p$enum, function(e) esc(e), character(1))), collapse = " "))
+  }
+  desc <- if (!is.null(p$description)) sprintf("<p class='amr-field-desc'>%s</p>", esc(p$description)) else ""
+
+  cat(sprintf(
+    "<div class='amr-field' style='margin-left:%drem'><span class='amr-field-name'>%s</span><span class='amr-field-meta'>%s</span>%s%s</div>\n",
+    depth * 1L, esc(name), meta, desc, enum_html))
+
+  # Recurse: object properties, then array-of-object items.
+  if (identical(type, "object") && !is.null(p$properties) && depth < 3) {
+    req <- unlist(p$required %||% list())
+    for (nm in names(p$properties)) render_field(nm, p$properties[[nm]], nm %in% req, depth + 1)
+  }
+  items <- p$items
+  if (identical(type, "array") && !is.null(items) && !is.null(items$properties) && depth < 3) {
+    req <- unlist(items$required %||% list())
+    cat(sprintf("<div class='amr-callno' style='margin-left:%drem'>each item:</div>\n", (depth + 1L)))
+    for (nm in names(items$properties)) render_field(nm, items$properties[[nm]], nm %in% req, depth + 1)
+  }
+  # Map values (additionalProperties as a schema).
+  ap <- p$additionalProperties
+  if (identical(type, "object") && is.list(ap) && !is.null(ap$type) && depth < 3) {
+    cat(sprintf("<div class='amr-callno' style='margin-left:%drem'>values (keyed map):</div>\n", (depth + 1L)))
+    render_field("&lt;key&gt;", ap, FALSE, depth + 1)
+  }
+}
+
+render_schema <- function(schema) {
+  req <- unlist(schema$required %||% list())
+  for (nm in names(schema$properties %||% list())) {
+    render_field(nm, schema$properties[[nm]], nm %in% req, 0)
+  }
+}
+```
+
+Each authored sidecar is validated against one of two JSON Schemas before any derivation.
+A field marked [required]{.amr-req} must be present; fields with an `enum` accept only the
+listed values. These schemas are the executable Tier A contract — this page renders them
+directly, so it never drifts from what the validator enforces.
+
+::: {.panel-tabset}
+
+## Assessment system
+
+```{r}
+#| output: asis
+s <- read_schema("amr.assessment_system.v1.schema.json")
+cat("```{=html}\n")
+cat(sprintf("<p class='amr-lede'>%s</p>\n", esc(s$description)))
+cat(sprintf("<p class='amr-callno'>%s · <code>%s</code></p>\n", esc(s$title), esc(s[["$id"]])))
+render_schema(s)
+cat("\n```\n")
+```
+
+## Accountability system
+
+```{r}
+#| output: asis
+s <- read_schema("amr.accountability_system.v1.schema.json")
+cat("```{=html}\n")
+cat(sprintf("<p class='amr-lede'>%s</p>\n", esc(s$description)))
+cat(sprintf("<p class='amr-callno'>%s · <code>%s</code></p>\n", esc(s$title), esc(s[["$id"]])))
+render_schema(s)
+cat("\n```\n")
+```
+
+:::

@@ -38,6 +38,7 @@ place. Founding ADR proposed pending sign-off.
 | [[004-tooling-language]] | **proposed** | Single-language R tooling: `validate`/`build` become `amrr::validate_registry()`/`build_registry()` (build deps in Suggests), drop Python, semantic parity verified |
 | ADR-005 | planned | AI-assisted authoring / scraping pipeline |
 | ADR-006 | planned | Governance: authorship, review, promotion to `verified` |
+| [[007-pages-catalog]] | **proposed** | Human-readable Pages catalog: a Quarto site (`site/`) renders the derived JSON — `reactable` browse, per-record Display/Explore/Raw, spec + changelog viewers; additive to the published JSON |
 
 ---
 

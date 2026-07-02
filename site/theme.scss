@@ -1,0 +1,44 @@
+/*-- scss:defaults --*/
+// Light theme — "the assessment archive": warm paper, ink text, deep-teal primary,
+// archival-ochre accent. Cosmo (Bootstrap) variable overrides.
+
+$font-family-sans-serif: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif !default;
+$font-family-monospace:  "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace !default;
+$headings-font-family:   "Fraunces", Georgia, "Times New Roman", serif !default;
+
+$body-bg:      #faf8f3;   // warm paper
+$body-color:   #1f1d18;   // warm near-black ink
+$primary:      #155e6b;   // deep teal
+$link-color:   #124e59;
+$border-color: #e4ddce;
+
+$headings-font-weight: 600;
+$navbar-bg:    rgba(250, 248, 243, 0.86);
+$code-color:   #8a4b1f;   // ochre-brown inline code
+
+// Custom properties consumed by the shared rules layer (_rules.scss).
+:root {
+  --amr-paper:        #{$body-bg};
+  --amr-ink:          #{$body-color};
+  --amr-surface:      #ffffff;
+  --amr-surface-2:    #f4efe4;
+  --amr-border:       #{$border-color};
+  --amr-border-strong:#d6cdb8;
+  --amr-muted:        #6b6455;
+  --amr-primary:      #{$primary};
+  --amr-accent:       #b5761f;   // archival ochre
+  --amr-accent-soft:  #f3e7d0;
+  --amr-shadow:       0 1px 2px rgba(31, 29, 24, 0.05), 0 8px 24px -12px rgba(31, 29, 24, 0.18);
+
+  --amr-status-draft:      #b5761f;
+  --amr-status-reviewed:   #2b6c8f;
+  --amr-status-verified:   #2f7d51;
+  --amr-status-deprecated: #8a8577;
+
+  --amr-conf-low:    #b5761f;
+  --amr-conf-medium: #2b6c8f;
+  --amr-conf-high:   #2f7d51;
+}
+
+/*-- scss:rules --*/
+@import "rules";

@@ -4,6 +4,36 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-02] feature | Human-readable GitHub Pages catalog (Quarto site, ADR-007)
+
+**Action:** feature
+
+- Built a **Quarto `website`** under `site/` that renders the derived `build/**` JSON into a
+  human-readable, read-only catalog and published it additively on GitHub Pages. Borrows the
+  polished mechanics of the `dataimago/HelloWorld` template but carries a **neutral** identity
+  (Public Sans / Fraunces / IBM Plex Mono; warm-paper light + slate dark) — an "archival data
+  instrument" look.
+- Views: a **`reactable`** browse catalog (search/filter/sort); per-record **Display**
+  (R-rendered identity, achievement levels, cutscore grade×boundary matrix, targets,
+  provenance), **Explore** (vendored MIT `@andypf/json-viewer`, a JSON-Hero-like tree), and
+  **Raw** (native ```json); a **spec viewer** that renders both JSON Schemas as documentation;
+  and a **changelog** viewer. Record pages are generated flat by a `pre-render` R script.
+- The site consumes the JSON directly via `jsonlite` (no `amrr` dependency). Deploy is additive:
+  `build-publish` now validate → build → `quarto render site` → copy `build/` into `_site/` →
+  deploy `_site/`, so every existing JSON fetch URL still resolves (ADR-000 D7 preserved).
+- Gotchas handled: `output: asis` HTML wrapped in Pandoc `{=html}` raw blocks (else `>=` etc.
+  get re-parsed as markdown); free-text `htmlEscape`d; flat site-root pages so relative asset
+  paths resolve on the project subpath. Verified end-to-end with headless-Chrome screenshots of
+  the catalog, an assessment record, an accountability record, the spec, and the changelog.
+
+**Why:** make the registry inspectable by colleagues (spec review) and clients, not just
+machines. See [[007-pages-catalog]].
+
+**Next:** merge behind green CI; iterate on identity/branding; optionally a dark-mode andypf
+theme sync and per-record deep-links.
+
+---
+
 ## [2026-07-02] harness | Auto-validate hook + loop-command allowlist (sign-off received)
 
 **Action:** harness

@@ -8,14 +8,14 @@ RPKG := r-pkg/amrr
 R    := Rscript
 
 .DEFAULT_GOAL := help
-.PHONY: help setup validate build check test all clean
+.PHONY: help setup validate build check test all clean site site-preview
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
-	  | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-9s\033[0m %s\n", $$1, $$2}'
+	  | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-13s\033[0m %s\n", $$1, $$2}'
 
 setup: ## Install the R packages the tooling + dev loop need
-	$(R) -e 'install.packages(c("jsonlite","jsonvalidate","DBI","RSQLite","digest","devtools","roxygen2","testthat"), repos="https://cloud.r-project.org")'
+	$(R) -e 'install.packages(c("jsonlite","jsonvalidate","DBI","RSQLite","digest","devtools","roxygen2","testthat","reactable","htmltools","knitr","rmarkdown"), repos="https://cloud.r-project.org")'
 
 validate: ## Tier A gate: validate every sidecar (schema + registry invariants)
 	$(R) -e 'pkgload::load_all("$(RPKG)", quiet=TRUE); amrr::validate_registry(".")'
@@ -29,6 +29,15 @@ test: ## amrr testthat suite (Tier C)
 check: ## amrr R CMD check (Tier C) — pure-R package, mirrors CI
 	cd $(RPKG) && $(R) -e 'roxygen2::roxygenise()'
 	cd r-pkg && R CMD build amrr && R CMD check --no-manual --no-vignettes amrr_*.tar.gz && rm -rf amrr.Rcheck amrr_*.tar.gz
+
+site: build ## Render the Quarto catalog into site/_site (+ copy JSON bundles in)
+	quarto render site
+	cp -R build/. site/_site/
+	touch site/_site/.nojekyll
+	@echo "Catalog: site/_site/index.html"
+
+site-preview: build ## Live-preview the catalog (Quarto preview server)
+	quarto preview site
 
 all: build test ## Full fast loop: validate -> build -> R tests
 

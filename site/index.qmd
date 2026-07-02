@@ -1,0 +1,110 @@
+---
+title: "Assessment Metadata Registry"
+pagetitle: "Assessment Metadata Registry"
+toc: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+source("_common.R")
+library(reactable)
+
+recs   <- amr_all_records()
+stamp  <- amr_registry_stamp()
+n_assess <- sum(vapply(recs, function(r) !amr_is_accountability(r), logical(1)))
+n_acct   <- length(recs) - n_assess
+jurs     <- unique(vapply(recs, function(r) r$jurisdiction$id, character(1)))
+years    <- as.integer(vapply(recs, amr_year, character(1)))
+
+# One catalog row per sidecar.
+df <- do.call(rbind, lapply(recs, function(r) {
+  sys <- amr_system(r)
+  scope <- if (amr_is_accountability(r)) sprintf("%d targets", length(r$targets %||% list()))
+           else sprintf("%d content areas", length(r$content_areas %||% list()))
+  data.frame(
+    Jurisdiction = r$jurisdiction$name %||% r$jurisdiction$id,
+    System = sys$name %||% sys$id,
+    Type = amr_type(r),
+    Year = amr_year(r),
+    Scope = scope,
+    Vendor = r$administration$vendor %||% "—",
+    Status = r$status %||% "",
+    Confidence = r$source_confidence %||% "",
+    slug = amr_slug(r),
+    stringsAsFactors = FALSE
+  )
+}))
+```
+
+::: {.amr-masthead}
+[Canonical · version-controlled · derived]{.amr-kicker}
+
+# A catalog of state assessment metadata
+
+::: {.amr-lede}
+Version-controlled JSON sidecars are the source of truth for assessment- and
+accountability-system metadata — identities, vendors, vertical scales, achievement
+levels, cutscores, comparability caveats, and accountability targets. Everything
+below is **rendered from those sidecars**; browse a record for a human-readable view
+or the raw JSON.
+:::
+
+```{r}
+#| output: asis
+span <- if (length(years)) sprintf("%d–%d", min(years), max(years)) else "—"
+cat(sprintf(
+'<div class="amr-statline">
+  <div class="amr-stat"><span class="amr-stat-n">%d</span><span class="amr-stat-l">records</span></div>
+  <div class="amr-stat"><span class="amr-stat-n">%d</span><span class="amr-stat-l">jurisdictions</span></div>
+  <div class="amr-stat"><span class="amr-stat-n">%d</span><span class="amr-stat-l">assessment</span></div>
+  <div class="amr-stat"><span class="amr-stat-n">%d</span><span class="amr-stat-l">accountability</span></div>
+  <div class="amr-stat"><span class="amr-stat-n">%s</span><span class="amr-stat-l">years</span></div>
+</div>',
+  length(recs), length(jurs), n_assess, n_acct, span))
+```
+:::
+
+## Catalog {.unnumbered}
+
+Search across every record, or filter a column. Select a **system** to open its record.
+
+```{r}
+#| label: catalog
+reactable(
+  df[, c("Jurisdiction", "System", "Type", "Year", "Scope", "Vendor", "Status", "Confidence")],
+  columns = list(
+    Jurisdiction = colDef(minWidth = 150),
+    System = colDef(minWidth = 160, cell = function(value, index) {
+      htmltools::tags$a(class = "amr-rowlink", href = amr_page(df$slug[index]), value)
+    }),
+    Type = colDef(width = 130),
+    Year = colDef(width = 80),
+    Scope = colDef(minWidth = 120),
+    Status = colDef(width = 110, align = "center", html = TRUE,
+                    cell = function(value) amr_badge(value, "status")),
+    Confidence = colDef(width = 120, align = "center", html = TRUE,
+                        cell = function(value) amr_badge(value, "conf"))
+  ),
+  searchable = TRUE,
+  filterable = TRUE,
+  defaultPageSize = 15,
+  showPageSizeOptions = TRUE,
+  pageSizeOptions = c(15, 30, 60),
+  highlight = TRUE,
+  borderless = TRUE,
+  defaultSorted = list(Jurisdiction = "asc", System = "asc", Year = "desc"),
+  class = "amr-catalog"
+)
+```
+
+```{r}
+#| output: asis
+if (length(stamp)) {
+  cat(sprintf(
+    '<p class="amr-callno" style="margin-top:1rem">Built from registry commit <code>%s</code>%s · %s</p>',
+    substr(stamp$git_sha %||% "—", 1, 12),
+    if (isTRUE(stamp$dirty)) " (dirty)" else "",
+    stamp$built_at %||% ""))
+}
+```

@@ -61,9 +61,11 @@ that on the CI/native filesystem.)
 
 ## Publishing
 
-`.github/workflows/build-publish.yml` runs validate -> build -> deploy `build/` to GitHub
-Pages on merge to `main`. The static bundles become the canonical fetch target for R
-consumption (ADR-000 D7); the SQLite/`index.json` back a future read-only API.
+`.github/workflows/build-publish.yml` runs validate -> build -> **`quarto render site`** ->
+copy `build/` into the Quarto `_site/` -> deploy `_site/` to GitHub Pages on merge to `main`.
+The static JSON bundles remain the canonical fetch target for R consumption (ADR-000 D7) and
+keep their root URLs; the Quarto **catalog** (ADR-007) is layered on top as a human-readable
+lens. The SQLite/`index.json` back a future read-only API.
 
 ## Extending
 

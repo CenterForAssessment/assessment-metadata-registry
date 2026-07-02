@@ -1,0 +1,65 @@
+---
+title: "Changelog"
+subtitle: "Year-over-year changes across the registry"
+---
+
+```{r}
+#| include: false
+source("_common.R")
+library(reactable)
+
+events <- amr_read_json("changelog.json")$events %||% list()
+
+fmt_val <- function(v) {
+  if (is.null(v)) return("<span class='amr-callno'>—</span>")
+  s <- amr_json(v, pretty = FALSE)
+  if (nchar(s) > 80) s <- paste0(substr(s, 1, 80), "…")
+  sprintf("<code>%s</code>", htmltools::htmlEscape(s))
+}
+
+df <- if (length(events)) do.call(rbind, lapply(events, function(e) {
+  sys <- e$assessment_system_id %||% e$accountability_system_id %||% ""
+  data.frame(
+    Jurisdiction = e$jurisdiction_id %||% "",
+    System = sys,
+    Area = e$content_area %||% "",
+    Years = sprintf("%s → %s", e$year_from %||% "?", e$year_to %||% "?"),
+    Field = e$field %||% "",
+    From = fmt_val(e$from),
+    To = fmt_val(e$to),
+    Kind = e$record_type %||% "",
+    stringsAsFactors = FALSE
+  )
+})) else data.frame()
+```
+
+Each entry is a change to an authored value between two consecutive years for the same
+jurisdiction and system — a vendor swap, a scale transition, a revised cutscore vector, or an
+altered accountability target. Re-establishments and corrections surface here as explicit,
+reviewable signals.
+
+```{r}
+#| label: changelog
+if (!nrow(df)) {
+  htmltools::tags$p(class = "amr-callno", "No changes recorded.")
+} else reactable(
+  df[, c("Jurisdiction", "System", "Area", "Years", "Field", "From", "To", "Kind")],
+  columns = list(
+    Jurisdiction = colDef(width = 110),
+    System = colDef(minWidth = 120),
+    Area = colDef(width = 110),
+    Years = colDef(width = 120),
+    Field = colDef(width = 110),
+    From = colDef(html = TRUE, minWidth = 130),
+    To   = colDef(html = TRUE, minWidth = 130),
+    Kind = colDef(width = 120, filterable = FALSE)
+  ),
+  searchable = TRUE,
+  filterable = TRUE,
+  defaultPageSize = 20,
+  highlight = TRUE,
+  borderless = TRUE,
+  defaultSorted = list(Jurisdiction = "asc", System = "asc"),
+  class = "amr-catalog"
+)
+```
