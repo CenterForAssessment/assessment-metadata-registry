@@ -1,0 +1,26 @@
+# Derived artifacts (Tier B/C) — regenerated from metadata/, never authored.
+/build/
+/dist/
+*.sqlite
+*.sqlite3
+*.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# R
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+r-pkg/amrr/src/*.o
+r-pkg/amrr/src/*.so
+r-pkg/amrr/..Rcheck/
+*.Rcheck/
+
+# OS / editor
+.DS_Store
+.idea/

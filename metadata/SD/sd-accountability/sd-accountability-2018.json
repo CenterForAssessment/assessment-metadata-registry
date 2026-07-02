@@ -1,0 +1,44 @@
+{
+  "schema_version": "amr.accountability_system.v1",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "seed:demo",
+    "entered_at": "2026-07-02",
+    "last_verified_at": null,
+    "changed_from_prior": null
+  },
+  "jurisdiction": {
+    "id": "SD",
+    "name": "Demonstration State D",
+    "type": "state"
+  },
+  "accountability_system": {
+    "id": "sd-accountability",
+    "name": "Demonstration State D Accountability System"
+  },
+  "administration": {
+    "id": "sd-accountability-2018",
+    "year": "2018"
+  },
+  "targets": [
+    {
+      "assessment_system_id": "sd-summative",
+      "content_area": "MATHEMATICS",
+      "label": "Proficient Cut",
+      "semantics": "proficiency",
+      "basis": "proficiency_boundary",
+      "comparison": ">=",
+      "provenance": "derived from cutscores + proficient mask (demonstration)"
+    },
+    {
+      "assessment_system_id": "sd-summative",
+      "content_area": "READING",
+      "label": "Proficient Cut",
+      "semantics": "proficiency",
+      "basis": "proficiency_boundary",
+      "comparison": ">=",
+      "provenance": "derived from cutscores + proficient mask (demonstration)"
+    }
+  ]
+}

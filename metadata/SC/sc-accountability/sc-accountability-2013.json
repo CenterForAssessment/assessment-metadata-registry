@@ -1,0 +1,60 @@
+{
+  "schema_version": "amr.accountability_system.v1",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "seed:demo",
+    "entered_at": "2026-07-02",
+    "last_verified_at": null,
+    "changed_from_prior": null
+  },
+  "jurisdiction": {
+    "id": "SC",
+    "name": "Demonstration State C",
+    "type": "state"
+  },
+  "accountability_system": {
+    "id": "sc-accountability",
+    "name": "Demonstration State C Accountability System"
+  },
+  "administration": {
+    "id": "sc-accountability-2013",
+    "year": "2013"
+  },
+  "targets": [
+    {
+      "assessment_system_id": "sc-summative",
+      "content_area": "ELA",
+      "label": "Exit Target",
+      "semantics": "exit",
+      "basis": "scale_score",
+      "comparison": ">=",
+      "provenance": "explicit per-grade scale (demonstration; ELP-like exit)",
+      "per_grade_scale_score": {
+        "3": 500,
+        "4": 500,
+        "5": 500,
+        "6": 500,
+        "7": 500,
+        "8": 500
+      }
+    },
+    {
+      "assessment_system_id": "sc-summative",
+      "content_area": "MATHEMATICS",
+      "label": "Exit Target",
+      "semantics": "exit",
+      "basis": "scale_score",
+      "comparison": ">=",
+      "provenance": "explicit per-grade scale (demonstration; ELP-like exit)",
+      "per_grade_scale_score": {
+        "3": 490,
+        "4": 490,
+        "5": 490,
+        "6": 490,
+        "7": 490,
+        "8": 490
+      }
+    }
+  ]
+}

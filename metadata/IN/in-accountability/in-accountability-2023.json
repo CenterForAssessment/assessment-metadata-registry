@@ -1,0 +1,68 @@
+{
+  "schema_version": "amr.accountability_system.v1",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "migration:sgpc-foundry-accountability",
+    "entered_at": "2026-07-02",
+    "last_verified_at": null,
+    "changed_from_prior": null
+  },
+  "jurisdiction": {
+    "id": "IN",
+    "name": "Indiana",
+    "type": "state"
+  },
+  "accountability_system": {
+    "id": "in-accountability",
+    "name": "Indiana Accountability System"
+  },
+  "administration": {
+    "id": "in-accountability-2023",
+    "year": "2023"
+  },
+  "targets": [
+    {
+      "assessment_system_id": "ilearn",
+      "content_area": "ELA",
+      "label": "Proficient Cut",
+      "semantics": "proficiency",
+      "basis": "proficiency_boundary",
+      "comparison": ">=",
+      "provenance": "Summative proficient cut; derived from cutscores + the achievement_levels proficient mask (basis=proficiency_boundary -- the scale score entering the first proficient level). No new numbers: the target inherits the sidecar cutscores provenance (currently PLACEHOLDER -- replace with official IDOE ILEARN cuts before any client-facing run)."
+    },
+    {
+      "assessment_system_id": "ilearn",
+      "content_area": "MATHEMATICS",
+      "label": "Proficient Cut",
+      "semantics": "proficiency",
+      "basis": "proficiency_boundary",
+      "comparison": ">=",
+      "provenance": "Summative proficient cut; derived from cutscores + the achievement_levels proficient mask (basis=proficiency_boundary -- the scale score entering the first proficient level). No new numbers: the target inherits the sidecar cutscores provenance (currently PLACEHOLDER -- replace with official IDOE ILEARN cuts before any client-facing run)."
+    },
+    {
+      "assessment_system_id": "wida-access",
+      "content_area": "ELP_COMPOSITE",
+      "label": "ELP Exit Target",
+      "semantics": "exit",
+      "basis": "scale_score",
+      "comparison": ">=",
+      "per_grade_scale_score": {
+        "0": 299.4,
+        "1": 320.8,
+        "2": 335,
+        "3": 346.2,
+        "4": 356.4,
+        "5": 364.4,
+        "6": 371.8,
+        "7": 378.8,
+        "8": 384.8,
+        "9": 391.6,
+        "10": 397.6,
+        "11": 403.4,
+        "12": 408.4
+      },
+      "provenance": "IN ELP exit = Overall composite >= WIDA level 4.2 (OLD scale); per-grade scale-score thresholds resolved at build time from the vendored widaACCESS_ss_to_pl OLD lookup (build/wida_access_ss_to_pl_OLD.csv). PRELIMINARY: confirm Indiana's official exit level and the LONG CONTENT_AREA code for the Overall composite (default 'ELP_COMPOSITE') before activating; WIDA resets the scale July 2026 (new-scale exit = new sidecar)."
+    }
+  ]
+}

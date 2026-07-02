@@ -1,0 +1,23 @@
+Package: amrr
+Title: Assessment Metadata Registry Client
+Version: 0.1.0
+Authors@R:
+    person("Damian", "Betebenner", email = "dbetebenner@nciea.org", role = c("aut", "cre"))
+Description: Reads the Assessment Metadata Registry (self-contained annual JSON
+    sidecars for assessment-system and accountability-system metadata) into R
+    objects, one jurisdiction/system/year at a time. Resolves per cell from a
+    local registry checkout (pinnable by commit SHA) or a published static
+    bundle, and optionally re-merges accountability achievement targets onto the
+    assessment record for consumers (e.g. SGPc) that expect them together.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports:
+    jsonlite
+Suggests:
+    testthat (>= 3.0.0),
+    withr
+Config/testthat/edition: 3
+URL: https://github.com/CenterForAssessment/assessment-metadata-registry
+BugReports: https://github.com/CenterForAssessment/assessment-metadata-registry/issues

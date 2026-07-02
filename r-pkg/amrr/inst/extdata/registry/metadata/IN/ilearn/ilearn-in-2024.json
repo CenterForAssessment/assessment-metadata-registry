@@ -1,0 +1,149 @@
+{
+  "schema_version": "amr.assessment_system.v1",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "migration:sgpc-foundry",
+    "entered_at": "2026-07-02",
+    "last_verified_at": null,
+    "changed_from_prior": null
+  },
+  "jurisdiction": {
+    "id": "IN",
+    "name": "Indiana",
+    "type": "state"
+  },
+  "assessment_system": {
+    "id": "ilearn",
+    "name": "Indiana Learning Evaluation Assessment Readiness Network",
+    "family": "ILEARN",
+    "assessment_type": "state-summative"
+  },
+  "administration": {
+    "id": "ilearn-in-2024",
+    "year": "2024",
+    "vendor": "Indiana Department of Education",
+    "window": "annual",
+    "csem_ref": null
+  },
+  "assessment_program": {
+    "assessment_name": "Indiana Learning Evaluation Assessment Readiness Network",
+    "abbreviation": "ILEARN",
+    "organization": {
+      "name": "Indiana Department of Education",
+      "abbreviation": "IDOE",
+      "url": "https://www.in.gov/doe/"
+    }
+  },
+  "cutscores_provenance": "PLACEHOLDER -- non-authoritative scaffold values. Replace cutscores with the official IDOE ILEARN performance-level cut scores (per subject x grade) before any client-facing run.",
+  "content_areas": [
+    {
+      "id": "ELA",
+      "label": "English/Language Arts",
+      "vertical_scale": false,
+      "scale_name": "ILEARN ELA scale"
+    },
+    {
+      "id": "MATHEMATICS",
+      "label": "Mathematics",
+      "vertical_scale": false,
+      "scale_name": "ILEARN Mathematics scale"
+    }
+  ],
+  "achievement_levels": {
+    "ELA": {
+      "labels": [
+        "Below Proficiency",
+        "Approaching Proficiency",
+        "At Proficiency",
+        "Above Proficiency"
+      ],
+      "proficient": [
+        false,
+        false,
+        true,
+        true
+      ]
+    },
+    "MATHEMATICS": {
+      "labels": [
+        "Below Proficiency",
+        "Approaching Proficiency",
+        "At Proficiency",
+        "Above Proficiency"
+      ],
+      "proficient": [
+        false,
+        false,
+        true,
+        true
+      ]
+    }
+  },
+  "cutscores": {
+    "ELA": {
+      "3": [
+        462,
+        497,
+        525
+      ],
+      "4": [
+        470,
+        505,
+        533
+      ],
+      "5": [
+        478,
+        513,
+        541
+      ],
+      "6": [
+        486,
+        521,
+        549
+      ],
+      "7": [
+        494,
+        529,
+        557
+      ],
+      "8": [
+        502,
+        537,
+        565
+      ]
+    },
+    "MATHEMATICS": {
+      "3": [
+        462,
+        497,
+        525
+      ],
+      "4": [
+        470,
+        505,
+        533
+      ],
+      "5": [
+        478,
+        513,
+        541
+      ],
+      "6": [
+        486,
+        521,
+        549
+      ],
+      "7": [
+        494,
+        529,
+        557
+      ],
+      "8": [
+        502,
+        537,
+        565
+      ]
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": "amr.assessment_system.v1",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "migration:sgpc-foundry",
+    "entered_at": "2026-07-02",
+    "last_verified_at": null,
+    "changed_from_prior": null
+  },
+  "jurisdiction": {
+    "id": "IN",
+    "name": "Indiana",
+    "type": "state"
+  },
+  "assessment_system": {
+    "id": "wida-access",
+    "name": "WIDA ACCESS",
+    "family": "WIDA-ACCESS",
+    "assessment_type": "english-language-proficiency"
+  },
+  "administration": {
+    "id": "wida-access-in-2018",
+    "year": "2018",
+    "vendor": "DRC",
+    "window": "annual",
+    "csem_ref": null
+  },
+  "assessment_program": {
+    "assessment_name": "WIDA ACCESS for ELLs",
+    "abbreviation": "ACCESS",
+    "organization": {
+      "name": "WIDA at the Wisconsin Center for Education Research, University of Wisconsin-Madison",
+      "abbreviation": "WIDA",
+      "url": "https://wida.wisc.edu"
+    }
+  },
+  "content_areas": [
+    {
+      "id": "ELP_COMPOSITE",
+      "label": "Overall (Composite)",
+      "vertical_scale": true,
+      "scale_name": "WIDA scale"
+    }
+  ],
+  "achievement_levels": {
+    "ELP_COMPOSITE": {
+      "labels": [
+        "WIDA Level 1",
+        "WIDA Level 2",
+        "WIDA Level 3",
+        "WIDA Level 4",
+        "WIDA Level 5",
+        "WIDA Level 6"
+      ],
+      "proficient": [
+        false,
+        false,
+        false,
+        true,
+        true,
+        true
+      ]
+    }
+  }
+}
