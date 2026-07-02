@@ -1,0 +1,64 @@
+project:
+  type: website
+  output-dir: _site
+  # Generate one record-<slug>.qmd per sidecar before rendering (reads ../build).
+  pre-render: _generate.R
+  resources:
+    - assets
+
+execute:
+  freeze: false
+  echo: false
+  warning: false
+  message: false
+
+website:
+  title: "Assessment Metadata Registry"
+  favicon: assets/img/favicon.svg
+  site-url: "https://centerforassessment.github.io/assessment-metadata-registry/"
+  repo-url: "https://github.com/CenterForAssessment/assessment-metadata-registry"
+  page-navigation: true
+  navbar:
+    pinned: true
+    title: "Assessment Metadata Registry"
+    right:
+      - text: Catalog
+        href: index.qmd
+      - text: Spec
+        href: spec.qmd
+      - text: Changelog
+        href: changelog.qmd
+      - text: About
+        href: about.qmd
+      - icon: github
+        href: https://github.com/CenterForAssessment/assessment-metadata-registry
+        aria-label: "GitHub repository"
+  search:
+    location: navbar
+    type: overlay
+    copy-button: true
+  page-footer:
+    border: true
+    left: |
+      **Assessment Metadata Registry** · canonical JSON sidecars, derived by `amrr`.
+    center: |
+      Every bundle is stamped with the registry commit SHA — the reproducibility pin.
+    right:
+      - text: "index.json"
+        href: index.json
+      - icon: github
+        href: https://github.com/CenterForAssessment/assessment-metadata-registry
+
+format:
+  html:
+    theme:
+      light: [cosmo, theme.scss]
+      dark: [cosmo, theme-dark.scss]
+    toc: true
+    toc-title: "On this page"
+    code-copy: true
+    code-overflow: wrap
+    include-in-header: assets/head.html
+    grid:
+      body-width: 960px
+    link-external-newwindow: true

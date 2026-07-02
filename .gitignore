@@ -22,6 +22,12 @@ r-pkg/amrr/..Rcheck/
 *.Rcheck/
 r-pkg/*.tar.gz
 
+# Quarto catalog site — rendered output, freeze cache, and generated record pages.
+site/_site/
+site/.quarto/
+site/_freeze/
+site/record-*.qmd
+
 # Harness — keep the shared .claude/ tracked, but personal overrides are local-only.
 .claude/settings.local.json
 

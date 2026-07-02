@@ -1,0 +1,2 @@
+@andypf/json-viewer v2.8.0 (MIT) — vendored from https://cdn.jsdelivr.net/npm/@andypf/json-viewer@2.8.0/dist/iife/index.js
+Do not edit; re-vendor by bumping the version.

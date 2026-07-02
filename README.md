@@ -23,9 +23,14 @@ it rather than fork it.
 |------|------|-------|
 | **A — Authored** (canonical) | Hand-authored annual JSON sidecars | `metadata/<jur>/<system>/*.json`, gated by `schemas/` |
 | **B — Derived** (generated) | SQLite, index, changelog, SHA-stamped bundles | built by `amrr::build_registry()`; published to Pages by CI |
-| **C — Consumed** | `amrr` R package: `get_metadata()` with SHA pinning | `r-pkg/amrr/` |
+| **C — Consumed** | `amrr` R package + a human-readable **catalog** | `r-pkg/amrr/`, `site/` |
 
 The whole toolchain is R (see `wiki/decisions/004-tooling-language.md`).
+
+**Browse the catalog:** <https://centerforassessment.github.io/assessment-metadata-registry/> —
+a Quarto site that renders every record human-readably (a searchable catalog, per-record
+Display / Explore-JSON / Raw views, a spec viewer, and a changelog). The machine-readable JSON
+(`index.json`, `dist/**`, …) is published at the same URLs for programmatic consumers (ADR-007).
 
 **Quick start:**
 
@@ -49,8 +54,9 @@ schemas/      JSON Schemas for authored records (Tier A contract)
 metadata/     Canonical annual sidecars: <jurisdiction>/<system>/<system>-<jur>-<year>.json
 tools/        archive/ = historical one-time seed scripts (live tooling is amrr::*_registry)
 r-pkg/amrr/   R package: get_metadata() consumer + build_registry()/validate_registry() tooling
+site/         Quarto catalog (Tier C presentation): renders the derived JSON for humans
 wiki/         LLM wiki: decisions (ADRs), patterns, sources, analyses
-Makefile      Local dogfooding loop: make validate | build | check | test | all
+Makefile      Local dogfooding loop: make validate | build | check | test | all | site
 AGENTS.md     Operating manual (read first); CLAUDE.md imports it
 ```
 

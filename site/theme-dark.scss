@@ -1,0 +1,42 @@
+/*-- scss:defaults --*/
+// Dark theme — deep slate archive. Same type system, shifted palette for contrast.
+
+$font-family-sans-serif: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif !default;
+$font-family-monospace:  "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace !default;
+$headings-font-family:   "Fraunces", Georgia, "Times New Roman", serif !default;
+
+$body-bg:      #14181c;
+$body-color:   #e7e2d6;
+$primary:      #63b3c0;   // brighter teal for dark contrast
+$link-color:   #7cc2ce;
+$border-color: #2a3138;
+
+$headings-font-weight: 600;
+$navbar-bg:    rgba(20, 24, 28, 0.86);
+$code-color:   #e0a86a;
+
+:root {
+  --amr-paper:        #{$body-bg};
+  --amr-ink:          #{$body-color};
+  --amr-surface:      #1b2025;
+  --amr-surface-2:    #222930;
+  --amr-border:       #{$border-color};
+  --amr-border-strong:#39424b;
+  --amr-muted:        #9aa1a8;
+  --amr-primary:      #{$primary};
+  --amr-accent:       #d69a4a;
+  --amr-accent-soft:  #32281a;
+  --amr-shadow:       0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -14px rgba(0, 0, 0, 0.6);
+
+  --amr-status-draft:      #d69a4a;
+  --amr-status-reviewed:   #5aa6cc;
+  --amr-status-verified:   #5cbd85;
+  --amr-status-deprecated: #8b93a0;
+
+  --amr-conf-low:    #d69a4a;
+  --amr-conf-medium: #5aa6cc;
+  --amr-conf-high:   #5cbd85;
+}
+
+/*-- scss:rules --*/
+@import "rules";

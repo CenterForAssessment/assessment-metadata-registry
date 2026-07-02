@@ -1,0 +1,323 @@
+// Shared structural + component rules for the registry catalog. Colors come from
+// the per-theme custom properties (--amr-*) set in theme.scss / theme-dark.scss.
+// "The assessment archive": editorial, precise, restrained.
+
+// ---------------------------------------------------------------- base
+body {
+  background-color: var(--amr-paper);
+  color: var(--amr-ink);
+  font-feature-settings: "kern", "liga", "cv05";
+  letter-spacing: 0.005em;
+}
+
+h1, h2, h3, h4, .h1, .h2, .h3 {
+  letter-spacing: -0.012em;
+  font-optical-sizing: auto;
+}
+
+// Small-caps monospace kicker used above section titles.
+.amr-kicker {
+  font-family: var(--bs-font-monospace, "IBM Plex Mono", monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--amr-accent);
+}
+
+// A monospaced "call number" — the design motif for record identity.
+.amr-callno {
+  font-family: var(--bs-font-monospace, "IBM Plex Mono", monospace);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  color: var(--amr-muted);
+}
+
+// ---------------------------------------------------------------- navbar
+.navbar {
+  border-bottom: 1px solid var(--amr-border);
+  backdrop-filter: saturate(1.4) blur(8px);
+  -webkit-backdrop-filter: saturate(1.4) blur(8px);
+  transition: box-shadow 0.25s ease, padding 0.25s ease;
+}
+.navbar .navbar-brand {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.navbar .navbar-nav .nav-link {
+  position: relative;
+  font-weight: 500;
+}
+// Animated underline on hover / active.
+.navbar .navbar-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.35rem;
+  height: 1.5px;
+  background: var(--amr-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.22s ease;
+}
+.navbar .navbar-nav .nav-link:hover::after,
+.navbar .navbar-nav .nav-link.active::after { transform: scaleX(1); }
+
+// ---------------------------------------------------------------- masthead
+.amr-masthead {
+  padding: 2.5rem 0 1.75rem;
+  border-bottom: 1px solid var(--amr-border);
+  margin-bottom: 2rem;
+}
+.amr-masthead h1 {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1.04;
+  margin: 0.35rem 0 0.5rem;
+}
+.amr-masthead .amr-lede {
+  font-size: 1.12rem;
+  color: var(--amr-muted);
+  max-width: 46rem;
+}
+.amr-statline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: 1.4rem;
+  padding-top: 1.2rem;
+  border-top: 1px dashed var(--amr-border-strong);
+}
+.amr-stat { display: flex; flex-direction: column; gap: 0.1rem; }
+.amr-stat .amr-stat-n {
+  font-family: "Fraunces", serif;
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1;
+}
+.amr-stat .amr-stat-l {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amr-muted);
+}
+
+// ---------------------------------------------------------------- badges
+.amr-badge {
+  display: inline-block;
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.14em 0.55em;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.amr-status-draft      { color: var(--amr-status-draft); }
+.amr-status-reviewed   { color: var(--amr-status-reviewed); }
+.amr-status-verified   { color: var(--amr-status-verified); }
+.amr-status-deprecated { color: var(--amr-status-deprecated); }
+.amr-conf-low    { color: var(--amr-conf-low); }
+.amr-conf-medium { color: var(--amr-conf-medium); }
+.amr-conf-high   { color: var(--amr-conf-high); }
+
+.amr-type {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: var(--amr-muted);
+}
+
+// ---------------------------------------------------------------- catalog table (reactable)
+.amr-catalog { margin: 0.5rem 0 2rem; }
+.ReactTable, .rt-table { font-size: 0.9rem; }
+.rt-th {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.68rem !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amr-muted) !important;
+}
+.rt-tr:hover .rt-td { background: var(--amr-surface-2); }
+.amr-rowlink {
+  font-weight: 600;
+  text-decoration: none;
+}
+.amr-rowlink:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+// ---------------------------------------------------------------- record page
+.amr-record-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.6rem 1rem;
+  padding: 0.4rem 0 1rem;
+  border-bottom: 1px solid var(--amr-border);
+  margin-bottom: 1.5rem;
+}
+.amr-record-head .amr-badges { display: flex; gap: 0.4rem; margin-left: auto; }
+
+// Section cards.
+.amr-section {
+  background: var(--amr-surface);
+  border: 1px solid var(--amr-border);
+  border-radius: 10px;
+  padding: 1.1rem 1.25rem;
+  margin: 0 0 1.1rem;
+  box-shadow: var(--amr-shadow);
+}
+.amr-section > h3:first-child, .amr-section > .amr-kicker:first-child { margin-top: 0; }
+
+// Definition grid for identity / provenance.
+.amr-dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1.1rem;
+  margin: 0.4rem 0 0;
+}
+.amr-dl dt {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--amr-muted);
+  align-self: center;
+}
+.amr-dl dd { margin: 0; }
+
+// Data tables (cutscores, levels, targets).
+table.amr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  margin: 0.4rem 0 0;
+}
+table.amr-table caption {
+  caption-side: top;
+  text-align: left;
+  color: var(--amr-muted);
+  font-size: 0.8rem;
+  padding-bottom: 0.4rem;
+}
+table.amr-table th, table.amr-table td {
+  padding: 0.36rem 0.7rem;
+  border-bottom: 1px solid var(--amr-border);
+  text-align: left;
+}
+table.amr-table thead th {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amr-muted);
+  border-bottom: 1.5px solid var(--amr-border-strong);
+}
+table.amr-table td.amr-num {
+  font-family: var(--bs-font-monospace, monospace);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+table.amr-table tbody tr:hover td { background: var(--amr-surface-2); }
+.amr-proficient { color: var(--amr-status-verified); font-weight: 600; }
+
+// Cross-links between records.
+a.amr-xlink {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.86rem;
+  text-decoration: none;
+  border-bottom: 1px dotted currentColor;
+}
+
+// Provenance "stamp".
+.amr-stamp {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.76rem;
+  color: var(--amr-muted);
+  border: 1px dashed var(--amr-border-strong);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.6rem;
+}
+
+// A prominent caveat (e.g. cutscores_provenance PLACEHOLDER).
+.amr-caveat {
+  border-left: 3px solid var(--amr-accent);
+  background: var(--amr-accent-soft);
+  padding: 0.6rem 0.9rem;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.9rem;
+}
+
+// ---------------------------------------------------------------- tabset + json viewer
+.panel-tabset > .nav-tabs { border-bottom: 1px solid var(--amr-border); }
+.panel-tabset > .nav-tabs .nav-link {
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+andypf-json-viewer {
+  display: block;
+  border: 1px solid var(--amr-border);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  background: var(--amr-surface);
+  box-shadow: var(--amr-shadow);
+  overflow: auto;
+}
+
+// ---------------------------------------------------------------- spec viewer
+.amr-field {
+  border-top: 1px solid var(--amr-border);
+  padding: 0.9rem 0;
+}
+.amr-field:last-child { border-bottom: 1px solid var(--amr-border); }
+.amr-field .amr-field-name {
+  font-family: var(--bs-font-monospace, monospace);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.amr-field .amr-field-meta {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-left: 0.5rem;
+  font-family: var(--bs-font-monospace, monospace);
+  font-size: 0.72rem;
+  color: var(--amr-muted);
+}
+.amr-field .amr-req { color: var(--amr-accent); }
+.amr-field .amr-field-desc { margin: 0.35rem 0 0; color: var(--amr-ink); }
+.amr-enum code {
+  background: var(--amr-surface-2);
+  border-radius: 4px;
+  padding: 0.05em 0.35em;
+  margin-right: 0.25rem;
+}
+
+// ---------------------------------------------------------------- footer + toc
+.nav-footer {
+  border-top: 1px solid var(--amr-border);
+  font-size: 0.85rem;
+  color: var(--amr-muted);
+}
+#TOC .active, .sidebar nav[role="doc-toc"] ul > li > a.active {
+  border-left-color: var(--amr-accent);
+  color: var(--amr-primary);
+}
+
+// ---------------------------------------------------------------- motion
+@media (prefers-reduced-motion: no-preference) {
+  .amr-reveal { animation: amr-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .amr-reveal:nth-child(2) { animation-delay: 0.05s; }
+  .amr-reveal:nth-child(3) { animation-delay: 0.1s; }
+  .amr-reveal:nth-child(4) { animation-delay: 0.15s; }
+}
+@keyframes amr-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
