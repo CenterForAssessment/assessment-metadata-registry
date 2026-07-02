@@ -9,8 +9,7 @@ on:
     paths:
       - "metadata/**"
       - "schemas/**"
-      - "tools/validate.R"
-      - "tools/_shared.R"
+      - "r-pkg/amrr/**"
       - ".github/workflows/validate.yml"
   # No paths filter on PRs: validate runs on every pull request so it can serve as a
   # required status check without the paths-filter deadlock (a required check that never
@@ -31,5 +30,7 @@ jobs:
           packages: |
             any::jsonlite
             any::jsonvalidate
+      - name: Install amrr
+        run: R CMD INSTALL --no-docs r-pkg/amrr
       - name: Validate sidecars
-        run: Rscript tools/validate.R
+        run: Rscript -e 'amrr::validate_registry(".")'

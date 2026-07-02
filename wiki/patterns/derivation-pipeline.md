@@ -6,7 +6,7 @@ updated: 2026-07-02
 status: active
 curated: true
 sources:
-  - tools/build.R
+  - r-pkg/amrr/R/build.R
   - schemas/sql/amr-registry.v1.sql
   - wiki/decisions/000-registry-architecture.md
   - wiki/decisions/004-tooling-language.md
@@ -15,16 +15,16 @@ tags: [derivation, build, index, changelog, sqlite, static-bundles, provenance]
 
 # Pattern: Derivation Pipeline (Tier B)
 
-Implements ADR-000 D6 (JSON canonical, everything else derived). `tools/build.R` reads
-every authored sidecar under `metadata/**` and regenerates the disposable query layer
+Implements ADR-000 D6 (JSON canonical, everything else derived). `amrr::build_registry()`
+reads every authored sidecar under `metadata/**` and regenerates the disposable query layer
 under `build/` (git-ignored). Nothing here is authored; correctness lives in Tier A.
-(The tooling is R — ADR-004.)
+(The tooling is R, and lives in the `amrr` package — ADR-004.)
 
 ## Inputs and outputs
 
 ```
 metadata/**/*.json   (Tier A, canonical)
-        |  tools/build.R
+        |  amrr::build_registry()
         v
 build/manifest.json          provenance: git SHA + built_at + schema + per-file sha256
 build/index.json             flat: one row per jurisdiction x system x year x content_area
@@ -49,8 +49,8 @@ bundle published from that SHA.
 All rows are sorted by stable keys and JSON is written deterministically, so — modulo the
 `_registry` timestamp — the diff of `build/` is fully explainable by the change to
 `metadata/`. This is what lets CI treat regeneration as a gate. The R build is *semantically*
-identical to the prior Python build (verified by `tools/parity_check.R`); byte formatting is
-not load-bearing because consumers pin the git SHA, not a content hash.
+identical to the prior Python build (parity verified during the port; see ADR-004); byte
+formatting is not load-bearing because consumers pin the git SHA, not a content hash.
 
 ## SQLite
 

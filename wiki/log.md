@@ -4,6 +4,36 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-02] refactor | Fold the R tooling into the amrr package (ADR-004 revised)
+
+**Action:** refactor
+
+- Moved the derivation/validation tooling **into `amrr`** as exported functions:
+  `amrr::validate_registry()` and `amrr::build_registry()` (mirroring `get_metadata()`'s
+  `registry =` arg). Deleted `tools/*.R`; `tools/` now holds only `archive/`. All the
+  registry's R lives in one package with one test suite and one `R CMD check`.
+- **Producer/consumer split preserved by dependency scoping:** the build/validate-only
+  packages (`jsonvalidate`, `DBI`, `RSQLite`, `digest`) are `Suggests` with
+  `requireNamespace()` checks, so a `get_metadata()` consumer still installs only `jsonlite`.
+  The shared Tier A internals (`is_assessment_record`, `as_logical_flag`,
+  `amrr_registry_root`, `amrr_git_sha_of`) are reused — no duplication.
+- **Parity re-verified:** `amrr::build_registry` output == the pre-refactor `tools/build.R`
+  output (0 artifacts diverged across all JSON + SQLite). New `test-tooling.R` runs
+  validate/build against a bundled fixture registry (`inst/extdata/registry` now carries
+  schemas + DDL). `R CMD check` clean (0/0/0); full testthat green.
+- CI (`validate.yml`, `build-publish.yml`) now `R CMD INSTALL r-pkg/amrr` then call
+  `amrr::validate_registry(".")` / `amrr::build_registry(".", "build")`; Makefile uses
+  `pkgload::load_all`. ADR-004 revised to record the in-package placement (supersedes the
+  standalone-`tools/` form); docs retargeted.
+
+**Why:** user preference — "much more tidy to keep all of the R in the amrr package." See
+[[004-tooling-language]].
+
+**Next:** merge behind green CI (validate + R-CMD-check + build-publish); then the deferred
+settings/hook; flip ADR-000/ADR-004 to accepted after sign-off.
+
+---
+
 ## [2026-07-02] decision + build | ADR-004: complete R build (tooling ported off Python)
 
 **Action:** decision + build

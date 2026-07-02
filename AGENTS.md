@@ -24,7 +24,7 @@ Founding architecture: `wiki/decisions/000-registry-architecture.md`. Read it fi
 
 ```
 Tier A  Authored JSON sidecars     metadata/<jurisdiction>/<system>/*.json   (CANONICAL)
-Tier B  Derived DB + indexes       tools/ build -> SQLite, index.json, changelogs
+Tier B  Derived DB + indexes       amrr::build_registry() -> SQLite, index.json, changelogs
 Tier C  Consumed                   r-pkg/amrr (get_metadata), static bundles, optional API
 ```
 
@@ -101,7 +101,7 @@ the registry.
 
 - **`author`** — add/correct a sidecar: write JSON → validate against schema → set
   `status`/`provenance` → commit. Never touch derived artifacts.
-- **`build`** — regenerate Tier B/C: run `tools/` to project sidecars → SQLite, indexes,
+- **`build`** — regenerate Tier B/C: `amrr::build_registry()` projects sidecars → SQLite, indexes,
   changelogs, static bundles. Deterministic; runs in CI.
 - **`query`** — answer a cross-cutting question from the derived index/changelog with
   path-cited results (read-only).
