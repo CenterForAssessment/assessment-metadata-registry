@@ -4,6 +4,32 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-02] github integration | Foundation committed, PR merged, Pages live
+
+**Action:** build + release
+
+- Executed the CLI handoff's GitHub-integration task (HANDOFF.md §4, §6). Renamed the
+  default branch **`master` → `main`** so the three workflows' `push`/Pages triggers fire.
+- Verified locally before pushing: `tools/validate.py` → 48 files, 0 errors;
+  `tools/build.py` → 48 records across 3 jurisdictions; **`amrr`** — regenerated `man/` +
+  `NAMESPACE` via roxygen, `R CMD check` **Status: OK** (0/0/0), testthat **28 tests pass**
+  (first real execution of the R package).
+- Committed all previously-untracked work on `phase-1-3-registry-foundation`, opened
+  **PR #1**, both PR checks green (`validate` 8s, `R-CMD-check` 1m45s), squash-merged to
+  `main` as **`ccd1890`** — the first real reproducibility pin.
+- Enabled **GitHub Pages** (Source: GitHub Actions). `build-publish` deployed the derived
+  layer; published `manifest.json` carries `git_sha: ccd1890…`, `dirty: false`, 48 records
+  (27 assessment + 21 accountability), 3 jurisdictions. Site:
+  `https://centerforassessment.github.io/assessment-metadata-registry/`.
+- Refreshed `README.md` with a shareable top-of-file overview (tagline, what/why,
+  three-tier table, quick start). ADR-000 left `status: proposed` per deciders' call.
+
+**Next:** flip ADR-000 to accepted after sign-off; close the SGPc consumption loop
+(HANDOFF §5); optionally bump CI actions off deprecated Node 20 and add `main` branch
+protection.
+
+---
+
 ## [2026-07-02] handoff | Prep for CLI transfer (GitHub + close consumption loop)
 
 **Action:** documentation
