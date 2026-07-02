@@ -14,14 +14,14 @@ help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 	  | awk 'BEGIN{FS=":.*?## "}{printf "  \033[36m%-9s\033[0m %s\n", $$1, $$2}'
 
-setup: ## Install the R packages the tooling needs
-	$(R) -e 'install.packages(c("jsonlite","jsonvalidate","DBI","RSQLite","digest"), repos="https://cloud.r-project.org")'
+setup: ## Install the R packages the tooling + dev loop need
+	$(R) -e 'install.packages(c("jsonlite","jsonvalidate","DBI","RSQLite","digest","devtools","roxygen2","testthat"), repos="https://cloud.r-project.org")'
 
 validate: ## Tier A gate: validate every sidecar (schema + registry invariants)
-	$(R) tools/validate.R
+	$(R) -e 'pkgload::load_all("$(RPKG)", quiet=TRUE); amrr::validate_registry(".")'
 
 build: validate ## Regenerate the derived layer (Tier B) into build/ (validates first)
-	$(R) tools/build.R --out build
+	$(R) -e 'pkgload::load_all("$(RPKG)", quiet=TRUE); amrr::build_registry(".", out="build")'
 
 test: ## amrr testthat suite (Tier C)
 	cd $(RPKG) && $(R) -e 'devtools::test()'

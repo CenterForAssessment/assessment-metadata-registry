@@ -45,12 +45,12 @@ is wrong" into a caught error rather than a silent bad row.
 - **Changelog** surfaces year-over-year changes so re-establishments and corrections are
   explicit, reviewable signals.
 - **One local entry point:** `Makefile` (`make validate | build | check | test | all`) runs
-  the same R gates humans and CI run (`Rscript tools/validate.R`, `tools/build.R`; ADR-004).
+  the same R gates humans and CI run (`amrr::validate_registry()`, `amrr::build_registry()`; ADR-004).
   `main` is branch-protected (PR required; `validate` a required status check), so the gates
   are enforced, not optional.
 - **Proposed next increment (needs human review — self-modifying):** a checked-in
   `.claude/settings.json` allow-list for the safe, repeated loop commands, plus a
-  `PostToolUse` hook that runs `Rscript tools/validate.R` the instant a `metadata/`/`schemas/`
+  `PostToolUse` hook that runs `amrr::validate_registry(".")` the instant a `metadata/`/`schemas/`
   file is edited (tightest authoring feedback). Behavior-changing, so it lands only on explicit sign-off.
 
 ### 4. Subagents (throughput lever — fan out)

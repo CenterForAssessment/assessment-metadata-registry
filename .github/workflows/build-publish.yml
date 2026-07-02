@@ -11,9 +11,7 @@ on:
     paths:
       - "metadata/**"
       - "schemas/**"
-      - "tools/build.R"
-      - "tools/validate.R"
-      - "tools/_shared.R"
+      - "r-pkg/amrr/**"
       - ".github/workflows/build-publish.yml"
   workflow_dispatch:
 
@@ -45,10 +43,12 @@ jobs:
             any::DBI
             any::RSQLite
             any::digest
+      - name: Install amrr
+        run: R CMD INSTALL --no-docs r-pkg/amrr
       - name: Validate (Tier A gate)
-        run: Rscript tools/validate.R
+        run: Rscript -e 'amrr::validate_registry(".")'
       - name: Build derived layer (Tier B)
-        run: Rscript tools/build.R --out build
+        run: Rscript -e 'amrr::build_registry(".", out = "build")'
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:

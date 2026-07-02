@@ -35,7 +35,7 @@ place. Founding ADR proposed pending sign-off.
 | [[001-assessment-system-schema]] | **accepted** | `amr.assessment_system.v1` schema: ported SGPc surface + governance fields + legacy alias |
 | [[002-accountability-system-record]] | **accepted** | `amr.accountability_system.v1`; relocated achievement targets (ELP exit) out of the assessment record — the worked "what goes where" example |
 | [[003-demo-jurisdictions]] | **accepted** | Demo jurisdictions SD + SC from testSGPc; `comparability` schema extension (scale transitions, COVID gap); changelog fix |
-| [[004-tooling-language]] | **proposed** | Single-language R tooling: port `validate`/`build` to `Rscript` (jsonvalidate + RSQLite), drop Python, semantic parity verified |
+| [[004-tooling-language]] | **proposed** | Single-language R tooling: `validate`/`build` become `amrr::validate_registry()`/`build_registry()` (build deps in Suggests), drop Python, semantic parity verified |
 | ADR-005 | planned | AI-assisted authoring / scraping pipeline |
 | ADR-006 | planned | Governance: authorship, review, promotion to `verified` |
 

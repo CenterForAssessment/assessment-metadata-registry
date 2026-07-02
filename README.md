@@ -22,7 +22,7 @@ it rather than fork it.
 | Tier | What | Where |
 |------|------|-------|
 | **A — Authored** (canonical) | Hand-authored annual JSON sidecars | `metadata/<jur>/<system>/*.json`, gated by `schemas/` |
-| **B — Derived** (generated) | SQLite, index, changelog, SHA-stamped bundles | built by `tools/build.R`; published to Pages by CI |
+| **B — Derived** (generated) | SQLite, index, changelog, SHA-stamped bundles | built by `amrr::build_registry()`; published to Pages by CI |
 | **C — Consumed** | `amrr` R package: `get_metadata()` with SHA pinning | `r-pkg/amrr/` |
 
 The whole toolchain is R (see `wiki/decisions/004-tooling-language.md`).
@@ -31,7 +31,7 @@ The whole toolchain is R (see `wiki/decisions/004-tooling-language.md`).
 
 ```bash
 # Validate the canonical sidecars locally (expects 48 files, 0 errors)
-make validate            # or: Rscript tools/validate.R
+make validate            # or: Rscript -e 'amrr::validate_registry(".")'
 ```
 ```r
 # Consume from R — pin the exact registry bytes by commit SHA
@@ -47,8 +47,8 @@ See **Validate locally** and **Consume from R** below for the full workflow, and
 ```
 schemas/      JSON Schemas for authored records (Tier A contract)
 metadata/     Canonical annual sidecars: <jurisdiction>/<system>/<system>-<jur>-<year>.json
-tools/        R derivation + validation tooling (validate.R, build.R); archive/ = historical
-r-pkg/amrr/   R consumption package: get_metadata(...) with SHA pinning
+tools/        archive/ = historical one-time seed scripts (live tooling is amrr::*_registry)
+r-pkg/amrr/   R package: get_metadata() consumer + build_registry()/validate_registry() tooling
 wiki/         LLM wiki: decisions (ADRs), patterns, sources, analyses
 Makefile      Local dogfooding loop: make validate | build | check | test | all
 AGENTS.md     Operating manual (read first); CLAUDE.md imports it
@@ -73,7 +73,7 @@ runs the same validation on every PR.
 
 ```bash
 make setup               # once: install jsonlite, jsonvalidate, DBI, RSQLite, digest
-make validate            # or: Rscript tools/validate.R
+make validate            # or: Rscript -e 'amrr::validate_registry(".")'
 make build               # validate, then derive Tier B into build/
 ```
 
@@ -95,7 +95,7 @@ amrr::amrr_targets(md[[1]], "ELP_COMPOSITE")       # exit target, merged from ac
 - Tier A (canonical): `amr.assessment_system.v1` + `amr.accountability_system.v1`
   schemas; Indiana seed corpus (ILEARN, WIDA-ACCESS, accountability). Records are
   `status: draft` (scaffold values) pending review.
-- Tier B (derived): `tools/build.R` → index, changelog, per-jurisdiction bundles,
+- Tier B (derived): `amrr::build_registry()` → index, changelog, per-jurisdiction bundles,
   SQLite, SHA-stamped manifest; published to Pages by CI.
 - Tier C (consume): `r-pkg/amrr` — `get_metadata()` with SHA pinning and target re-merge.
 
