@@ -46,8 +46,9 @@ See **Validate locally** and **Consume from R** below for the full workflow, and
 schemas/      JSON Schemas for authored records (Tier A contract)
 metadata/     Canonical annual sidecars: <jurisdiction>/<system>/<system>-<jur>-<year>.json
 tools/        Migration + validation tooling (Tier A gates)
-r-pkg/amrr/   R consumption package (Phase 3): get_metadata(...)   [planned]
+r-pkg/amrr/   R consumption package: get_metadata(...) with SHA pinning
 wiki/         LLM wiki: decisions (ADRs), patterns, sources, analyses
+Makefile      Local dogfooding loop: make validate | build | check | test | all
 AGENTS.md     Operating manual (read first); CLAUDE.md imports it
 ```
 
@@ -63,12 +64,13 @@ AGENTS.md     Operating manual (read first); CLAUDE.md imports it
 
 ## Validate locally
 
-The quick-start `validate.py` needs one dependency; install it first. CI runs the same
-validation on every push/PR that touches `metadata/` or `schemas/`.
+`make validate` bootstraps a local venv (the tooling needs `jsonschema`) and runs the Tier A
+gate; `make build` regenerates the derived layer after validating. CI runs the same
+validation on every PR.
 
 ```bash
-python3 -m pip install -r tools/requirements.txt
-python3 tools/validate.py
+make validate            # or: python3 -m pip install -r tools/requirements.txt && python3 tools/validate.py
+make build               # validate, then derive Tier B into build/
 ```
 
 ## Consume from R

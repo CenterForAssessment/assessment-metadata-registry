@@ -20,6 +20,10 @@ r-pkg/amrr/src/*.o
 r-pkg/amrr/src/*.so
 r-pkg/amrr/..Rcheck/
 *.Rcheck/
+r-pkg/*.tar.gz
+
+# Harness — keep the shared .claude/ tracked, but personal overrides are local-only.
+.claude/settings.local.json
 
 # OS / editor
 .DS_Store

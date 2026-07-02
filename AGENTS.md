@@ -149,7 +149,19 @@ Flag conflicts explicitly; propose an alternative.
 
 ## The harness
 
-`.claude/` holds the operational half (skills, subagents, hooks, gates). Spec:
-`wiki/patterns/development-harness.md`. Most development quality is circumstantial — keep
-investing in the harness. When this repo's harness stabilizes, it is templatized as a
-reusable pattern the way the SGPc harness was.
+`.claude/` holds the operational half. Spec: `wiki/patterns/development-harness.md`.
+Currently present:
+
+- **Local loop:** `Makefile` — `make validate | build | check | test | all` (bootstraps the
+  venv; runs the same gates as CI). Prefer it over ad-hoc commands.
+- **Subagents** (`.claude/agents/`): `metadata-author` (draft-only authoring from a cited
+  source), `registry-librarian` (regenerate + diff the derived layer, read-only on Tier A),
+  `consumption-lint` (verify the SGPc consumption contract holds).
+- **Enforced gates:** `main` is branch-protected — a PR is required and `validate` is a
+  required status check; CI also runs `build-publish` (Pages) and `R-CMD-check`.
+
+Proposed next (self-modifying → needs explicit human sign-off): a `.claude/settings.json`
+permission allow-list for the safe loop commands and a `PostToolUse` auto-validate hook.
+
+Most development quality is circumstantial — keep investing in the harness. When it
+stabilizes it is templatized as a reusable pattern, the way the SGPc harness was.

@@ -4,6 +4,37 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-02] harness | CI hardening, main branch protection, dogfooding loop
+
+**Action:** harness + build
+
+- **CI hardening (PR #3, `a531657`):** bumped all GitHub Actions to Node 24-native majors
+  (`checkout@v7`, `setup-python@v6`, `configure-pages@v6`, `upload-pages-artifact@v5`,
+  `deploy-pages@v5`), silencing the Node 20 deprecation annotation (0 annotations on the
+  re-run). Dropped the `pull_request` paths filter on `validate.yml` so `validate` runs on
+  every PR — a prerequisite for using it as a required check without the paths-filter
+  deadlock.
+- **Branch protection on `main`:** PR required (0 approvals, so solo self-merge works),
+  `validate` a required status check (strict/up-to-date), conversation resolution +
+  linear history required, force-pushes and deletions blocked, `enforce_admins: off`
+  (owner keeps an escape hatch). Guards the reproducibility pins.
+- **Dogfooding loop:** added `Makefile` (`make validate | build | check | test | all`,
+  bootstraps the `.venv` for the PEP 668 issue) as the single local entry point, and the
+  three `.claude/agents/` subagents the harness pattern designed —
+  [[development-harness]] `metadata-author` (draft-only, cited), `registry-librarian`
+  (regenerate + diff, read-only on Tier A), `consumption-lint` (SGPc contract holds).
+- **Freshness:** dropped the stale `[planned]` on `amrr` in the README; updated
+  `development-harness.md` and the AGENTS.md harness section to present tense; `.gitignore`
+  now covers `r-pkg/*.tar.gz` and personal `.claude/settings.local.json`.
+- **Deferred (needs explicit sign-off):** a checked-in `.claude/settings.json` permission
+  allow-list + `PostToolUse` auto-validate hook. Correctly blocked by the auto-mode
+  self-modification guard; proposed for human review rather than forced.
+
+**Next:** sign off (or decline) the settings allow-list + auto-validate hook; flip ADR-000
+to accepted; close the SGPc consumption loop (HANDOFF §5).
+
+---
+
 ## [2026-07-02] github integration | Foundation committed, PR merged, Pages live
 
 **Action:** build + release

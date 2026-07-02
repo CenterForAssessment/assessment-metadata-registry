@@ -44,9 +44,16 @@ is wrong" into a caught error rather than a silent bad row.
   is explainable by the input change (no hand edits to derived artifacts).
 - **Changelog** surfaces year-over-year changes so re-establishments and corrections are
   explicit, reviewable signals.
+- **One local entry point:** `Makefile` (`make validate | build | check | test | all`)
+  bootstraps the venv and runs the same gates humans and CI run. `main` is branch-protected
+  (PR required; `validate` a required status check), so the gates are enforced, not optional.
+- **Proposed next increment (needs human review — self-modifying):** a checked-in
+  `.claude/settings.json` allow-list for the safe, repeated loop commands, plus a
+  `PostToolUse` hook that runs `validate.py` the instant a `metadata/`/`schemas/` file is
+  edited (tightest authoring feedback). Behavior-changing, so it lands only on explicit sign-off.
 
 ### 4. Subagents (throughput lever — fan out)
-Planned `.claude/agents/`:
+`.claude/agents/` (present):
 - `metadata-author` — drafts/validates a single sidecar from a cited source; writes only
   `draft` status; never promotes.
 - `registry-librarian` — regenerates and diffs the derived layer; read-only on Tier A.
