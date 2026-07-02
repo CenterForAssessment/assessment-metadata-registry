@@ -1,0 +1,223 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://centerforassessment.github.io/assessment-metadata-registry/schemas/amr.assessment_system.v1.json",
+  "title": "Assessment System Metadata (self-contained per-annual sidecar) v1",
+  "description": "One file describes exactly one (jurisdiction x assessment_system x year). Identity (jurisdiction + assessment_system) is invariant and conflict-checked at ingest; administration, assessment_program, content_areas, achievement_levels, and cutscores are year-resolved (the file is the year), so performance-level re-establishment is first-class. Ported from SGPc sgpc.assessment_metadata.v0.1; the legacy schema_version string is accepted as an alias during migration.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "jurisdiction",
+    "assessment_system",
+    "administration",
+    "content_areas",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "enum": ["amr.assessment_system.v1", "sgpc.assessment_metadata.v0.1"],
+      "description": "amr.assessment_system.v1 is canonical; sgpc.assessment_metadata.v0.1 is the accepted legacy alias during migration."
+    },
+    "status": {
+      "enum": ["draft", "reviewed", "verified", "deprecated"],
+      "description": "Governance status. draft = unreviewed (incl. machine-drafted or placeholder values); reviewed = a human checked it; verified = confirmed against an authoritative citation; deprecated = retained for history but superseded."
+    },
+    "source_confidence": {
+      "enum": ["low", "medium", "high"],
+      "description": "Confidence in the substantive facts (esp. cutscores/levels). Placeholder/scaffold values are low."
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Where this record came from, who entered it, and what changed. Required (with source_citation) for any status other than draft.",
+      "properties": {
+        "source_citation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "URL or document reference for the authoritative source of the substantive claims."
+        },
+        "entered_by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Author identifier; for machine-drafted records use the form ai:<harness-id>."
+        },
+        "entered_at": { "type": "string", "minLength": 1 },
+        "last_verified_at": { "type": ["string", "null"] },
+        "changed_from_prior": {
+          "type": ["string", "null"],
+          "description": "What changed vs the prior year/commit and why (assessment-system change vs metadata correction vs modeling decision)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "jurisdiction": {
+      "type": "object",
+      "required": ["id", "name", "type"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["state", "territory", "consortium", "district", "other"] },
+        "nces_id": { "type": "string" },
+        "fips": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "assessment_system": {
+      "type": "object",
+      "required": ["id", "name", "family", "assessment_type"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "family": { "type": "string", "minLength": 1 },
+        "assessment_type": {
+          "type": "string",
+          "minLength": 1,
+          "description": "e.g. state-summative, english-language-proficiency, alternate, science, end-of-course."
+        }
+      },
+      "additionalProperties": false
+    },
+    "administration": {
+      "type": "object",
+      "required": ["id", "year"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "year": { "type": "string", "pattern": "^[0-9]{4}$" },
+        "vendor": { "type": "string", "minLength": 1 },
+        "window": { "type": "string", "minLength": 1 },
+        "csem_ref": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "assessment_program": {
+      "type": "object",
+      "properties": {
+        "assessment_name": { "type": "string", "minLength": 1 },
+        "abbreviation": { "type": "string", "minLength": 1 },
+        "organization": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "abbreviation": { "type": "string" },
+            "url": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "cutscores_provenance": {
+      "type": "string",
+      "description": "Free-text note about the provenance/status of the cutscores block specifically (e.g. a PLACEHOLDER warning). Retained from the SGPc sidecars; complements the structured provenance block."
+    },
+    "comparability": {
+      "type": "object",
+      "description": "Year-resolved comparability of this administration to the prior year: scale breaks, vendor/blueprint changes, and administration gaps (e.g. COVID-19). Lets consumers flag non-comparable growth spans and the changelog surface breaks.",
+      "properties": {
+        "comparable_to_prior_year": {
+          "type": ["boolean", "null"],
+          "description": "Are scores comparable to the immediately prior administered year? null = unknown."
+        },
+        "scale_transition": {
+          "type": "boolean",
+          "description": "Did the scale change in this year (a break vs the prior year)?"
+        },
+        "prior_scale_name": {
+          "type": "string",
+          "description": "Name of the superseded scale when scale_transition is true."
+        },
+        "administered": {
+          "type": "boolean",
+          "description": "Was this administration given at all? false records an intentional gap (e.g. 2020 COVID) as a first-class fact."
+        },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "content_areas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "vertical_scale"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string" },
+          "vertical_scale": { "type": "boolean" },
+          "scale_name": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "achievement_levels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["labels"],
+        "properties": {
+          "labels": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "proficient": {
+            "type": "array",
+            "items": { "type": ["string", "boolean"] }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cutscores": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      }
+    },
+    "aliases": {
+      "type": "object",
+      "description": "Crosswalks: canonical id -> alternate names/codes (old names, SGP content-area names, state abbreviations).",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "edfi": {
+      "type": "object",
+      "description": "Optional Ed-Fi descriptor crosswalk overrides for this cell. Each map overrides the bundled descriptor-profile defaults; absent keys fall back to the profile.",
+      "properties": {
+        "namespace": { "type": "string", "minLength": 1 },
+        "assessment_category": { "type": "string", "minLength": 1 },
+        "academic_subjects": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "grade_levels": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "performance_levels": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "enum": ["reviewed", "verified", "deprecated"] } }
+      },
+      "then": {
+        "required": ["provenance"],
+        "properties": {
+          "provenance": { "required": ["source_citation"] }
+        }
+      }
+    }
+  ]
+}

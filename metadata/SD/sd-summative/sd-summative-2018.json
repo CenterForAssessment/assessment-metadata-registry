@@ -1,0 +1,147 @@
+{
+  "schema_version": "amr.assessment_system.v1",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "seed:demo",
+    "entered_at": "2026-07-02",
+    "last_verified_at": null,
+    "changed_from_prior": null
+  },
+  "jurisdiction": {
+    "id": "SD",
+    "name": "Demonstration State D",
+    "type": "state"
+  },
+  "assessment_system": {
+    "id": "sd-summative",
+    "name": "Demonstration Summative Assessment (State D)",
+    "family": "DEMO-SUMMATIVE",
+    "assessment_type": "state-summative"
+  },
+  "administration": {
+    "id": "sd-summative-2018",
+    "year": "2018",
+    "vendor": "Demonstration",
+    "window": "annual"
+  },
+  "assessment_program": {
+    "assessment_name": "Demonstration Summative Assessment (State D)",
+    "abbreviation": "DEMO-D"
+  },
+  "comparability": {
+    "administered": true,
+    "scale_transition": false,
+    "comparable_to_prior_year": true
+  },
+  "content_areas": [
+    {
+      "id": "MATHEMATICS",
+      "label": "Mathematics",
+      "vertical_scale": true,
+      "scale_name": "State D Vertical Scale"
+    },
+    {
+      "id": "READING",
+      "label": "Reading",
+      "vertical_scale": true,
+      "scale_name": "State D Vertical Scale"
+    }
+  ],
+  "achievement_levels": {
+    "MATHEMATICS": {
+      "labels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4"
+      ],
+      "proficient": [
+        false,
+        false,
+        true,
+        true
+      ]
+    },
+    "READING": {
+      "labels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4"
+      ],
+      "proficient": [
+        false,
+        false,
+        true,
+        true
+      ]
+    }
+  },
+  "cutscores": {
+    "MATHEMATICS": {
+      "3": [
+        2400,
+        2530,
+        2650
+      ],
+      "4": [
+        2400,
+        2530,
+        2650
+      ],
+      "5": [
+        2400,
+        2530,
+        2650
+      ],
+      "6": [
+        2400,
+        2530,
+        2650
+      ],
+      "7": [
+        2400,
+        2530,
+        2650
+      ],
+      "8": [
+        2400,
+        2530,
+        2650
+      ]
+    },
+    "READING": {
+      "3": [
+        2400,
+        2540,
+        2650
+      ],
+      "4": [
+        2400,
+        2540,
+        2650
+      ],
+      "5": [
+        2400,
+        2540,
+        2650
+      ],
+      "6": [
+        2400,
+        2540,
+        2650
+      ],
+      "7": [
+        2400,
+        2540,
+        2650
+      ],
+      "8": [
+        2400,
+        2540,
+        2650
+      ]
+    }
+  }
+}

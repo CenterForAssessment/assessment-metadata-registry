@@ -1,0 +1,51 @@
+name: build-publish
+
+# Tier B: on merge to main, validate -> derive -> publish SHA-stamped static bundles to
+# GitHub Pages. The published artifacts (index, per-jurisdiction bundles, changelog,
+# tables, sqlite) are what amrr::get_metadata() fetches. Because the build stamps the
+# commit SHA into every bundle, a consumer that pins to a SHA can prove which bytes it used.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "metadata/**"
+      - "schemas/**"
+      - "tools/build.py"
+      - "tools/validate.py"
+      - "tools/requirements.txt"
+      - ".github/workflows/build-publish.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: python -m pip install -r tools/requirements.txt
+      - name: Validate (Tier A gate)
+        run: python tools/validate.py
+      - name: Build derived layer (Tier B)
+        run: python tools/build.py --out build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+      - id: deploy
+        uses: actions/deploy-pages@v4

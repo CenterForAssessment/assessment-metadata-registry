@@ -1,0 +1,35 @@
+name: validate-metadata
+
+# Tier A gate: every authored sidecar must pass JSON Schema + registry invariants.
+# A malformed or identity-inconsistent sidecar blocks the merge.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "metadata/**"
+      - "schemas/**"
+      - "tools/validate.py"
+      - "tools/requirements.txt"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "metadata/**"
+      - "schemas/**"
+      - "tools/validate.py"
+      - "tools/requirements.txt"
+      - ".github/workflows/validate.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: python -m pip install -r tools/requirements.txt
+      - name: Validate sidecars
+        run: python tools/validate.py

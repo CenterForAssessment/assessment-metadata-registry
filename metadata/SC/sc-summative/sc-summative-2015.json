@@ -1,0 +1,149 @@
+{
+  "schema_version": "amr.assessment_system.v1",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "seed:demo",
+    "entered_at": "2026-07-02",
+    "last_verified_at": null,
+    "changed_from_prior": "scale transition"
+  },
+  "jurisdiction": {
+    "id": "SC",
+    "name": "Demonstration State C",
+    "type": "state"
+  },
+  "assessment_system": {
+    "id": "sc-summative",
+    "name": "Demonstration Summative Assessment (State C)",
+    "family": "DEMO-SUMMATIVE",
+    "assessment_type": "state-summative"
+  },
+  "administration": {
+    "id": "sc-summative-2015",
+    "year": "2015",
+    "vendor": "Demonstration",
+    "window": "annual"
+  },
+  "assessment_program": {
+    "assessment_name": "Demonstration Summative Assessment (State C)",
+    "abbreviation": "DEMO-C"
+  },
+  "comparability": {
+    "administered": true,
+    "scale_transition": true,
+    "comparable_to_prior_year": false,
+    "prior_scale_name": "State C Legacy Scale",
+    "notes": "New scale adopted in 2015; not comparable to prior-scale scores."
+  },
+  "content_areas": [
+    {
+      "id": "ELA",
+      "label": "ELA",
+      "vertical_scale": false,
+      "scale_name": "State C Scale"
+    },
+    {
+      "id": "MATHEMATICS",
+      "label": "MATHEMATICS",
+      "vertical_scale": false,
+      "scale_name": "State C Scale"
+    }
+  ],
+  "achievement_levels": {
+    "ELA": {
+      "labels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4"
+      ],
+      "proficient": [
+        false,
+        false,
+        true,
+        true
+      ]
+    },
+    "MATHEMATICS": {
+      "labels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4"
+      ],
+      "proficient": [
+        false,
+        false,
+        true,
+        true
+      ]
+    }
+  },
+  "cutscores": {
+    "ELA": {
+      "3": [
+        600,
+        700,
+        770
+      ],
+      "4": [
+        600,
+        700,
+        770
+      ],
+      "5": [
+        600,
+        700,
+        770
+      ],
+      "6": [
+        600,
+        700,
+        770
+      ],
+      "7": [
+        600,
+        700,
+        770
+      ],
+      "8": [
+        600,
+        700,
+        770
+      ]
+    },
+    "MATHEMATICS": {
+      "3": [
+        560,
+        680,
+        760
+      ],
+      "4": [
+        560,
+        680,
+        760
+      ],
+      "5": [
+        560,
+        680,
+        760
+      ],
+      "6": [
+        560,
+        680,
+        760
+      ],
+      "7": [
+        560,
+        680,
+        760
+      ],
+      "8": [
+        560,
+        680,
+        760
+      ]
+    }
+  }
+}

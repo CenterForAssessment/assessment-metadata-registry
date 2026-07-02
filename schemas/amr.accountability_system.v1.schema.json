@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://centerforassessment.github.io/assessment-metadata-registry/schemas/amr.accountability_system.v1.json",
+  "title": "Accountability System Metadata (self-contained per-annual sidecar) v1",
+  "description": "One file describes exactly one (jurisdiction x accountability_system x year). The accountability system is a state-wide object that USES one or more assessment systems: it carries the policy goals a score is measured against (ELP exit thresholds, summative accountability proficiency targets), year-resolved. Each target CROSS-LINKS an assessment system + content area rather than living inside the assessment sidecar, because the target is state policy (see ADR-002), not a property of the assessment. Extensible: participation rules, N-size, indicator weights, and business rules are future additions.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "jurisdiction",
+    "accountability_system",
+    "administration",
+    "status",
+    "targets"
+  ],
+  "properties": {
+    "schema_version": { "const": "amr.accountability_system.v1" },
+    "status": {
+      "enum": ["draft", "reviewed", "verified", "deprecated"],
+      "description": "Governance status; non-draft requires provenance.source_citation."
+    },
+    "source_confidence": { "enum": ["low", "medium", "high"] },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "source_citation": { "type": "string", "minLength": 1 },
+        "entered_by": { "type": "string", "minLength": 1 },
+        "entered_at": { "type": "string", "minLength": 1 },
+        "last_verified_at": { "type": ["string", "null"] },
+        "changed_from_prior": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "jurisdiction": {
+      "type": "object",
+      "required": ["id", "name", "type"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["state", "territory", "consortium", "district", "other"] },
+        "nces_id": { "type": "string" },
+        "fips": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "accountability_system": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "framework": {
+          "type": "string",
+          "description": "e.g. ESSA, state-specific. Optional."
+        }
+      },
+      "additionalProperties": false
+    },
+    "administration": {
+      "type": "object",
+      "required": ["id", "year"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "year": { "type": "string", "pattern": "^[0-9]{4}$" }
+      },
+      "additionalProperties": false
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Criterion-referenced achievement targets: the policy goal a score is measured against. Each target cross-links the assessment system + content area it applies to.",
+      "items": {
+        "type": "object",
+        "required": ["assessment_system_id", "content_area", "semantics", "basis"],
+        "properties": {
+          "assessment_system_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Cross-link to an amr.assessment_system.v1 record (same jurisdiction + year)."
+          },
+          "content_area": { "type": "string", "minLength": 1 },
+          "label": { "type": "string" },
+          "semantics": {
+            "enum": ["exit", "proficiency"],
+            "description": "exit (ELP reclassification) or proficiency (summative accountability goal)."
+          },
+          "basis": {
+            "enum": ["proficiency_boundary", "scale_score", "level"],
+            "description": "proficiency_boundary resolves against the linked assessment's cutscores + proficient mask; scale_score carries explicit per-grade thresholds; level is reserved."
+          },
+          "comparison": { "enum": [">=", ">"] },
+          "per_grade_scale_score": {
+            "type": "object",
+            "description": "Required for basis='scale_score': grade -> scale-score threshold.",
+            "additionalProperties": { "type": "number" }
+          },
+          "level_value": {
+            "type": "number",
+            "description": "For basis='level' (deferred): the fractional level target (e.g. 4.2)."
+          },
+          "provenance": { "type": "string" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "basis": { "const": "scale_score" } } },
+            "then": { "required": ["per_grade_scale_score"] }
+          }
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "enum": ["reviewed", "verified", "deprecated"] } }
+      },
+      "then": {
+        "required": ["provenance"],
+        "properties": { "provenance": { "required": ["source_citation"] } }
+      }
+    }
+  ]
+}
