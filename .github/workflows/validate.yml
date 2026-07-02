@@ -12,21 +12,18 @@ on:
       - "tools/validate.py"
       - "tools/requirements.txt"
       - ".github/workflows/validate.yml"
+  # No paths filter on PRs: validate runs on every pull request so it can serve as a
+  # required status check without the paths-filter deadlock (a required check that never
+  # runs blocks the PR). The full-corpus validation is fast (~8s) and always meaningful.
   pull_request:
-    paths:
-      - "metadata/**"
-      - "schemas/**"
-      - "tools/validate.py"
-      - "tools/requirements.txt"
-      - ".github/workflows/validate.yml"
   workflow_dispatch:
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install deps
