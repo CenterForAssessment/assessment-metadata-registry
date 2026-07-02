@@ -4,6 +4,31 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-02] harness | Auto-validate hook + loop-command allowlist (sign-off received)
+
+**Action:** harness
+
+- Added the previously-deferred, self-modifying harness piece on explicit sign-off:
+  `.claude/settings.json` now allow-lists the safe loop commands
+  (`make validate|build|check|test|all`, read-only `git status`/`diff`/`log`) and wires a
+  `PostToolUse` hook, `.claude/hooks/validate-metadata.sh`.
+- The hook fires on `Edit`/`Write`/`MultiEdit`, parses the edited path, and runs
+  `amrr::validate_registry(".")` only when a live `metadata/`/`schemas/` file changed
+  (ignores the `r-pkg/**` package fixture). Clean registry → silent, exit 0; validation
+  failure → the errors go to stderr and exit 2, surfacing them to the agent to fix. Missing R
+  toolchain (no `jsonvalidate`/`amrr`/`pkgload`) → graceful no-op, so it never blocks editing.
+- Verified all four paths: gate-skip (non-registry + fixture), clean-pass, failure
+  (`cutscores[ELA][3] not monotonic` → exit 2), and graceful degrade. Uses installed `amrr`
+  when present, else `pkgload::load_all("r-pkg/amrr")`.
+
+**Why:** the tightest authoring feedback loop, and the last item of the dogfooding harness
+build-out. See [[development-harness]].
+
+**Deferred (unchanged):** schema review with a colleague (later today); flip ADR-000/ADR-004
+`proposed` → `accepted` after that review.
+
+---
+
 ## [2026-07-02] refactor | Fold the R tooling into the amrr package (ADR-004 revised)
 
 **Action:** refactor
