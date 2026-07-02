@@ -48,10 +48,13 @@ is wrong" into a caught error rather than a silent bad row.
   the same R gates humans and CI run (`amrr::validate_registry()`, `amrr::build_registry()`; ADR-004).
   `main` is branch-protected (PR required; `validate` a required status check), so the gates
   are enforced, not optional.
-- **Proposed next increment (needs human review — self-modifying):** a checked-in
-  `.claude/settings.json` allow-list for the safe, repeated loop commands, plus a
-  `PostToolUse` hook that runs `amrr::validate_registry(".")` the instant a `metadata/`/`schemas/`
-  file is edited (tightest authoring feedback). Behavior-changing, so it lands only on explicit sign-off.
+- **Tightest authoring feedback (landed):** a checked-in `.claude/settings.json` allow-lists
+  the safe, repeated loop commands (`make validate|build|check|test|all`, read-only git) and
+  wires a `PostToolUse` hook — `.claude/hooks/validate-metadata.sh` — that runs
+  `amrr::validate_registry(".")` the instant a `metadata/`/`schemas/` file is edited. A clean
+  registry is silent; a validation failure returns the errors to the agent (exit 2). The hook
+  degrades to a no-op when the R toolchain is absent, so it never blocks editing, and ignores
+  the `r-pkg/**` package fixture.
 
 ### 4. Subagents (throughput lever — fan out)
 `.claude/agents/` (present):

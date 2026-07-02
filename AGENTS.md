@@ -159,9 +159,11 @@ Currently present:
   `consumption-lint` (verify the SGPc consumption contract holds).
 - **Enforced gates:** `main` is branch-protected — a PR is required and `validate` is a
   required status check; CI also runs `build-publish` (Pages) and `R-CMD-check`.
-
-Proposed next (self-modifying → needs explicit human sign-off): a `.claude/settings.json`
-permission allow-list for the safe loop commands and a `PostToolUse` auto-validate hook.
+- **Auto-validate loop:** `.claude/settings.json` allow-lists the safe loop commands and wires
+  a `PostToolUse` hook (`.claude/hooks/validate-metadata.sh`) that runs
+  `amrr::validate_registry(".")` whenever a `metadata/`/`schemas/` file is edited — a clean
+  registry is silent, a failure is fed back to the agent. Degrades to a no-op without the R
+  toolchain, so it never blocks editing.
 
 Most development quality is circumstantial — keep investing in the harness. When it
 stabilizes it is templatized as a reusable pattern, the way the SGPc harness was.
