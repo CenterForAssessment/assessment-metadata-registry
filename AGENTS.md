@@ -152,8 +152,8 @@ Flag conflicts explicitly; propose an alternative.
 `.claude/` holds the operational half. Spec: `wiki/patterns/development-harness.md`.
 Currently present:
 
-- **Local loop:** `Makefile` — `make validate | build | check | test | all` (bootstraps the
-  venv; runs the same gates as CI). Prefer it over ad-hoc commands.
+- **Local loop:** `Makefile` — `make validate | build | check | test | all` (all-R
+  `Rscript` under the hood, ADR-004; runs the same gates as CI). Prefer it over ad-hoc commands.
 - **Subagents** (`.claude/agents/`): `metadata-author` (draft-only authoring from a cited
   source), `registry-librarian` (regenerate + diff the derived layer, read-only on Tier A),
   `consumption-lint` (verify the SGPc consumption contract holds).

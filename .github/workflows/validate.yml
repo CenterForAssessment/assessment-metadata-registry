@@ -9,12 +9,12 @@ on:
     paths:
       - "metadata/**"
       - "schemas/**"
-      - "tools/validate.py"
-      - "tools/requirements.txt"
+      - "tools/validate.R"
+      - "tools/_shared.R"
       - ".github/workflows/validate.yml"
   # No paths filter on PRs: validate runs on every pull request so it can serve as a
   # required status check without the paths-filter deadlock (a required check that never
-  # runs blocks the PR). The full-corpus validation is fast (~8s) and always meaningful.
+  # runs blocks the PR). Full-corpus validation is quick and always meaningful.
   pull_request:
   workflow_dispatch:
 
@@ -23,10 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v6
+      - uses: r-lib/actions/setup-r@v2
         with:
-          python-version: "3.12"
-      - name: Install deps
-        run: python -m pip install -r tools/requirements.txt
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::jsonlite
+            any::jsonvalidate
       - name: Validate sidecars
-        run: python tools/validate.py
+        run: Rscript tools/validate.R

@@ -6,23 +6,25 @@ updated: 2026-07-02
 status: active
 curated: true
 sources:
-  - tools/build.py
+  - tools/build.R
   - schemas/sql/amr-registry.v1.sql
   - wiki/decisions/000-registry-architecture.md
+  - wiki/decisions/004-tooling-language.md
 tags: [derivation, build, index, changelog, sqlite, static-bundles, provenance]
 ---
 
 # Pattern: Derivation Pipeline (Tier B)
 
-Implements ADR-000 D6 (JSON canonical, everything else derived). `tools/build.py` reads
+Implements ADR-000 D6 (JSON canonical, everything else derived). `tools/build.R` reads
 every authored sidecar under `metadata/**` and regenerates the disposable query layer
 under `build/` (git-ignored). Nothing here is authored; correctness lives in Tier A.
+(The tooling is R — ADR-004.)
 
 ## Inputs and outputs
 
 ```
 metadata/**/*.json   (Tier A, canonical)
-        |  tools/build.py
+        |  tools/build.R
         v
 build/manifest.json          provenance: git SHA + built_at + schema + per-file sha256
 build/index.json             flat: one row per jurisdiction x system x year x content_area
@@ -44,16 +46,18 @@ bundle published from that SHA.
 
 ## Determinism
 
-All rows are sorted by stable keys and JSON is written with sorted, indented output, so
-the build is byte-deterministic for a given input: the diff of `build/` is fully
-explainable by the change to `metadata/`. This is what lets CI treat regeneration as a
-gate.
+All rows are sorted by stable keys and JSON is written deterministically, so — modulo the
+`_registry` timestamp — the diff of `build/` is fully explainable by the change to
+`metadata/`. This is what lets CI treat regeneration as a gate. The R build is *semantically*
+identical to the prior Python build (verified by `tools/parity_check.R`); byte formatting is
+not load-bearing because consumers pin the git SHA, not a content hash.
 
-## SQLite on restrictive mounts
+## SQLite
 
-`build.py` builds the SQLite file in a local temp dir and copies the finished bytes to the
-destination. SQLite needs POSIX journal locking, which some mounts (FUSE) reject; the
-byte-copy sidesteps it. On CI (normal filesystem) this is a no-op cost.
+`build.R` writes `build/registry.sqlite` directly via `RSQLite`/`DBI`, executing the
+`schemas/sql/amr-registry.v1.sql` DDL then inserting the projection. (The former Python
+build used a temp-dir byte-copy to sidestep FUSE journal locking; the R build does not need
+that on the CI/native filesystem.)
 
 ## Publishing
 

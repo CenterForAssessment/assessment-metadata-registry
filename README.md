@@ -22,14 +22,16 @@ it rather than fork it.
 | Tier | What | Where |
 |------|------|-------|
 | **A — Authored** (canonical) | Hand-authored annual JSON sidecars | `metadata/<jur>/<system>/*.json`, gated by `schemas/` |
-| **B — Derived** (generated) | SQLite, index, changelog, SHA-stamped bundles | built by `tools/build.py`; published to Pages by CI |
+| **B — Derived** (generated) | SQLite, index, changelog, SHA-stamped bundles | built by `tools/build.R`; published to Pages by CI |
 | **C — Consumed** | `amrr` R package: `get_metadata()` with SHA pinning | `r-pkg/amrr/` |
+
+The whole toolchain is R (see `wiki/decisions/004-tooling-language.md`).
 
 **Quick start:**
 
 ```bash
 # Validate the canonical sidecars locally (expects 48 files, 0 errors)
-python3 tools/validate.py
+make validate            # or: Rscript tools/validate.R
 ```
 ```r
 # Consume from R — pin the exact registry bytes by commit SHA
@@ -45,7 +47,7 @@ See **Validate locally** and **Consume from R** below for the full workflow, and
 ```
 schemas/      JSON Schemas for authored records (Tier A contract)
 metadata/     Canonical annual sidecars: <jurisdiction>/<system>/<system>-<jur>-<year>.json
-tools/        Migration + validation tooling (Tier A gates)
+tools/        R derivation + validation tooling (validate.R, build.R); archive/ = historical
 r-pkg/amrr/   R consumption package: get_metadata(...) with SHA pinning
 wiki/         LLM wiki: decisions (ADRs), patterns, sources, analyses
 Makefile      Local dogfooding loop: make validate | build | check | test | all
@@ -64,12 +66,14 @@ AGENTS.md     Operating manual (read first); CLAUDE.md imports it
 
 ## Validate locally
 
-`make validate` bootstraps a local venv (the tooling needs `jsonschema`) and runs the Tier A
-gate; `make build` regenerates the derived layer after validating. CI runs the same
-validation on every PR.
+`make validate` runs the Tier A gate (schema via `jsonvalidate` + registry invariants);
+`make build` regenerates the derived layer after validating. Both are `Rscript` under the
+hood — the only requirement is R plus the tooling packages (`make setup` installs them). CI
+runs the same validation on every PR.
 
 ```bash
-make validate            # or: python3 -m pip install -r tools/requirements.txt && python3 tools/validate.py
+make setup               # once: install jsonlite, jsonvalidate, DBI, RSQLite, digest
+make validate            # or: Rscript tools/validate.R
 make build               # validate, then derive Tier B into build/
 ```
 
@@ -91,7 +95,7 @@ amrr::amrr_targets(md[[1]], "ELP_COMPOSITE")       # exit target, merged from ac
 - Tier A (canonical): `amr.assessment_system.v1` + `amr.accountability_system.v1`
   schemas; Indiana seed corpus (ILEARN, WIDA-ACCESS, accountability). Records are
   `status: draft` (scaffold values) pending review.
-- Tier B (derived): `tools/build.py` → index, changelog, per-jurisdiction bundles,
+- Tier B (derived): `tools/build.R` → index, changelog, per-jurisdiction bundles,
   SQLite, SHA-stamped manifest; published to Pages by CI.
 - Tier C (consume): `r-pkg/amrr` — `get_metadata()` with SHA pinning and target re-merge.
 

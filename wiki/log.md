@@ -4,6 +4,32 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-02] decision + build | ADR-004: complete R build (tooling ported off Python)
+
+**Action:** decision + build
+
+- **ADR-004 (proposed):** single-language R. Ported the Tier A→B tooling off Python — the
+  registry now has one toolchain (R), matching the R-shop and killing the PEP 668 friction.
+- **New `tools/*.R`:** `_shared.R` (constants, `as_bool`, `git_provenance`, `load_records`,
+  arg parser), `validate.R` (schema via `jsonvalidate`/ajv with `$schema` normalized to
+  draft-07 — the schemas use only draft-07 vocabulary — plus the ported invariants), and
+  `build.R` (all `build/` artifacts via `jsonlite` + `DBI`/`RSQLite` + `digest`). The tooling
+  stays standalone (not folded into `amrr`), preserving ADR-000's producer/consumer split.
+- **Semantic parity proven** by `tools/parity_check.R`: R vs Python builds are identical
+  across all 16 JSON artifacts and all 12 SQLite tables (10 changelog events, 45 index rows,
+  45 targets); both validators agree file-for-file (48/0). Byte parity is intentionally not a
+  goal (consumers pin the git SHA; `amrr` reads raw sidecars).
+- **Removed** `validate.py`, `build.py`, `requirements.txt`; **archived** the one-time seed
+  scripts to `tools/archive/`. **CI + Makefile** switched to `setup-r` + `Rscript`; a
+  `jsonvalidate`→`V8`/libv8 dep is now pulled in CI (cached).
+- **Docs retargeted** Python→R (README, `derivation-pipeline`, `development-harness`, AGENTS,
+  HANDOFF pointer); ADR index renumbered the unwritten placeholders (AI→005, Governance→006).
+
+**Next:** merge behind green CI; then the deferred `.claude/settings.json` + auto-validate
+hook (now `Rscript tools/validate.R`); flip ADR-000/ADR-004 to accepted after sign-off.
+
+---
+
 ## [2026-07-02] harness | CI hardening, main branch protection, dogfooding loop
 
 **Action:** harness + build

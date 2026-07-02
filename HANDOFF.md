@@ -189,6 +189,6 @@ Recommended: **State D first** to prove the mechanism with stable baselines, the
 | R client | `r-pkg/amrr/R/get_metadata.R`, `R/targets.R`, `R/accessors.R` |
 | SGPc resolver | `SGPc-rpkg/SGPc/R/metadata.R` (`resolve_sgpc_metadata` ~909; schema check ~39, ~351) |
 | SGPc demo consumer | `SGPc-rpkg/SGPc/R/testSGPc.R` (`sgpc_test_metadata_records` ~343; spec feed ~1592) |
-| Re-run seeds | `tools/migrate_sgpc_sidecars.py`, `tools/split_accountability.py`, `tools/seed_demo.py` |
+| Re-run seeds (historical Python) | `tools/archive/migrate_sgpc_sidecars.py`, `tools/archive/split_accountability.py`, `tools/archive/seed_demo.py` |
 
 Registry checkout for `amrr`: set `AMRR_REGISTRY` or `options(amrr.registry=)` to the repo root.
