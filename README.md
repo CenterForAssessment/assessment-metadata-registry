@@ -5,9 +5,10 @@
 
 **What it is.** A general, version-controlled registry of state assessment metadata:
 assessment-system identity, vendors, scales, achievement levels, cutscores, comparability
-caveats, Ed-Fi descriptors, and (forthcoming) accountability rules. The canonical source of
-truth is a set of self-contained **annual JSON sidecars**; every other artifact — query
-indexes, changelogs, static bundles, the R package — is *derived* from them and disposable.
+caveats, accountability targets, and Ed-Fi descriptors. The canonical source of truth is a
+set of self-contained **annual JSON sidecars**; every other artifact — query indexes,
+changelogs, static bundles, the R package, the Pages catalog — is *derived* from them and
+disposable.
 
 **Why it exists.** This metadata used to live as a single embedded R object that could not
 be queried across states and lost history whenever a state re-established performance
@@ -78,9 +79,10 @@ hood — the only requirement is R plus the tooling packages (`make setup` insta
 runs the same validation on every PR.
 
 ```bash
-make setup               # once: install jsonlite, jsonvalidate, DBI, RSQLite, digest
+make setup               # once: install the R tooling + site packages
 make validate            # or: Rscript -e 'amrr::validate_registry(".")'
 make build               # validate, then derive Tier B into build/
+make site                # render the human-readable catalog into site/_site/
 ```
 
 ## Consume from R
@@ -99,10 +101,12 @@ amrr::amrr_targets(md[[1]], "ELP_COMPOSITE")       # exit target, merged from ac
 ## Status
 
 - Tier A (canonical): `amr.assessment_system.v1` + `amr.accountability_system.v1`
-  schemas; Indiana seed corpus (ILEARN, WIDA-ACCESS, accountability). Records are
+  schemas; **48 records across 3 jurisdictions** — Indiana (ILEARN, WIDA-ACCESS, and its
+  accountability system) plus demonstration jurisdictions SC and SD. Records are
   `status: draft` (scaffold values) pending review.
 - Tier B (derived): `amrr::build_registry()` → index, changelog, per-jurisdiction bundles,
   SQLite, SHA-stamped manifest; published to Pages by CI.
-- Tier C (consume): `r-pkg/amrr` — `get_metadata()` with SHA pinning and target re-merge.
+- Tier C (consume): `r-pkg/amrr` — `get_metadata()` with SHA pinning and target re-merge;
+  and a Quarto **catalog** (`site/`) that renders the derived JSON for humans (ADR-007).
 
 See `wiki/decisions/000-registry-architecture.md` for the architecture and roadmap.
