@@ -33,7 +33,11 @@ Checks each authored sidecar under \verb{<registry>/metadata/} against its JSON
 Schema (via \pkg{jsonvalidate}) plus the registry invariants a schema cannot
 express: filename/path identity, cutscore count vs. achievement levels,
 monotonic cutscores, accountability cross-links, and a \code{source_citation} on
-non-draft records.
+non-draft records. v1 and v2 records are routed to their respective schemas
+(dual-version window, ADR-009); v2 records additionally get the enrollment
+axis rule (cutscore/scale-bound grade keys must be enrolled grades) and the
+scale-envelope invariant (\verb{loss <= min(cuts) <= max(cuts) <= hoss}). Once any
+v2 record exists, remaining v1 records raise a migration warning.
 }
 \examples{
 \dontrun{

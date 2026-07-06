@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://centerforassessment.github.io/assessment-metadata-registry/schemas/amr.accountability.v2.json",
+  "title": "Accountability System Metadata (self-contained per-annual sidecar) v2",
+  "description": "One file describes exactly one (jurisdiction x accountability_system x year). The accountability system is a state-wide object that USES one or more assessment systems: it carries the policy goals a score is measured against, year-resolved, each cross-linking an assessment system + content area (ADR-002). v2 (ADR-009 D5) adds the policy blocks reclassified out of the colleague spec's measurement extensions: growth_targets, timelines, and participation, plus source_documents[]. targets[] is unchanged from v1 — the SGPc re-merge contract is untouched. growth_targets shape is provisional and hardens when the first real record is authored.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "jurisdiction",
+    "accountability_system",
+    "administration",
+    "status",
+    "targets"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "amr.accountability.v2",
+      "description": "Canonical v2 identifier. Supersedes amr.accountability_system.v1, which remains accepted by the validator during the migration window."
+    },
+    "status": {
+      "enum": ["draft", "reviewed", "verified", "deprecated"],
+      "description": "Governance status; non-draft requires provenance.source_citation."
+    },
+    "source_confidence": { "enum": ["low", "medium", "high"] },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "source_citation": { "type": "string", "minLength": 1 },
+        "entered_by": { "type": "string", "minLength": 1 },
+        "entered_at": { "type": "string", "minLength": 1 },
+        "last_verified_at": { "type": ["string", "null"] },
+        "changed_from_prior": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "source_documents": {
+      "type": "array",
+      "description": "Evidence list beyond the primary provenance.source_citation (state board rules, ESSA plans, exit-criteria memos). url may be null when known but not yet located (ADR-009 D4).",
+      "items": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "url": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jurisdiction": {
+      "type": "object",
+      "required": ["id", "name", "type"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["state", "territory", "consortium", "district", "other"] },
+        "nces_id": { "type": "string" },
+        "fips": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "accountability_system": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "framework": {
+          "type": "string",
+          "description": "e.g. ESSA, state-specific. Optional."
+        }
+      },
+      "additionalProperties": false
+    },
+    "administration": {
+      "type": "object",
+      "required": ["id", "year"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "year": { "type": "string", "pattern": "^[0-9]{4}$" }
+      },
+      "additionalProperties": false
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Criterion-referenced achievement targets: the policy goal a score is measured against. Each target cross-links the assessment system + content area it applies to. Unchanged from v1 (SGPc re-merge contract).",
+      "items": {
+        "type": "object",
+        "required": ["assessment_system_id", "content_area", "semantics", "basis"],
+        "properties": {
+          "assessment_system_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Cross-link to an assessment record (same jurisdiction + year)."
+          },
+          "content_area": { "type": "string", "minLength": 1 },
+          "label": { "type": "string" },
+          "semantics": {
+            "enum": ["exit", "proficiency"],
+            "description": "exit (ELP reclassification) or proficiency (summative accountability goal)."
+          },
+          "basis": {
+            "enum": ["proficiency_boundary", "scale_score", "level"],
+            "description": "proficiency_boundary resolves against the linked assessment's cutscores + proficient mask; scale_score carries explicit per-grade thresholds; level is reserved."
+          },
+          "comparison": { "enum": [">=", ">"] },
+          "per_grade_scale_score": {
+            "type": "object",
+            "description": "Required for basis='scale_score': ENROLLED grade -> scale-score threshold (axis rule: grade keys are enrolled grades).",
+            "additionalProperties": { "type": "number" }
+          },
+          "level_value": {
+            "type": "number",
+            "description": "For basis='level' (deferred): the fractional level target (e.g. 4.2)."
+          },
+          "provenance": { "type": "string" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "basis": { "const": "scale_score" } } },
+            "then": { "required": ["per_grade_scale_score"] }
+          }
+        ],
+        "additionalProperties": false
+      }
+    },
+    "growth_targets": {
+      "type": "array",
+      "description": "Expected growth toward exit/proficiency (reclassified from colleague elp$growth_targets — ADR-009 D5). PROVISIONAL SHAPE: required cross-link + description; per-grade values optional. Harden when the first real record is authored.",
+      "items": {
+        "type": "object",
+        "required": ["assessment_system_id", "description"],
+        "properties": {
+          "assessment_system_id": { "type": "string", "minLength": 1 },
+          "content_area": { "type": "string", "minLength": 1 },
+          "label": { "type": "string" },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The growth expectation rule in prose (e.g. 'gain >= 0.5 proficiency levels per year toward exit')."
+          },
+          "per_grade": {
+            "type": "object",
+            "description": "Optional ENROLLED grade -> numeric growth expectation.",
+            "additionalProperties": { "type": "number" }
+          },
+          "provenance": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "timelines": {
+      "type": "object",
+      "description": "Exit/on-time policy timelines (reclassified from colleague elp$timelines — ADR-009 D5).",
+      "properties": {
+        "max_years_to_exit": { "type": "number" },
+        "on_time_rule": { "type": "string" },
+        "ltel_definition": {
+          "type": "string",
+          "description": "Long-term English learner definition (e.g. '> 6 years without exit')."
+        },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "participation": {
+      "type": "object",
+      "description": "Participation policy (reclassified from colleague alternate$participation_criteria / federal_cap — ADR-009 D5).",
+      "properties": {
+        "criteria": {
+          "type": "array",
+          "description": "Participation criteria statements (e.g. alternate-assessment eligibility rules).",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "federal_cap": {
+          "type": "number",
+          "description": "Federal alternate-assessment participation cap as a proportion (e.g. 0.01)."
+        },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "enum": ["reviewed", "verified", "deprecated"] } }
+      },
+      "then": {
+        "required": ["provenance"],
+        "properties": { "provenance": { "required": ["source_citation"] } }
+      }
+    }
+  ]
+}

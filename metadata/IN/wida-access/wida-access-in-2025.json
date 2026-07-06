@@ -1,5 +1,5 @@
 {
-  "schema_version": "amr.assessment_system.v1",
+  "schema_version": "amr.assessment.v2",
   "status": "draft",
   "source_confidence": "low",
   "provenance": {
@@ -17,7 +17,7 @@
     "id": "wida-access",
     "name": "WIDA ACCESS",
     "family": "WIDA-ACCESS",
-    "assessment_type": "english-language-proficiency"
+    "assessment_type": "elp"
   },
   "administration": {
     "id": "wida-access-in-2025",
@@ -40,7 +40,12 @@
       "id": "ELP_COMPOSITE",
       "label": "Overall (Composite)",
       "vertical_scale": true,
-      "scale_name": "WIDA scale"
+      "scale_name": "WIDA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": [],
+        "note": "No per-grade facts in the v1 record; populate enrolled_grades_tested during authoring."
+      }
     }
   ],
   "achievement_levels": {

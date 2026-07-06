@@ -14,13 +14,21 @@
 # Internal null-coalescing helper (kept ASCII; not exported).
 `%||%` <- function(x, y) if (is.null(x) || length(x) == 0L) y else x
 
-ASSESSMENT_SCHEMAS <- c("amr.assessment_system.v1", "sgpc.assessment_metadata.v0.1")
-ACCOUNTABILITY_SCHEMA <- "amr.accountability_system.v1"
+# Accepted schema_version strings. v1 (and the legacy SGPc alias) remain valid
+# during the ADR-009 D6 dual-version migration window; v2 is canonical.
+ASSESSMENT_SCHEMAS <- c("amr.assessment.v2",
+                        "amr.assessment_system.v1", "sgpc.assessment_metadata.v0.1")
+ACCOUNTABILITY_SCHEMAS <- c("amr.accountability.v2", "amr.accountability_system.v1")
 
 is_assessment_record <- function(r) {
   is.list(r) && !is.null(r$schema_version) && r$schema_version %in% ASSESSMENT_SCHEMAS
 }
 
 is_accountability_record <- function(r) {
-  is.list(r) && identical(r$schema_version, ACCOUNTABILITY_SCHEMA)
+  is.list(r) && !is.null(r$schema_version) && r$schema_version %in% ACCOUNTABILITY_SCHEMAS
+}
+
+# TRUE when a record carries a v2 schema_version (either record type).
+is_v2_record <- function(r) {
+  is.list(r) && !is.null(r$schema_version) && grepl("\\.v2$", r$schema_version)
 }

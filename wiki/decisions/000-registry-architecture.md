@@ -2,8 +2,8 @@
 title: "ADR-000: Assessment Metadata Registry — Foundational Architecture"
 type: decision
 created: 2026-07-02
-updated: 2026-07-02
-status: proposed
+updated: 2026-07-06
+status: accepted
 deciders: Damian Betebenner (+ co-developer)
 curated: true
 scope:
@@ -25,9 +25,9 @@ tags: [architecture, metadata, registry, versioning, provenance, r-package, harn
 
 # ADR-000: Assessment Metadata Registry — Foundational Architecture
 
-**Status:** Proposed
+**Status:** Accepted (sign-off Damian Betebenner, 2026-07-06)
 **Date:** 2026-07-02
-**Deciders:** Damian Betebenner and co-developer (sign-off required before Phase 1)
+**Deciders:** Damian Betebenner and co-developer
 
 > This is the founding decision for the `assessment-metadata-registry` repo. It sets the
 > framing, the unit of record, the schema surface, the storage/derivation model, the

@@ -1,0 +1,114 @@
+{
+  "_comment": "DESIGN EXEMPLAR for ADR-009 (proposed). Not a live registry record: lives outside metadata/, is not validated by the Tier A gate, and carries placeholder scale values flagged provisional. Purpose: a concrete amr.assessment.v2 shape for WIDA-ACCESS Indiana to dogfood the v2 design against before JSON Schema authoring.",
+  "schema_version": "amr.assessment.v2",
+  "status": "draft",
+  "source_confidence": "medium",
+  "provenance": {
+    "entered_by": "ai:amr-harness",
+    "entered_at": "2026-07-06",
+    "last_verified_at": null,
+    "changed_from_prior": "v2 exemplar derived from wida-access-in-2024.json (v1) + ADR-009 additions: enrollment block, scale_bounds, measurement.elp, source_documents."
+  },
+  "source_documents": [
+    {
+      "title": "WIDA ACCESS for ELLs Interpretive Guide for Score Reports (2023-2024)",
+      "url": "https://wida.wisc.edu/resources/access-ells-interpretive-guide-score-reports"
+    },
+    {
+      "title": "Indiana WIDA state page",
+      "url": "https://wida.wisc.edu/memberships/consortium/in"
+    }
+  ],
+  "jurisdiction": {
+    "id": "IN",
+    "name": "Indiana",
+    "type": "state"
+  },
+  "assessment_system": {
+    "id": "wida-access",
+    "name": "WIDA ACCESS",
+    "family": "WIDA-ACCESS",
+    "assessment_type": "elp"
+  },
+  "administration": {
+    "id": "wida-access-in-2024",
+    "year": "2024",
+    "vendor": "DRC",
+    "window": "annual",
+    "csem_ref": null
+  },
+  "assessment_program": {
+    "assessment_name": "WIDA ACCESS for ELLs",
+    "abbreviation": "ACCESS",
+    "organization": {
+      "name": "WIDA at the Wisconsin Center for Education Research, University of Wisconsin-Madison",
+      "abbreviation": "WIDA",
+      "url": "https://wida.wisc.edu"
+    }
+  },
+  "content_areas": [
+    {
+      "id": "ELP_COMPOSITE",
+      "label": "Overall (Composite)",
+      "vertical_scale": true,
+      "scale_name": "WIDA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": ["K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+        "note": "Grade-span (cluster) instruments — see measurement.elp.grade_clusters. Scores, proficiency-level lookups, and accountability exit thresholds are interpreted by ENROLLED grade, not by cluster form."
+      }
+    }
+  ],
+  "achievement_levels": {
+    "ELP_COMPOSITE": {
+      "labels": [
+        "WIDA Level 1",
+        "WIDA Level 2",
+        "WIDA Level 3",
+        "WIDA Level 4",
+        "WIDA Level 5",
+        "WIDA Level 6"
+      ],
+      "proficient": [false, false, false, true, true, true]
+    }
+  },
+  "scale_bounds": {
+    "ELP_COMPOSITE": {
+      "5": { "loss": 100, "hoss": 600, "source": "provisional" }
+    }
+  },
+  "cutscores_provenance": "PLACEHOLDER — scale_bounds entry illustrates v2 shape only (WIDA nominal 100-600 scale envelope, per-enrolled-grade keying); replace with official WIDA proficiency-level scale-score lookups per enrolled grade before any client-facing use. Grade-by-level cut lookups, when authored, go in cutscores[ELP_COMPOSITE][<enrolled grade>].",
+  "measurement": {
+    "elp": {
+      "instrument": "ACCESS for ELLs Online",
+      "domains": ["LISTENING", "SPEAKING", "READING", "WRITING"],
+      "composites": {
+        "ELP_COMPOSITE": {
+          "label": "Overall",
+          "weights": { "READING": 0.35, "WRITING": 0.35, "LISTENING": 0.15, "SPEAKING": 0.15 }
+        },
+        "ORAL": {
+          "label": "Oral Language",
+          "weights": { "LISTENING": 0.5, "SPEAKING": 0.5 }
+        },
+        "LITERACY": {
+          "label": "Literacy",
+          "weights": { "READING": 0.5, "WRITING": 0.5 }
+        }
+      },
+      "grade_clusters": ["K", "1", "2-3", "4-5", "6-8", "9-12"],
+      "band_scheme": "WIDA proficiency levels 1.0-6.0 reported to tenths; scale scores 100-600"
+    }
+  },
+  "aliases": {
+    "ELP_COMPOSITE": ["Overall", "Composite", "OVERALL"]
+  },
+  "comparability": {
+    "comparable_to_prior_year": true,
+    "scale_transition": false,
+    "prior_scale_name": null,
+    "administered": true,
+    "notes": null
+  },
+  "_accountability_cross_reference": "ELP exit criteria, growth targets, and timelines are POLICY facts and are NOT in this record — see metadata/IN/in-accountability/in-accountability-2024.json (targets[] semantics: exit; per-grade exit thresholds, e.g. grade 5 = 364.4)."
+}

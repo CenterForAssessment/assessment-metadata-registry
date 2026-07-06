@@ -65,14 +65,39 @@ render_schema <- function(schema) {
 }
 ```
 
-Each authored sidecar is validated against one of two JSON Schemas before any derivation.
+Each authored sidecar is validated against its JSON Schema before any derivation.
 A field marked [required]{.amr-req} must be present; fields with an `enum` accept only the
 listed values. These schemas are the executable Tier A contract — this page renders them
-directly, so it never drifts from what the validator enforces.
+directly, so it never drifts from what the validator enforces. **v2** (ADR-009) is
+canonical; **v1** remains accepted during the migration window.
 
 ::: {.panel-tabset}
 
-## Assessment system
+## Assessment (v2)
+
+```{r}
+#| output: asis
+s <- read_schema("amr.assessment.v2.schema.json")
+cat("```{=html}\n")
+cat(sprintf("<p class='amr-lede'>%s</p>\n", esc(s$description)))
+cat(sprintf("<p class='amr-callno'>%s · <code>%s</code></p>\n", esc(s$title), esc(s[["$id"]])))
+render_schema(s)
+cat("\n```\n")
+```
+
+## Accountability (v2)
+
+```{r}
+#| output: asis
+s <- read_schema("amr.accountability.v2.schema.json")
+cat("```{=html}\n")
+cat(sprintf("<p class='amr-lede'>%s</p>\n", esc(s$description)))
+cat(sprintf("<p class='amr-callno'>%s · <code>%s</code></p>\n", esc(s$title), esc(s[["$id"]])))
+render_schema(s)
+cat("\n```\n")
+```
+
+## Assessment (v1, migration window)
 
 ```{r}
 #| output: asis
@@ -84,7 +109,7 @@ render_schema(s)
 cat("\n```\n")
 ```
 
-## Accountability system
+## Accountability (v1, migration window)
 
 ```{r}
 #| output: asis

@@ -2,8 +2,8 @@
 title: "ADR-007: Human-readable Pages catalog (Quarto presentation tier)"
 type: decision
 created: 2026-07-02
-updated: 2026-07-02
-status: proposed
+updated: 2026-07-06
+status: accepted
 deciders: Damian Betebenner
 curated: true
 sources:
@@ -18,7 +18,7 @@ tags: [pages, quarto, catalog, presentation, reactable, json-viewer, tier-c]
 # ADR-007: Human-readable Pages catalog (Quarto presentation tier)
 
 ## Status
-Proposed.
+Accepted (sign-off Damian Betebenner, 2026-07-06).
 
 ## Context
 GitHub Pages published only the derived `build/**` JSON — machine-readable, not human-readable.
