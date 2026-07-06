@@ -20,13 +20,19 @@ get_metadata(
 
 \item{year}{Optional four-digit administration year (character or numeric).}
 
-\item{registry}{Optional path to a registry checkout (the directory containing
-\verb{metadata/}, or that directory itself). Defaults to \code{option("amrr.registry")}
-then the \code{AMRR_REGISTRY} environment variable.}
+\item{registry}{Either a local registry checkout (the directory containing
+\verb{metadata/}) \strong{or} a base URL serving the derived layer (e.g. the published
+GitHub Pages root). A URL registry fetches the jurisdiction bundle
+\verb{<registry>/dist/<jurisdiction>.json} over HTTP (via \pkg{jsonlite}) instead
+of reading local files; \verb{http://}, \verb{https://}, and \verb{file://} are recognized.
+The bundle's \verb{_registry.git_sha} becomes the pin. Note a URL registry serves
+the \emph{latest} published build (the derived layer is not retained per SHA); for
+byte-reproducible pinning read the canonical sidecars from a checkout at a
+commit SHA. Defaults to \code{option("amrr.registry")} then \code{AMRR_REGISTRY}.}
 
-\item{ref}{Optional commit SHA to pin to. If the checkout's \code{HEAD} differs, a
-warning is issued and the working tree is read as-is (checkout the ref
-yourself to guarantee bytes).}
+\item{ref}{Optional commit SHA to pin to. If the resolved registry SHA (git
+\code{HEAD} for a checkout, or the bundle's stamp for a URL) differs, a warning is
+issued and the data is read as-is.}
 
 \item{attach_targets}{Merge resolved accountability targets onto each
 assessment record? Defaults to \code{TRUE}.}
@@ -51,9 +57,14 @@ the run reproducible.
 }
 \examples{
 \dontrun{
+# From a local checkout (byte-reproducible when pinned to a commit SHA):
 md <- get_metadata("IN", system = "wida-access", year = 2024,
                    registry = "~/GitHub/CenterForAssessment/assessment-metadata-registry")
 amrr_registry_ref(md)
 amrr_targets(md[[1]], "ELP_COMPOSITE")
+
+# From the published derived layer over HTTP (no checkout needed):
+pages <- "https://centerforassessment.github.io/assessment-metadata-registry"
+md <- get_metadata("IN", system = "ilearn", year = 2024, registry = pages)
 }
 }

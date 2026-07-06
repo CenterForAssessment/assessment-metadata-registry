@@ -1,3 +1,14 @@
+# amrr 0.4.0 (2026-07-06)
+
+* `get_metadata()` now accepts a **URL registry** as well as a local checkout:
+  when `registry` is an `http(s)://` or `file://` base (e.g. the published GitHub
+  Pages root), it fetches the jurisdiction bundle `<registry>/dist/<jur>.json` over
+  HTTP (via jsonlite) and reads the metadata from there — no checkout required. The
+  bundle's `_registry.git_sha` becomes the pin; filtering and the accountability
+  target re-merge are identical to the local path. A URL registry serves the
+  *latest* published build, so for byte-reproducible pinning read the canonical
+  sidecars from a checkout at a commit SHA.
+
 # amrr 0.3.0 (2026-07-06)
 
 v2 refinements reconciling the colleague's `amr.assessment_config.v1` feedback

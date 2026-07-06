@@ -1,3 +1,26 @@
+# A URL registry (remote derived layer) vs a local checkout path.
+.is_url_registry <- function(x) {
+  is.character(x) && length(x) == 1L && grepl("^(https?|file)://", x)
+}
+
+# Fetch a jurisdiction's derived bundle (<base>/dist/<jur>.json) over HTTP/file
+# and return its records + the build's git_sha. The bundle already carries every
+# record for the jurisdiction (assessment + accountability), so the caller's
+# filter/attach_targets logic is identical to the local path.
+.fetch_jurisdiction_bundle <- function(base, jurisdiction) {
+  url <- sprintf("%s/dist/%s.json", base, jurisdiction)
+  # jsonlite fetches http(s) URLs but not file:// — strip that scheme to a path.
+  src <- sub("^file://", "", url)
+  bundle <- tryCatch(
+    jsonlite::fromJSON(src, simplifyVector = FALSE),
+    error = function(e) stop(sprintf(
+      "Could not fetch registry bundle for jurisdiction '%s' from %s: %s",
+      jurisdiction, url, conditionMessage(e)), call. = FALSE)
+  )
+  list(records = bundle$records %||% list(),
+       sha = (bundle[["_registry"]] %||% list())$git_sha %||% NA_character_)
+}
+
 #' Get assessment metadata for a jurisdiction
 #'
 #' Reads the registry for one `jurisdiction`, optionally filtered to a `system`
@@ -15,12 +38,18 @@
 #' @param jurisdiction Jurisdiction id (e.g. `"IN"`).
 #' @param system Optional assessment-system id (e.g. `"ilearn"`, `"wida-access"`).
 #' @param year Optional four-digit administration year (character or numeric).
-#' @param registry Optional path to a registry checkout (the directory containing
-#'   `metadata/`, or that directory itself). Defaults to `option("amrr.registry")`
-#'   then the `AMRR_REGISTRY` environment variable.
-#' @param ref Optional commit SHA to pin to. If the checkout's `HEAD` differs, a
-#'   warning is issued and the working tree is read as-is (checkout the ref
-#'   yourself to guarantee bytes).
+#' @param registry Either a local registry checkout (the directory containing
+#'   `metadata/`) **or** a base URL serving the derived layer (e.g. the published
+#'   GitHub Pages root). A URL registry fetches the jurisdiction bundle
+#'   `<registry>/dist/<jurisdiction>.json` over HTTP (via \pkg{jsonlite}) instead
+#'   of reading local files; `http://`, `https://`, and `file://` are recognized.
+#'   The bundle's `_registry.git_sha` becomes the pin. Note a URL registry serves
+#'   the *latest* published build (the derived layer is not retained per SHA); for
+#'   byte-reproducible pinning read the canonical sidecars from a checkout at a
+#'   commit SHA. Defaults to `option("amrr.registry")` then `AMRR_REGISTRY`.
+#' @param ref Optional commit SHA to pin to. If the resolved registry SHA (git
+#'   `HEAD` for a checkout, or the bundle's stamp for a URL) differs, a warning is
+#'   issued and the data is read as-is.
 #' @param attach_targets Merge resolved accountability targets onto each
 #'   assessment record? Defaults to `TRUE`.
 #'
@@ -28,10 +57,15 @@
 #'   records, with attributes `registry_ref`, `registry_root`, and `jurisdiction`.
 #' @examples
 #' \dontrun{
+#' # From a local checkout (byte-reproducible when pinned to a commit SHA):
 #' md <- get_metadata("IN", system = "wida-access", year = 2024,
 #'                    registry = "~/GitHub/CenterForAssessment/assessment-metadata-registry")
 #' amrr_registry_ref(md)
 #' amrr_targets(md[[1]], "ELP_COMPOSITE")
+#'
+#' # From the published derived layer over HTTP (no checkout needed):
+#' pages <- "https://centerforassessment.github.io/assessment-metadata-registry"
+#' md <- get_metadata("IN", system = "ilearn", year = 2024, registry = pages)
 #' }
 #' @export
 get_metadata <- function(jurisdiction, system = NULL, year = NULL,
@@ -39,16 +73,23 @@ get_metadata <- function(jurisdiction, system = NULL, year = NULL,
   if (missing(jurisdiction) || !is.character(jurisdiction) || length(jurisdiction) != 1L) {
     stop("jurisdiction must be a single string", call. = FALSE)
   }
-  root <- amrr_registry_root(registry)
-  sha <- amrr_git_sha_of(root)
+  if (.is_url_registry(registry)) {
+    root <- sub("/+$", "", registry)
+    b <- .fetch_jurisdiction_bundle(root, jurisdiction)
+    records <- b$records
+    sha <- b$sha
+  } else {
+    root <- amrr_registry_root(registry)
+    sha <- amrr_git_sha_of(root)
+    records <- read_jurisdiction_records(root, jurisdiction)
+  }
   if (!is.null(ref) && !is.na(sha) && !identical(ref, sha)) {
     warning(sprintf(
-      "registry HEAD (%s) != requested ref (%s); reading working tree as-is.",
+      "registry SHA (%s) != requested ref (%s); reading as-is.",
       substr(sha, 1L, 8L), substr(ref, 1L, 8L)
     ), call. = FALSE)
   }
 
-  records <- read_jurisdiction_records(root, jurisdiction)
   assessments <- Filter(is_assessment_record, records)
   accountability <- Filter(is_accountability_record, records)
 

@@ -25,5 +25,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Damian Betebenner \email{dbetebenner@nciea.org}
 
+Authors:
+\itemize{
+  \item Damian Betebenner \email{dbetebenner@nciea.org}
+}
+
 }
 \keyword{internal}

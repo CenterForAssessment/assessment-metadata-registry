@@ -109,6 +109,15 @@ amrr_enrollment(rec, "ELA")                 # $intended_enrollment_grade "fixed"
 amrr_targets(rec, "ELA")                    # proficiency target, merged from accountability
 ```
 
+`registry` also accepts a **URL** — point it at the published catalog to read over HTTP
+without a checkout (it fetches `…/dist/<jurisdiction>.json` internally). Handy for quick
+access; for byte-reproducible pinning use a checkout at a commit SHA.
+
+```r
+pages <- "https://centerforassessment.github.io/assessment-metadata-registry"
+get_metadata("IN", system = "ilearn", year = 2024, registry = pages)
+```
+
 Omit `year` to get every year for a system as an `amrr_metadata` set, and project it into the
 compact **assessment-config** authoring shape — reusable level schemes, tests, a grade→test
 map, and unified cuts (ADR-010). `read_config()` expands it back into records.

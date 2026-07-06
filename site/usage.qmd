@@ -32,6 +32,22 @@ amrr_targets(rec, "ELA")                    # proficiency target, merged from ac
 `amrr_registry_ref()` returns the commit SHA of the checkout; passing `ref =` to
 `get_metadata()` resolves against that exact commit.
 
+### Read over HTTP (no checkout)
+
+`registry` also accepts a **URL** — point it at this published catalog and `get_metadata()`
+fetches the jurisdiction bundle (`…/dist/<jurisdiction>.json`) over HTTP internally, no
+checkout required. A URL registry serves the *latest* build; for byte-reproducible pinning,
+read the canonical sidecars from a checkout at a commit SHA.
+
+```r
+pages <- "https://centerforassessment.github.io/assessment-metadata-registry"
+md <- get_metadata("IN", system = "ilearn", year = 2024, registry = pages)
+amrr_registry_ref(md)                       # the SHA the published build was derived from
+```
+
+The derived JSON is also just fetchable directly — `dist/**`, `index.json`, `config/**`,
+`changelog.json`, `manifest.json` all resolve under the catalog URL for any HTTP client.
+
 ## The compact config view
 
 Omit `year` to get every year for a system as an `amrr_metadata` set, then project it into
