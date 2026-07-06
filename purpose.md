@@ -2,7 +2,7 @@
 title: Assessment Metadata Registry — Purpose
 type: overview
 created: 2026-07-02
-updated: 2026-07-02
+updated: 2026-07-06
 ---
 
 # Purpose
@@ -26,11 +26,12 @@ commit SHA as the reproducibility pin.
 
 ## Scope
 
-**In scope:** system-level assessment metadata (`amr.assessment_system.v1`) and
-accountability-system metadata (`amr.accountability_system.v1`) — identity, administration,
-content areas, scales, achievement levels, cutscores, vendors, comparability, Ed-Fi
-descriptors, accountability rules; the derived query layer; the `amrr` R consumption
-package; the AI-assisted authoring harness.
+**In scope:** system-level assessment metadata (`amr.assessment.v2`) and
+accountability-system metadata (`amr.accountability.v2`) — identity, administration,
+content areas (with the enrollment-grade model), scales, achievement levels, cutscores,
+vendors, comparability, Ed-Fi descriptors, accountability rules; the derived query layer;
+the `amrr` R consumption package (with a compact config view for authoring/export); the
+AI-assisted authoring harness.
 
 **Out of scope:** student- or school-level microdata (hard boundary); SGP-specific
 configuration (knots/boundaries, copula policy) — those stay in SGPc.

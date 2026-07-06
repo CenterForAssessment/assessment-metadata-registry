@@ -1,0 +1,66 @@
+---
+title: "Usage"
+subtitle: "Read the registry from R, pin it by commit SHA, and project it into the compact config shape"
+toc: true
+---
+
+The registry's canonical source is a set of **annual JSON sidecars** under `metadata/`; the
+`amrr` R package is the supported way to consume them. Everything on this catalog — this
+page included — is *derived* from those sidecars.
+
+## Read a record
+
+Point `amrr` at a registry checkout and read one cell
+(`jurisdiction × system × year`). Accountability `achievement_targets` are re-merged onto
+the assessment record at read time, and the resolved **commit SHA** pins the exact bytes
+your analysis used — record it so any past run is reconstructable.
+
+```r
+# install.packages("r-pkg/amrr", repos = NULL, type = "source")   # or devtools::load_all("r-pkg/amrr")
+library(amrr)
+
+md  <- get_metadata("IN", system = "ilearn", year = 2024, registry = ".")
+rec <- md[[1]]
+amrr_registry_ref(md)                       # commit SHA — record this with your run
+
+amrr_cutscores(rec, "ELA")                  # enrolled grade -> level lower bounds
+amrr_achievement_levels(rec, "ELA")$proficient_from   # "At Proficiency"
+amrr_enrollment(rec, "ELA")                 # $intended_enrollment_grade "fixed" + enrolled grades
+amrr_targets(rec, "ELA")                    # proficiency target, merged from accountability
+```
+
+`amrr_registry_ref()` returns the commit SHA of the checkout; passing `ref =` to
+`get_metadata()` resolves against that exact commit.
+
+## The compact config view
+
+Omit `year` to get every year for a system as an `amrr_metadata` set, then project it into
+the compact **assessment-config** authoring shape — reusable named level schemes, tests, a
+`content_area × grade → test` map, and unified `{loss, hoss, values}` cuts.
+`read_config()` expands it back into a record, so authoring can happen in whichever shape is
+more convenient.
+
+```r
+cfg <- as_config(get_metadata("IN", system = "ilearn", registry = "."))
+names(cfg$level_schemes)                    # "general_4" — one scheme, shared by ELA + Math
+cfg$tests$ela$intended_enrollment_grade     # "fixed" (the axis a bare grade list can't carry)
+back <- read_config(cfg)                     # -> an amr.assessment.v2 record
+```
+
+See the [Config view](config-view.qmd) page for every program rendered in this shape, and
+[the spec](spec.qmd) for the full field-by-field schema.
+
+## Validate & build locally
+
+For authoring and derivation, the whole toolchain is R behind a `Makefile`:
+
+```bash
+make setup       # once: install the R tooling + site packages
+make validate    # Tier A gate — schema + registry invariants (or: Rscript -e 'amrr::validate_registry(".")')
+make build       # validate, then derive Tier B into build/
+make site        # render this catalog into site/_site/
+make all         # validate -> build -> R tests
+```
+
+CI runs the same `validate` on every PR; `build-publish` regenerates and deploys this
+catalog on merge to `main`.
