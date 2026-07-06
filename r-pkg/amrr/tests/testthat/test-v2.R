@@ -234,6 +234,16 @@ test_that("provenance.verified_by is accepted", {
   expect_equal(r$n_errors, 0L)
 })
 
+test_that("amrr_achievement_levels exposes a derived proficient mask for compat", {
+  rec <- list(
+    schema_version = "amr.assessment.v2",
+    achievement_levels = list(ELA = list(labels = list("BB", "B", "P", "A"),
+                                         proficient_from = "P")))
+  blk <- amrr_achievement_levels(rec, "ELA")
+  expect_identical(blk$proficient_from, "P")
+  expect_identical(vapply(blk$proficient, isTRUE, logical(1)), c(FALSE, FALSE, TRUE, TRUE))
+})
+
 test_that(".fold_proficient_from replaces a monotonic mask; rejects a non-monotonic one", {
   rec <- list(achievement_levels = list(
     ELA = list(labels = list("BB", "B", "P", "A"), proficient = list(FALSE, FALSE, TRUE, TRUE))))

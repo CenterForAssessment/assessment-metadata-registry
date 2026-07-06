@@ -13,9 +13,15 @@ amrr_achievement_levels(x, content_area = NULL)
 content area's cutscores (grade -> numeric vector of level lower bounds).}
 }
 \value{
-A named list of achievement-level blocks (labels + proficient mask), or
-just the requested content area's block, or \code{NULL} if absent.
+A named list of achievement-level blocks (\code{labels}, the canonical
+\code{proficient_from} label, and a derived boolean \code{proficient} mask), just the
+requested content area's block, or \code{NULL} if absent.
 }
 \description{
 Achievement levels for a record
+}
+\details{
+Canonical records carry \code{proficient_from} (ADR-010); for consumer
+backward compatibility this accessor also attaches the derived boolean
+\code{proficient} mask when only \code{proficient_from} is present.
 }
