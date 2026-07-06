@@ -4,6 +4,39 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-06] build | v2 verified + corpus migrated (first R execution; PR #10)
+
+**Action:** build + release
+
+- **Ran the v2 R code for the first time** (Cowork wrote it without R). `make test` →
+  **91 tests pass** (0 fail/0 warn), including 47 in `test-v2.R`. `make check` →
+  **R CMD check Status: OK** (0/0/0); roxygen regenerated `NAMESPACE` (+11 exports) and
+  `man/*.Rd` for the new exports (committed).
+- **Migrated the corpus v1→v2** via `amrr::migrate_registry(".")` — all 48 sidecars in one
+  reviewed commit. Diff is purely mechanical: `schema_version` restamp, `assessment_type`
+  normalization (`state-summative→summative`, `english-language-proficiency→elp`),
+  `enrollment` block seeded from cutscore grade keys (`fixed` for ILEARN/summative grades
+  3–8; `variable` + **empty** `enrolled_grades_tested` for WIDA — no facts invented). Every
+  removed line verified to be a `schema_version`/`assessment_type` restamp or a comma-only
+  `scale_name` reformat (no value drift).
+- **`make all` green on the all-v2 corpus** with **no** dual-window warning. **Build parity
+  preserved** (rebuilt pre- and post-migration): **45 targets, 177 exit thresholds, WIDA
+  g5/2024 = 364.4**, identical before/after. (The handoff's "21/117" was the stale IN-only
+  ADR-002 figure; the full 3-jurisdiction corpus is 45 targets, per the ADR-004 parity log.)
+- **`make site`** — spec page renders all four schemas (v2 primary, v1 marked "migration
+  window"); migrated record pages show the enrollment section; the v1 JSON fetch bundles
+  still resolve under `_site/` (additive deploy, ADR-007 preserved).
+- **Committed on `v2-implementation`** (3 commits: ADR-008 taxonomy docs; v2 implementation
+  amrr 0.2.0; corpus v1→v2 migration) and opened **PR #10** → `main`. Awaiting green
+  `validate` + `R-CMD-check` before merge.
+
+**Next:** merge PR #10 behind green CI; then the §4 follow-ups (WIDA_IN real authoring,
+Phase G SGPc resolver, ADR-006 governance draft).
+
+**PR:** https://github.com/CenterForAssessment/assessment-metadata-registry/pull/10
+
+---
+
 ## [2026-07-06] build | v2 implemented (ADR-009 accepted; amrr 0.2.0, Phases B–F)
 
 **Action:** decision + build
