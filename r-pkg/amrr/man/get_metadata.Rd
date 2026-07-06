@@ -20,19 +20,29 @@ get_metadata(
 
 \item{year}{Optional four-digit administration year (character or numeric).}
 
-\item{registry}{Either a local registry checkout (the directory containing
-\verb{metadata/}) \strong{or} a base URL serving the derived layer (e.g. the published
-GitHub Pages root). A URL registry fetches the jurisdiction bundle
-\verb{<registry>/dist/<jurisdiction>.json} over HTTP (via \pkg{jsonlite}) instead
-of reading local files; \verb{http://}, \verb{https://}, and \verb{file://} are recognized.
-The bundle's \verb{_registry.git_sha} becomes the pin. Note a URL registry serves
-the \emph{latest} published build (the derived layer is not retained per SHA); for
-byte-reproducible pinning read the canonical sidecars from a checkout at a
-commit SHA. Defaults to \code{option("amrr.registry")} then \code{AMRR_REGISTRY}.}
+\item{registry}{One of three forms:
+\itemize{
+\item \strong{Local checkout} -- a directory containing \verb{metadata/} (the default;
+falls back to \code{option("amrr.registry")} then \code{AMRR_REGISTRY}). The pin is
+git \code{HEAD}; byte-reproducible when you check out a commit SHA.
+\item \strong{GitHub repo} -- \code{"github://owner/repo"} (or
+\code{"https://github.com/owner/repo"}). Fetches the canonical sidecars for the
+jurisdiction straight from GitHub \strong{pinned to an exact commit SHA} (via the
+git-trees + raw-content APIs), no checkout required -- a first-class
+reproducible remote (ADR-011). Set \code{ref} to the SHA/branch/tag to pin.
+Optional auth token from \code{AMRR_GITHUB_TOKEN} / \code{GITHUB_PAT} / \code{GITHUB_TOKEN}
+raises the API rate limit; installing \pkg{curl} is recommended.
+\item \strong{Derived-layer URL} -- a base URL serving \verb{<registry>/dist/<jur>.json}
+(e.g. the published GitHub Pages root); \verb{http://}, \verb{https://}, \verb{file://}.
+Convenient but serves the \emph{latest} build only (the derived layer is not
+retained per SHA) -- use the GitHub or checkout forms for reproducible pins.
+}}
 
-\item{ref}{Optional commit SHA to pin to. If the resolved registry SHA (git
-\code{HEAD} for a checkout, or the bundle's stamp for a URL) differs, a warning is
-issued and the data is read as-is.}
+\item{ref}{Optional pin. For the \strong{GitHub} form, \code{ref} is a SHA, branch, or tag
+(default: the repo's default-branch \code{HEAD}); it is resolved to a concrete
+commit SHA that is fetched and recorded as \code{\link[=amrr_registry_ref]{amrr_registry_ref()}}. For the
+local/derived forms, \code{ref} is asserted against the resolved SHA and a mismatch
+only warns (the data is read as-is).}
 
 \item{attach_targets}{Merge resolved accountability targets onto each
 assessment record? Defaults to \code{TRUE}.}
@@ -63,7 +73,13 @@ md <- get_metadata("IN", system = "wida-access", year = 2024,
 amrr_registry_ref(md)
 amrr_targets(md[[1]], "ELP_COMPOSITE")
 
-# From the published derived layer over HTTP (no checkout needed):
+# Reproducible remote: canonical sidecars straight from GitHub, pinned by SHA:
+md <- get_metadata("IN", system = "ilearn", year = 2024,
+                   registry = "github://CenterForAssessment/assessment-metadata-registry",
+                   ref = "b824b20")
+amrr_registry_ref(md)   # the resolved 40-hex commit SHA -- the reproducibility pin
+
+# Convenience (latest build only): the published derived layer over HTTP:
 pages <- "https://centerforassessment.github.io/assessment-metadata-registry"
 md <- get_metadata("IN", system = "ilearn", year = 2024, registry = pages)
 }

@@ -109,9 +109,22 @@ amrr_enrollment(rec, "ELA")                 # $intended_enrollment_grade "fixed"
 amrr_targets(rec, "ELA")                    # proficiency target, merged from accountability
 ```
 
-`registry` also accepts a **URL** — point it at the published catalog to read over HTTP
-without a checkout (it fetches `…/dist/<jurisdiction>.json` internally). Handy for quick
-access; for byte-reproducible pinning use a checkout at a commit SHA.
+**Reproducible remote (pin by SHA).** `registry` also accepts a **GitHub repo** —
+`get_metadata()` reads the canonical sidecars straight from GitHub **pinned to an exact
+commit SHA** (via the git-trees + raw-content APIs), no checkout required. `ref` (a SHA,
+branch, or tag) is resolved to a concrete commit SHA and recorded as the pin, so the read
+is byte-for-byte reconstructable.
+
+```r
+repo <- "github://CenterForAssessment/assessment-metadata-registry"
+md   <- get_metadata("IN", system = "ilearn", year = 2024, registry = repo, ref = "b824b20")
+amrr_registry_ref(md)                       # the resolved 40-hex SHA — the reproducibility pin
+```
+
+For quick, non-reproducible access there's also a **derived-layer URL** — point `registry`
+at the published catalog and it fetches `…/dist/<jurisdiction>.json` over HTTP. Convenient,
+but it serves the *latest* build only; use the `github://` form (or a checkout at a SHA)
+when you need a reproducible pin.
 
 ```r
 pages <- "https://centerforassessment.github.io/assessment-metadata-registry"
@@ -146,8 +159,10 @@ page of the catalog.
 - **Tier B (derived):** `amrr::build_registry()` → index, changelog, per-jurisdiction
   bundles, SQLite, the compact `config/` projection, and a SHA-stamped manifest; published
   to Pages by CI.
-- **Tier C (consume):** `r-pkg/amrr` 0.3.0 — `get_metadata()` with SHA pinning and target
-  re-merge, v2 accessors, and the `as_config()` / `read_config()` config view; plus a
-  Quarto **catalog** (`site/`) with a **Config view** page (ADR-007 / ADR-010).
+- **Tier C (consume):** `r-pkg/amrr` 0.5.0 — `get_metadata()` with SHA pinning and target
+  re-merge, v2 accessors, and the `as_config()` / `read_config()` config view; reads from a
+  local checkout, a **reproducible `github://` remote** pinned by commit SHA (ADR-011), or a
+  derived-layer URL (latest); plus a Quarto **catalog** (`site/`) with a **Config view** page
+  (ADR-007 / ADR-010).
 
 See `wiki/decisions/000-registry-architecture.md` for the architecture and roadmap.

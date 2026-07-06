@@ -38,18 +38,26 @@
 #' @param jurisdiction Jurisdiction id (e.g. `"IN"`).
 #' @param system Optional assessment-system id (e.g. `"ilearn"`, `"wida-access"`).
 #' @param year Optional four-digit administration year (character or numeric).
-#' @param registry Either a local registry checkout (the directory containing
-#'   `metadata/`) **or** a base URL serving the derived layer (e.g. the published
-#'   GitHub Pages root). A URL registry fetches the jurisdiction bundle
-#'   `<registry>/dist/<jurisdiction>.json` over HTTP (via \pkg{jsonlite}) instead
-#'   of reading local files; `http://`, `https://`, and `file://` are recognized.
-#'   The bundle's `_registry.git_sha` becomes the pin. Note a URL registry serves
-#'   the *latest* published build (the derived layer is not retained per SHA); for
-#'   byte-reproducible pinning read the canonical sidecars from a checkout at a
-#'   commit SHA. Defaults to `option("amrr.registry")` then `AMRR_REGISTRY`.
-#' @param ref Optional commit SHA to pin to. If the resolved registry SHA (git
-#'   `HEAD` for a checkout, or the bundle's stamp for a URL) differs, a warning is
-#'   issued and the data is read as-is.
+#' @param registry One of three forms:
+#'   * **Local checkout** -- a directory containing `metadata/` (the default;
+#'     falls back to `option("amrr.registry")` then `AMRR_REGISTRY`). The pin is
+#'     git `HEAD`; byte-reproducible when you check out a commit SHA.
+#'   * **GitHub repo** -- `"github://owner/repo"` (or
+#'     `"https://github.com/owner/repo"`). Fetches the canonical sidecars for the
+#'     jurisdiction straight from GitHub **pinned to an exact commit SHA** (via the
+#'     git-trees + raw-content APIs), no checkout required -- a first-class
+#'     reproducible remote (ADR-011). Set `ref` to the SHA/branch/tag to pin.
+#'     Optional auth token from `AMRR_GITHUB_TOKEN` / `GITHUB_PAT` / `GITHUB_TOKEN`
+#'     raises the API rate limit; installing \pkg{curl} is recommended.
+#'   * **Derived-layer URL** -- a base URL serving `<registry>/dist/<jur>.json`
+#'     (e.g. the published GitHub Pages root); `http://`, `https://`, `file://`.
+#'     Convenient but serves the *latest* build only (the derived layer is not
+#'     retained per SHA) -- use the GitHub or checkout forms for reproducible pins.
+#' @param ref Optional pin. For the **GitHub** form, `ref` is a SHA, branch, or tag
+#'   (default: the repo's default-branch `HEAD`); it is resolved to a concrete
+#'   commit SHA that is fetched and recorded as [amrr_registry_ref()]. For the
+#'   local/derived forms, `ref` is asserted against the resolved SHA and a mismatch
+#'   only warns (the data is read as-is).
 #' @param attach_targets Merge resolved accountability targets onto each
 #'   assessment record? Defaults to `TRUE`.
 #'
@@ -63,7 +71,13 @@
 #' amrr_registry_ref(md)
 #' amrr_targets(md[[1]], "ELP_COMPOSITE")
 #'
-#' # From the published derived layer over HTTP (no checkout needed):
+#' # Reproducible remote: canonical sidecars straight from GitHub, pinned by SHA:
+#' md <- get_metadata("IN", system = "ilearn", year = 2024,
+#'                    registry = "github://CenterForAssessment/assessment-metadata-registry",
+#'                    ref = "b824b20")
+#' amrr_registry_ref(md)   # the resolved 40-hex commit SHA -- the reproducibility pin
+#'
+#' # Convenience (latest build only): the published derived layer over HTTP:
 #' pages <- "https://centerforassessment.github.io/assessment-metadata-registry"
 #' md <- get_metadata("IN", system = "ilearn", year = 2024, registry = pages)
 #' }
@@ -73,7 +87,13 @@ get_metadata <- function(jurisdiction, system = NULL, year = NULL,
   if (missing(jurisdiction) || !is.character(jurisdiction) || length(jurisdiction) != 1L) {
     stop("jurisdiction must be a single string", call. = FALSE)
   }
-  if (.is_url_registry(registry)) {
+  kind <- .registry_kind(registry)
+  if (kind == "github") {
+    gh <- .parse_github_registry(registry)
+    sha <- .gh_resolve_sha(gh$owner, gh$repo, ref)   # ref -> concrete pinned SHA
+    records <- .fetch_github_records(gh$owner, gh$repo, sha, jurisdiction)
+    root <- sprintf("github://%s/%s", gh$owner, gh$repo)
+  } else if (kind == "derived_url") {
     root <- sub("/+$", "", registry)
     b <- .fetch_jurisdiction_bundle(root, jurisdiction)
     records <- b$records
@@ -83,7 +103,9 @@ get_metadata <- function(jurisdiction, system = NULL, year = NULL,
     sha <- amrr_git_sha_of(root)
     records <- read_jurisdiction_records(root, jurisdiction)
   }
-  if (!is.null(ref) && !is.na(sha) && !identical(ref, sha)) {
+  # For github, ref was resolved-and-fetched (the pin is exact by construction);
+  # for local/derived, ref is an assertion against the resolved SHA.
+  if (kind != "github" && !is.null(ref) && !is.na(sha) && !identical(ref, sha)) {
     warning(sprintf(
       "registry SHA (%s) != requested ref (%s); reading as-is.",
       substr(sha, 1L, 8L), substr(ref, 1L, 8L)

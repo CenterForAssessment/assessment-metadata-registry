@@ -51,9 +51,13 @@ though targets are authored separately.
 ## Reproducibility handshake
 
 The registry is pinned by commit SHA. SGPc records `amrr_registry_ref(md)` in its output;
-to reproduce, check out the registry at that SHA and re-resolve. Because R consumption
-reads committed Tier A sidecars, the SHA fully determines the bytes — no live service on
-the critical path.
+to reproduce, resolve the registry at that SHA and re-read. Because R consumption reads
+committed Tier A sidecars, the SHA fully determines the bytes — no live service on the
+critical path. This works from either a **local/submoduled checkout** (`registry = <path>`,
+pinned by checking out the SHA) or, since `amrr` 0.5.0, a **reproducible remote**
+(`registry = "github://CenterForAssessment/assessment-metadata-registry"`, `ref = <SHA>`),
+which fetches the canonical sidecars straight from GitHub at that SHA — no checkout needed
+(ADR-011).
 
 ## Invariants SGPc can rely on
 
@@ -63,8 +67,13 @@ the critical path.
 - A `proficiency_boundary` target's scale scores are derived from the same record's
   cutscores + proficient mask (the boundary entering the first proficient level).
 
-## Open item
+## Resolved: remote (non-checkout) pinning — ADR-011
 
-Remote (non-checkout) pinning: raw-by-SHA needs the consumed artifact committed. v1 reads
-a local checkout (fully SHA-pinnable); a published-bundle distribution model is a future
-ADR. Until then SGPc consumes a local/submoduled registry checkout.
+**Resolved (2026-07-06, `amrr` 0.5.0).** Reproducible remote pinning reads the **canonical
+Tier A sidecars** raw-by-SHA from GitHub (git-trees + raw content, both addressed by the
+commit SHA), *not* the git-ignored derived bundle. `get_metadata()` accepts
+`registry = "github://owner/repo"` + `ref` (resolved to a concrete SHA and recorded as
+`amrr_registry_ref()`). SGPc may now consume the registry either as a local/submoduled
+checkout **or** as a `github://` remote pinned by `ref`, both byte-reproducible. The
+derived-URL mode (`amrr` 0.4.0) remains available for convenience but serves the *latest*
+build only — use the checkout or `github://` form for reproducible runs. See ADR-011.

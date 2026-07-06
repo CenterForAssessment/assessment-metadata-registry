@@ -32,12 +32,28 @@ amrr_targets(rec, "ELA")                    # proficiency target, merged from ac
 `amrr_registry_ref()` returns the commit SHA of the checkout; passing `ref =` to
 `get_metadata()` resolves against that exact commit.
 
-### Read over HTTP (no checkout)
+### Reproducible remote — pin by commit SHA, no checkout
 
-`registry` also accepts a **URL** — point it at this published catalog and `get_metadata()`
-fetches the jurisdiction bundle (`…/dist/<jurisdiction>.json`) over HTTP internally, no
-checkout required. A URL registry serves the *latest* build; for byte-reproducible pinning,
-read the canonical sidecars from a checkout at a commit SHA.
+`registry` also accepts a **GitHub repo**: `get_metadata()` reads the canonical Tier A
+sidecars straight from GitHub **pinned to an exact commit SHA** (via the git-trees +
+raw-content APIs), so a remote read is byte-for-byte reconstructable without a local
+checkout. `ref` (a SHA, branch, or tag) is resolved to a concrete commit SHA and recorded
+as the pin. An optional token (`AMRR_GITHUB_TOKEN` / `GITHUB_PAT` / `GITHUB_TOKEN`) raises
+the GitHub API rate limit; installing the `curl` package is recommended.
+
+```r
+repo <- "github://CenterForAssessment/assessment-metadata-registry"
+md   <- get_metadata("IN", system = "ilearn", year = 2024, registry = repo, ref = "b824b20")
+amrr_registry_ref(md)                       # the resolved 40-hex commit SHA — the pin
+```
+
+### Read over HTTP (convenience, latest build)
+
+`registry` also accepts a plain **URL** — point it at this published catalog and
+`get_metadata()` fetches the jurisdiction bundle (`…/dist/<jurisdiction>.json`) over HTTP
+internally, no checkout required. Unlike the `github://` form this serves the *latest* build
+only (the derived layer isn't retained per SHA), so use it for convenience and the
+`github://` remote (or a checkout at a SHA) when you need a reproducible pin.
 
 ```r
 pages <- "https://centerforassessment.github.io/assessment-metadata-registry"

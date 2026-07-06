@@ -13,10 +13,12 @@ first. This wiki follows the **SGPc house style** (the same page-type taxonomy a
 **Status:** v2 implemented and migrated (`amrr` 0.2.0), then refined per ADR-010
 (`amrr` 0.3.0): `proficient_from` (replacing the legacy `proficient[]` mask, corpus
 folded), `verified_by`, the EOC `"eoc"` cut key, and the compact config view
-(`as_config`/`read_config`, `build/config/`, site **Config view** page). ADRs
-000/004/007/008/009/010 accepted 2026-07-06. Pending: SGPc resolver wiring (Phase G);
-a `read_config()` sidecar writer; real WIDA_IN / EOC authoring. WIDA_IN is the v2
-dogfood corpus.
+(`as_config`/`read_config`, `build/config/`, site **Config view** page). `amrr` 0.4.0
+added a derived-URL remote (latest build); 0.5.0 added a **reproducible remote** —
+`get_metadata(registry = "github://…", ref = <SHA>)` reads canonical sidecars raw-by-SHA,
+no checkout (ADR-011). ADRs 000/004/007/008/009/010/011 accepted 2026-07-06. Pending: SGPc
+resolver wiring (Phase G); a `read_config()` sidecar writer; real WIDA_IN / EOC authoring.
+WIDA_IN is the v2 dogfood corpus.
 
 ---
 
@@ -46,6 +48,7 @@ dogfood corpus.
 | [[008-unified-metadata-taxonomy]] | **accepted** | Greenfield five-domain taxonomy; naming alignment first; registry API via `amrr` as primary consumption (SGPc function-argument pattern); optional `.rda` materialization secondary; colleague spec as SGPstateData analog |
 | [[009-v2-implementation]] | **accepted** | v2 implementation: enrollment-grade model (`fixed`/`variable` + `enrolled_grades_tested`), enrolled-grade-keyed `scale_bounds`, type-discriminated extensions, dual-version migration, WIDA_IN dogfood-first delivery |
 | [[010-config-view-reconciliation]] | **accepted** | Reconcile the colleague's `amr.assessment_config.v1`: additive v2 refinements (`proficient_from`, `verified_by`, EOC `"eoc"` cut key) + the compact config shape as an `amrr` projection (`as_config`/`read_config`, `build/config/`, site Config view) — not a canonical re-model |
+| [[011-remote-sha-pinning]] | **accepted** | Reproducible remote consumption (`amrr` 0.5.0): `get_metadata(registry = "github://owner/repo", ref = <SHA>)` reads canonical Tier A sidecars raw-by-SHA from GitHub (git-trees + raw content, byte-immutable), no checkout — resolves the deferred remote-pinning open item; derived-URL mode remains for convenience/latest only |
 
 ---
 
