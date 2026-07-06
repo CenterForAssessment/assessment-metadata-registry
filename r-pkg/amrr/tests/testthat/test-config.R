@@ -62,6 +62,20 @@ test_that("the reconstructed record validates as a v2 assessment", {
   expect_length(.v2_assessment_invariants(back), 0L)
 })
 
+test_that("build_registry emits the compact config projection (build/config/*.json)", {
+  skip_if_not_installed("DBI"); skip_if_not_installed("RSQLite"); skip_if_not_installed("digest")
+  reg <- fixture_registry()
+  tmp <- withr::local_tempdir()
+  file.copy(list.files(reg, full.names = TRUE), tmp, recursive = TRUE)
+  migrate_registry(tmp, quiet = TRUE)  # v2 corpus so as_config sees enrollment
+  out <- withr::local_tempdir()
+  build_registry(tmp, out = out, quiet = TRUE)
+  cfgs <- list.files(file.path(out, "config"), pattern = "\\.json$")
+  expect_true(length(cfgs) >= 1L)
+  ex <- jsonlite::fromJSON(file.path(out, "config", cfgs[[1]]), simplifyVector = FALSE)
+  expect_identical(ex$schema_version, "amr.assessment_config.v1")
+})
+
 test_that("EOC records project to a single 'eoc' cut key + not_grade_bound, and restore", {
   eoc <- list(
     schema_version = "amr.assessment.v2", status = "draft",

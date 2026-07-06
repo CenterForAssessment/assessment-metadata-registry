@@ -270,6 +270,28 @@
 
 .br_clean <- function(rec) { rec[["_source_path"]] <- NULL; rec }
 
+# Compact "assessment config" projection (ADR-010): one file per (jurisdiction,
+# assessment system) in the amr.assessment_config.v1 shape (via as_config()) --
+# an ergonomic authoring/review lens on the normalized records. Emitted under
+# build/config/. Returns the vector of written relative filenames.
+.br_config <- function(records, stamp, out) {
+  by_sys <- list()
+  for (r in records) if (is_assessment_record(r)) {
+    sk <- paste(r$jurisdiction$id, record_system_id(r), sep = .amrr_sep)
+    by_sys[[sk]] <- c(by_sys[[sk]], list(r))
+  }
+  written <- character(0)
+  for (sk in names(by_sys)) {
+    parts <- strsplit(sk, .amrr_sep, fixed = TRUE)[[1]]
+    cfg <- tryCatch(as_config(by_sys[[sk]]), error = function(e) NULL)
+    if (is.null(cfg)) next
+    fname <- paste0(parts[1], "-", parts[2], ".json")
+    .br_write_json(file.path(out, "config", fname), c(list(`_registry` = stamp), cfg))
+    written <- c(written, fname)
+  }
+  written
+}
+
 .br_write_json <- function(path, payload) {
   dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
   txt <- jsonlite::toJSON(payload, pretty = TRUE, auto_unbox = TRUE,
@@ -336,6 +358,8 @@ build_registry <- function(registry = NULL, out = "build", ddl = NULL, quiet = F
                    list(`_registry` = stamp, jurisdiction_id = parts[1],
                         system_id = parts[2], records = by_sys[[sk]]))
   }
+
+  .br_config(records, stamp, out)  # compact config projection (ADR-010)
 
   .br_sqlite(records, file.path(out, "registry.sqlite"), ddl, prov)
 
