@@ -2,8 +2,8 @@
 title: "ADR-004: Single-Language R Tooling"
 type: decision
 created: 2026-07-02
-updated: 2026-07-02
-status: proposed
+updated: 2026-07-06
+status: accepted
 deciders: Damian Betebenner
 curated: true
 sources:
@@ -18,7 +18,7 @@ tags: [tooling, language, R, amrr, jsonvalidate, sqlite, derivation, pipeline]
 
 # ADR-004: Single-Language R Tooling
 
-**Status:** Proposed
+**Status:** Accepted (sign-off Damian Betebenner, 2026-07-06)
 
 ## Context
 

@@ -4,6 +4,128 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-06] build | v2 implemented (ADR-009 accepted; amrr 0.2.0, Phases B–F)
+
+**Action:** decision + build
+
+- **ADR-009 accepted** (binary `fixed|variable` enum confirmed at sign-off; three-value
+  `grade-span` variant explicitly rejected — assessment terminology is murky and
+  "grade-span" would not describe ACT despite its cross-grade use; rationale recorded in
+  the ADR's Alternatives table).
+- **Phase B — schemas:** `schemas/amr.assessment.v2.schema.json` +
+  `amr.accountability.v2.schema.json`. v2 adds: required `content_areas[].enrollment`
+  block, `scale_bounds[ca][enrolled grade]` (`{loss, hoss, source}`), optional
+  `cutscores_source[ca][grade]` (per-value confidence enum), canonical `assessment_type`
+  enum with schema-enforced conditional `measurement.elp`/`measurement.alternate` blocks,
+  `source_documents[]`; accountability v2 adds `growth_targets` (provisional shape),
+  `timelines`, `participation`. `validate_registry()` routes v1/v2, enforces the **axis
+  rule** + scale-envelope invariants on v2 records, and warns on v1 stragglers once any
+  v2 record exists (dual-window nudge, D6).
+- **Phase C — migrator:** `amrr::migrate_registry(registry, write = FALSE|TRUE)` —
+  mechanical restamp, `assessment_type` normalization (`state-summative→summative`,
+  `english-language-proficiency→elp`, colleague `general→summative`), enrollment seeded
+  from cutscore grade keys (`elp→variable`, else `fixed`); never invents facts. **Corpus
+  migration NOT yet run** — it is the user's local step (sandbox has no R; see Next).
+- **Phase D — accessors:** `amrr_enrollment()`, `amrr_scale_bounds()`, `amrr_elp()`,
+  `amrr_alternate()`, `amrr_source_documents()`, `amrr_growth_targets()`,
+  `amrr_timelines()`, `amrr_participation()`.
+- **Phase E — derived/site:** index rows carry `intended_enrollment_grade`,
+  `enrolled_grades_tested`, `has_scale_bounds`; site `spec.qmd` renders all four schemas
+  (v2 primary, v1 marked migration-window); `_common.R` fixed a latent v2 bug
+  (`amr_is_accountability` matched only the v1 string) and Display now renders
+  enrollment columns, scale-bounds tables, ELP/alternate measurement sections, and
+  source documents.
+- **Phase F — materialization:** `amrr_materialize()` → `.rds`/`.rda` carrying the
+  registry SHA + `materialized_at` (the colleague-bridge demo artifact).
+- **Tests:** fixture registry gains v2 schemas + `wida-access-in-2025.json` (v2);
+  `helper-registry.R` shared fixture helper; new `test-v2.R` (schema routing, axis-rule +
+  envelope negatives, migrator dry-run/write/idempotence, accessors, materialize
+  round-trip); `test-tooling.R` counts updated (6 records) + dual-window warning
+  expectations. `amrr` 0.2.0, NEWS.md added.
+- **Verification (sandbox, no R):** Python jsonschema cross-check — 54 corpus+fixture
+  records validate under routing; WIDA_IN exemplar validates as v2 (caught + fixed:
+  `comparability.prior_scale_name` now nullable); 7 negative schema cases reject; a
+  throwaway shadow of the migration transform over all 48 corpus records validates as
+  v2; invariant logic cross-checked. **R suite not yet run locally.**
+
+**Next (local, in order):** (1) `make validate` (corpus still v1 — expect clean);
+(2) `Rscript -e 'pkgload::load_all("r-pkg/amrr"); amrr::migrate_registry(".", write=FALSE)'`
+then `write=TRUE`, review diff; (3) `make all` + `make check` (roxygenise regenerates
+man/); (4) commit corpus migration as one reviewed commit; (5) `make site`; (6) Phase G
+(SGPc resolver) in the SGPc repo; ADR-006 governance draft can proceed in parallel.
+
+---
+
+## [2026-07-06] decision | ADR sign-offs (000/004/007/008) + ADR-009 drafted (v2 implementation)
+
+**Action:** decision + design
+
+- **Sign-offs recorded (Damian, 2026-07-06):** ADR-000, ADR-004, ADR-007, ADR-008 flipped
+  `proposed → accepted`. Colleague confirmed **API-first consumption** (query + accessors +
+  optional `.rda` materialization) in place of sourced `.R` spec files — ADR-008's primary
+  adoption risk resolved. Near-term proof point: SGPc sidecar consumption.
+- **ADR-009 drafted (proposed):** the v2 implementation ADR required by ADR-008 §8. Key
+  refinement from sign-off review: the **enrollment-grade model** — every content area
+  carries `enrollment` (`intended_enrollment_grade: fixed|variable`,
+  `enrolled_grades_tested[]`, `note`), disentangling instrument target grade, enrolled
+  grade, and cut keys (motivating cases: ILEARN Grade 8 Math = fixed/8; ACT =
+  variable/10-12; WIDA-ACCESS K-2 = variable/grade-span). Axis rule: `cutscores` and the
+  new `scale_bounds[ca][grade]` (`{loss, hoss, source}`, mirrors cutscore keying) are
+  always keyed by **enrolled grade**. Supersedes the crosswalk's bare
+  `content_areas[].grades`; [[metadata-taxonomy]] and [[schema-crosswalk]] amended.
+- **Dogfood exemplar:** `schemas/examples/wida-access-in-2024.v2.example.json` — concrete
+  `amr.assessment.v2` shape for WIDA-ACCESS IN (enrollment block, `measurement.elp` with
+  domains/composites/weights/grade-clusters, scale_bounds with provisional placeholder,
+  `source_documents[]`, accountability cross-reference). Design artifact only — outside
+  `metadata/`, not a live record.
+- Updated [[index]] (statuses + ADR-009 row + status line).
+
+**Next:** review/accept ADR-009, then Phase B (v2 JSON Schemas + invariants) riffing
+against the WIDA_IN exemplar; ADR-006 (governance) draftable in parallel; ADR-005 (AI
+authoring) deferred until v2 lands.
+
+---
+
+## [2026-07-03] amend | ADR-008 consumption-priority revision
+
+**Action:** amend (wiki only)
+
+- Revised [[008-unified-metadata-taxonomy]] after review: colleague `assessment_spec.R` reframed
+  as SGPstateData-style R-object analog (naming input), not a co-equal authoring path.
+- Recorded consumption priority: (1) naming/taxonomy alignment, (2) registry API via `amrr`
+  with function-argument queries (SGPc pattern), (3) optional binary materialization from
+  pinned API responses.
+- Deprioritized parallel `to_assessment_spec()` round-trip layer; `amrr` growth path is
+  query → accessors → optional `.rda` export.
+
+**Why:** the unified approach is API-first; building against the registry should be easier
+than maintaining sourced R spec files that duplicate JSON facts.
+
+---
+
+## [2026-07-03] design | Unified metadata taxonomy alignment (ADR-008)
+
+**Action:** design (wiki only — no schema or code changes)
+
+- Added [[008-unified-metadata-taxonomy]] (proposed): greenfield target model
+  `amr.assessment.v2` / `amr.accountability.v2` superseding three overlapping vocabularies
+  (registry `amr.*` v1, SGPc `sgpc.assessment_metadata.v0.1`, colleague `assessment_spec.R`).
+- Added [[metadata-taxonomy]] pattern: five domains (jurisdiction, assessment-system identity,
+  measurement, accountability, governance), projection layers (canonical → SGPc sidecar /
+  R spec view), consumer-plumbing exclusion, naming conventions.
+- Added [[schema-crosswalk]] analysis: field-level mapping with conflicts, gaps, and
+  reclassifications (ELP exit/growth/timelines → accountability per ADR-002 heuristic).
+- Added [[colleague-assessment-spec-r]] source summary.
+- Updated [[index]].
+
+**Why:** marry SGPc's narrow analysis sidecar with a broader state-program metadata registry
+(SGPstateData-style) without duplicating facts or mixing measurement with policy.
+
+**Next:** sign-off on ADR-008; follow-up implementation ADR for v2 JSON Schemas and
+round-trip adapters (`to_assessment_spec()`, `project_sgpc_metadata()`).
+
+---
+
 ## [2026-07-02] feature | Human-readable GitHub Pages catalog (Quarto site, ADR-007)
 
 **Action:** feature

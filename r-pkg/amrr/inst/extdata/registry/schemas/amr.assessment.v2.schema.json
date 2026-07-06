@@ -1,0 +1,349 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://centerforassessment.github.io/assessment-metadata-registry/schemas/amr.assessment.v2.json",
+  "title": "Assessment System Metadata (self-contained per-annual sidecar) v2",
+  "description": "One file describes exactly one (jurisdiction x assessment_system x year). v2 (ADR-008/ADR-009) adds: the enrollment-grade model on every content area (intended_enrollment_grade fixed|variable + enrolled_grades_tested — disentangling the instrument's target grade, the student's enrolled grade, and cut keys), scale_bounds (loss/hoss keyed by enrolled grade, mirroring cutscores), a canonical assessment_type enum with conditional measurement.elp / measurement.alternate extension blocks, source_documents[], and per-grade cutscores_source confidence. AXIS RULE: cutscores, scale_bounds, and cutscores_source are ALWAYS keyed by ENROLLED grade — never by instrument or form name; instrument forms (e.g. WIDA grade clusters) are measurement facts in the extension blocks. v1 records remain valid during the migration window (ADR-009 D6).",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "jurisdiction",
+    "assessment_system",
+    "administration",
+    "content_areas",
+    "status"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "amr.assessment.v2",
+      "description": "Canonical v2 identifier. Supersedes amr.assessment_system.v1 (and the sgpc.assessment_metadata.v0.1 alias), which remain accepted by the validator during the migration window."
+    },
+    "status": {
+      "enum": ["draft", "reviewed", "verified", "deprecated"],
+      "description": "Governance status. draft = unreviewed (incl. machine-drafted or placeholder values); reviewed = a human checked it; verified = confirmed against an authoritative citation; deprecated = retained for history but superseded. Colleague verification-state map: unverified->draft, auto_derived->draft(+low), in_review->reviewed, human_verified->verified."
+    },
+    "source_confidence": {
+      "enum": ["low", "medium", "high"],
+      "description": "Confidence in the substantive facts (esp. cutscores/levels/bounds). Placeholder/scaffold values are low. Per-value confidence lives on scale_bounds entries (source) and cutscores_source."
+    },
+    "provenance": {
+      "type": "object",
+      "description": "Where this record came from, who entered it, and what changed. Required (with source_citation) for any status other than draft.",
+      "properties": {
+        "source_citation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "URL or document reference for the authoritative source of the substantive claims (the primary citation; additional evidence goes in source_documents)."
+        },
+        "entered_by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Author identifier; for machine-drafted records use the form ai:<harness-id>."
+        },
+        "entered_at": { "type": "string", "minLength": 1 },
+        "last_verified_at": { "type": ["string", "null"] },
+        "changed_from_prior": {
+          "type": ["string", "null"],
+          "description": "What changed vs the prior year/commit and why (assessment-system change vs metadata correction vs modeling decision)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "source_documents": {
+      "type": "array",
+      "description": "Evidence list beyond the primary provenance.source_citation: technical manuals, interpretive guides, state memos. url may be null when a document is known but not yet located online (ADR-009 D4).",
+      "items": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1 },
+          "url": { "type": ["string", "null"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "jurisdiction": {
+      "type": "object",
+      "required": ["id", "name", "type"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["state", "territory", "consortium", "district", "other"] },
+        "nces_id": { "type": "string" },
+        "fips": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "assessment_system": {
+      "type": "object",
+      "required": ["id", "name", "family", "assessment_type"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "family": { "type": "string", "minLength": 1 },
+        "assessment_type": {
+          "enum": ["summative", "alternate", "elp", "science", "end-of-course"],
+          "description": "Canonical discriminator (ADR-008 SS5). Legacy v1 strings (state-summative, english-language-proficiency, general) are normalized by migrate_registry(). elp permits measurement.elp; alternate permits measurement.alternate."
+        }
+      },
+      "additionalProperties": false
+    },
+    "administration": {
+      "type": "object",
+      "required": ["id", "year"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "year": { "type": "string", "pattern": "^[0-9]{4}$" },
+        "vendor": { "type": "string", "minLength": 1 },
+        "window": { "type": "string", "minLength": 1 },
+        "csem_ref": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "assessment_program": {
+      "type": "object",
+      "properties": {
+        "assessment_name": { "type": "string", "minLength": 1 },
+        "abbreviation": { "type": "string", "minLength": 1 },
+        "organization": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "abbreviation": { "type": "string" },
+            "url": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "cutscores_provenance": {
+      "type": "string",
+      "description": "Free-text note about the provenance/status of the cutscores/scale_bounds blocks specifically (e.g. a PLACEHOLDER warning). Complements the structured provenance block and per-grade cutscores_source."
+    },
+    "comparability": {
+      "type": "object",
+      "description": "Year-resolved comparability of this administration to the prior year: scale breaks, vendor/blueprint changes, and administration gaps (e.g. COVID-19).",
+      "properties": {
+        "comparable_to_prior_year": { "type": ["boolean", "null"] },
+        "scale_transition": { "type": "boolean" },
+        "prior_scale_name": { "type": ["string", "null"] },
+        "administered": { "type": "boolean" },
+        "notes": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "content_areas": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "vertical_scale", "enrollment"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string" },
+          "vertical_scale": { "type": "boolean" },
+          "scale_name": { "type": "string" },
+          "enrollment": {
+            "type": "object",
+            "description": "The enrollment-grade model (ADR-009 D1): the relationship between this instrument and the ENROLLED grade of the student taking it. fixed = the instrument targets one enrolled grade (ILEARN Grade 8 Math); variable = students from multiple enrolled grades sit the same instrument (ACT; WIDA grade-span forms).",
+            "required": ["intended_enrollment_grade", "enrolled_grades_tested"],
+            "properties": {
+              "intended_enrollment_grade": { "enum": ["fixed", "variable"] },
+              "enrolled_grades_tested": {
+                "type": "array",
+                "description": "Ordered enrolled grades that sit this content area. K (and PK) permitted. EOC without a grade association may use [] with an explanatory note.",
+                "items": { "type": "string", "pattern": "^(PK|K|[0-9]{1,2})$" }
+              },
+              "note": {
+                "type": "string",
+                "description": "Free text for the murky edge cases (e.g. 'ACT is a high-school test usually administered to 11th graders but taken by 10th/12th for graduation-competency purposes')."
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "achievement_levels": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["labels"],
+        "properties": {
+          "labels": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "proficient": {
+            "type": "array",
+            "description": "Boolean mask aligned to labels[]. A policy-benchmark label is DERIVED from this mask, never stored (ADR-008 SS5).",
+            "items": { "type": ["string", "boolean"] }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "cutscores": {
+      "type": "object",
+      "description": "content_area -> ENROLLED grade -> strictly increasing level lower bounds (count = n_levels - 1). Grade keys are enrolled grades, never instrument/form names (axis rule).",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": { "type": "number" }
+        }
+      }
+    },
+    "cutscores_source": {
+      "type": "object",
+      "description": "Optional per-grade confidence for cutscore vectors: content_area -> enrolled grade -> official|derived|provisional (ADR-008 SS5 per-value confidence).",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": { "enum": ["official", "derived", "provisional"] }
+      }
+    },
+    "scale_bounds": {
+      "type": "object",
+      "description": "content_area -> ENROLLED grade -> scale envelope {loss, hoss, source?}. Mirrors cutscores keying exactly (ADR-009 D2); per-grade because scales may differ by grade (ILEARN); uniform scales simply repeat values. Invariant (validator): loss <= min(cuts) <= max(cuts) <= hoss where both blocks are present.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "required": ["loss", "hoss"],
+          "properties": {
+            "loss": { "type": "number", "description": "Lowest obtainable scale score." },
+            "hoss": { "type": "number", "description": "Highest obtainable scale score." },
+            "source": { "enum": ["official", "derived", "provisional"] }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "description": "Type-conditional measurement extension blocks (ADR-009 D3). Vendor/psychometric facts ONLY — policy facts (ELP exit, growth targets, timelines, participation rules) live in the accountability record (ADR-002 heuristic).",
+      "properties": {
+        "elp": {
+          "type": "object",
+          "description": "English-language-proficiency measurement facts (permitted only when assessment_type = elp).",
+          "properties": {
+            "instrument": { "type": "string", "minLength": 1 },
+            "domains": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "composites": {
+              "type": "object",
+              "description": "Composite score definitions keyed by composite id (which may match a content_areas[].id, e.g. ELP_COMPOSITE): label + domain weights.",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "label": { "type": "string" },
+                  "weights": {
+                    "type": "object",
+                    "additionalProperties": { "type": "number" }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "grade_clusters": {
+              "type": "array",
+              "description": "Instrument FORM spans (e.g. K, 1, 2-3, 4-5, 6-8, 9-12). These are forms, not score-interpretation keys — cuts and bounds are keyed by enrolled grade (axis rule).",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "band_scheme": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "alternate": {
+          "type": "object",
+          "description": "Alternate-assessment measurement facts (permitted only when assessment_type = alternate). Participation criteria and the federal 1% cap are POLICY facts -> accountability record.",
+          "properties": {
+            "instrument": { "type": "string", "minLength": 1 },
+            "achievement_standard": { "type": "string" },
+            "scoring_model": { "enum": ["scale", "profile"] },
+            "linkage_levels": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "equating_notes": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "aliases": {
+      "type": "object",
+      "description": "Crosswalks: canonical id -> alternate names/codes (old names, SGP content-area names, colleague 'subjects' names, state abbreviations).",
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    },
+    "edfi": {
+      "type": "object",
+      "description": "Optional Ed-Fi descriptor crosswalk overrides for this cell.",
+      "properties": {
+        "namespace": { "type": "string", "minLength": 1 },
+        "assessment_category": { "type": "string", "minLength": 1 },
+        "academic_subjects": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "grade_levels": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "performance_levels": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "enum": ["reviewed", "verified", "deprecated"] } }
+      },
+      "then": {
+        "required": ["provenance"],
+        "properties": {
+          "provenance": { "required": ["source_citation"] }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["measurement"],
+        "properties": { "measurement": { "required": ["elp"] } }
+      },
+      "then": {
+        "properties": {
+          "assessment_system": {
+            "properties": { "assessment_type": { "const": "elp" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["measurement"],
+        "properties": { "measurement": { "required": ["alternate"] } }
+      },
+      "then": {
+        "properties": {
+          "assessment_system": {
+            "properties": { "assessment_type": { "const": "alternate" } }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -70,3 +70,110 @@ amrr_comparability <- function(x) {
 amrr_vendor <- function(x) {
   as_record(x)$administration$vendor %||% NA_character_
 }
+
+#' Enrollment-grade model for a record's content areas (v2)
+#'
+#' The ADR-009 enrollment block distinguishes the instrument's target
+#' (`intended_enrollment_grade`: `"fixed"` or `"variable"`) from the enrolled
+#' grades of students who sit it (`enrolled_grades_tested`). `NULL` on v1
+#' records (the block is v2-only).
+#'
+#' @param x A metadata record or a length-1 [get_metadata()] result.
+#' @param content_area Optional content-area id; if given, returns just that
+#'   content area's enrollment block.
+#' @return A named list (content area -> enrollment block), a single enrollment
+#'   block, or `NULL` if absent.
+#' @export
+amrr_enrollment <- function(x, content_area = NULL) {
+  rec <- as_record(x)
+  out <- list()
+  for (ca in rec$content_areas %||% list()) {
+    if (!is.null(ca$enrollment)) out[[ca$id]] <- ca$enrollment
+  }
+  if (!length(out)) return(NULL)
+  if (is.null(content_area)) out else out[[content_area]]
+}
+
+#' Scale bounds (loss/hoss) for a record (v2)
+#'
+#' `scale_bounds` mirrors `cutscores` keying exactly: content area -> enrolled
+#' grade -> `{loss, hoss, source}` (ADR-009 D2).
+#'
+#' @inheritParams amrr_enrollment
+#' @return A named list of scale-bound blocks, the requested content area's
+#'   block (grade -> `{loss, hoss, source}`), or `NULL` if absent.
+#' @export
+amrr_scale_bounds <- function(x, content_area = NULL) {
+  bounds <- as_record(x)$scale_bounds
+  if (is.null(content_area)) bounds else bounds[[content_area]]
+}
+
+#' ELP measurement extension block (v2)
+#'
+#' Vendor/psychometric ELP facts (instrument, domains, composites + weights,
+#' grade clusters, band scheme). Policy facts (exit criteria, growth targets,
+#' timelines) are NOT here -- they live in the accountability record; see
+#' [amrr_targets()], [amrr_growth_targets()], [amrr_timelines()].
+#'
+#' @param x A metadata record or a length-1 [get_metadata()] result.
+#' @return The `measurement.elp` list, or `NULL` if absent.
+#' @export
+amrr_elp <- function(x) {
+  (as_record(x)$measurement %||% list())$elp
+}
+
+#' Alternate-assessment measurement extension block (v2)
+#'
+#' Vendor/psychometric alternate facts (instrument, achievement standard,
+#' scoring model, linkage levels). Participation criteria and the federal cap
+#' are policy facts in the accountability record; see [amrr_participation()].
+#'
+#' @param x A metadata record or a length-1 [get_metadata()] result.
+#' @return The `measurement.alternate` list, or `NULL` if absent.
+#' @export
+amrr_alternate <- function(x) {
+  (as_record(x)$measurement %||% list())$alternate
+}
+
+#' Source documents for a record (v2)
+#'
+#' The evidence list beyond the primary `provenance.source_citation`.
+#'
+#' @param x A metadata record or a length-1 [get_metadata()] result.
+#' @return A list of `{title, url}` entries, or `NULL` if absent.
+#' @export
+amrr_source_documents <- function(x) {
+  as_record(x)$source_documents
+}
+
+#' Growth targets from an accountability record (v2)
+#'
+#' @param x An accountability metadata record.
+#' @return A list of growth-target blocks, or `NULL` if absent.
+#' @export
+amrr_growth_targets <- function(x) {
+  as_record(x)$growth_targets
+}
+
+#' Policy timelines from an accountability record (v2)
+#'
+#' Exit/on-time policy timelines (max years to exit, on-time rule, LTEL
+#' definition).
+#'
+#' @param x An accountability metadata record.
+#' @return The timelines list, or `NULL` if absent.
+#' @export
+amrr_timelines <- function(x) {
+  as_record(x)$timelines
+}
+
+#' Participation policy from an accountability record (v2)
+#'
+#' Alternate-assessment participation criteria and the federal cap.
+#'
+#' @param x An accountability metadata record.
+#' @return The participation list, or `NULL` if absent.
+#' @export
+amrr_participation <- function(x) {
+  as_record(x)$participation
+}

@@ -1,6 +1,6 @@
 Package: amrr
 Title: Assessment Metadata Registry Client
-Version: 0.1.0
+Version: 0.2.0
 Authors@R:
     person("Damian", "Betebenner", email = "dbetebenner@nciea.org", role = c("aut", "cre"))
 Description: Reads the Assessment Metadata Registry (self-contained annual JSON

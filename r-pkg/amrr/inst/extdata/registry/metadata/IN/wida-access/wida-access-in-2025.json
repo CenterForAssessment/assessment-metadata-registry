@@ -1,0 +1,108 @@
+{
+  "schema_version": "amr.assessment.v2",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "ai:amr-harness",
+    "entered_at": "2026-07-06",
+    "last_verified_at": null,
+    "changed_from_prior": "v2 fixture record exercising the ADR-009 surface: enrollment block, scale_bounds, cutscores_source, measurement.elp, source_documents."
+  },
+  "source_documents": [
+    {
+      "title": "FIXTURE -- placeholder evidence entry",
+      "url": null
+    }
+  ],
+  "jurisdiction": {
+    "id": "IN",
+    "name": "Indiana",
+    "type": "state"
+  },
+  "assessment_system": {
+    "id": "wida-access",
+    "name": "WIDA ACCESS",
+    "family": "WIDA-ACCESS",
+    "assessment_type": "elp"
+  },
+  "administration": {
+    "id": "wida-access-in-2025",
+    "year": "2025",
+    "vendor": "DRC",
+    "window": "annual",
+    "csem_ref": null
+  },
+  "assessment_program": {
+    "assessment_name": "WIDA ACCESS for ELLs",
+    "abbreviation": "ACCESS",
+    "organization": {
+      "name": "WIDA at the Wisconsin Center for Education Research, University of Wisconsin-Madison",
+      "abbreviation": "WIDA",
+      "url": "https://wida.wisc.edu"
+    }
+  },
+  "cutscores_provenance": "FIXTURE -- placeholder values shaped like WIDA proficiency-level lookups; exercises v2 invariants only.",
+  "content_areas": [
+    {
+      "id": "ELP_COMPOSITE",
+      "label": "Overall (Composite)",
+      "vertical_scale": true,
+      "scale_name": "WIDA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": ["K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"],
+        "note": "Grade-span (cluster) instruments; scores interpreted by enrolled grade (axis rule)."
+      }
+    }
+  ],
+  "achievement_levels": {
+    "ELP_COMPOSITE": {
+      "labels": [
+        "WIDA Level 1",
+        "WIDA Level 2",
+        "WIDA Level 3",
+        "WIDA Level 4",
+        "WIDA Level 5",
+        "WIDA Level 6"
+      ],
+      "proficient": [false, false, false, true, true, true]
+    }
+  },
+  "cutscores": {
+    "ELP_COMPOSITE": {
+      "K": [210, 260, 310, 360, 410],
+      "1": [220, 270, 320, 370, 420]
+    }
+  },
+  "cutscores_source": {
+    "ELP_COMPOSITE": {
+      "K": "provisional",
+      "1": "provisional"
+    }
+  },
+  "scale_bounds": {
+    "ELP_COMPOSITE": {
+      "K": { "loss": 100, "hoss": 600, "source": "provisional" },
+      "1": { "loss": 100, "hoss": 600, "source": "provisional" }
+    }
+  },
+  "measurement": {
+    "elp": {
+      "instrument": "ACCESS for ELLs Online",
+      "domains": ["LISTENING", "SPEAKING", "READING", "WRITING"],
+      "composites": {
+        "ELP_COMPOSITE": {
+          "label": "Overall",
+          "weights": { "READING": 0.35, "WRITING": 0.35, "LISTENING": 0.15, "SPEAKING": 0.15 }
+        }
+      },
+      "grade_clusters": ["K", "1", "2-3", "4-5", "6-8", "9-12"],
+      "band_scheme": "WIDA proficiency levels 1.0-6.0 reported to tenths; scale scores 100-600"
+    }
+  },
+  "comparability": {
+    "comparable_to_prior_year": true,
+    "scale_transition": false,
+    "administered": true
+  }
+}

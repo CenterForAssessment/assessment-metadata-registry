@@ -16,8 +16,10 @@
     levels <- rec$achievement_levels %||% list()
     comp <- rec$comparability %||% list()
     cutscores <- rec$cutscores %||% list()
+    scale_bounds <- rec$scale_bounds %||% list()
     for (ca in rec$content_areas %||% list()) {
       ca_id <- ca$id
+      enr <- ca$enrollment %||% list()
       rows[[length(rows) + 1L]] <- list(
         jurisdiction_id = jur$id, jurisdiction_name = jur$name,
         assessment_system_id = sys_$id, assessment_system_name = sys_$name,
@@ -26,6 +28,10 @@
         scale_name = ca$scale_name, vendor = adm$vendor,
         n_levels = length((levels[[ca_id]] %||% list())$labels %||% list()),
         has_cutscores = ca_id %in% names(cutscores),
+        # v2 fields (ADR-009); null on v1 rows during the migration window.
+        intended_enrollment_grade = enr$intended_enrollment_grade,
+        enrolled_grades_tested = enr$enrolled_grades_tested,
+        has_scale_bounds = ca_id %in% names(scale_bounds),
         scale_transition = comp$scale_transition,
         comparable_to_prior_year = comp$comparable_to_prior_year,
         status = rec$status, source_confidence = rec$source_confidence,

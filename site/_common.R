@@ -25,7 +25,9 @@ amr_manifest <- function() {
 amr_registry_stamp <- function() (amr_manifest()[["_registry"]]) %||% list()
 
 # ---- record model ----------------------------------------------------------
-amr_is_accountability <- function(rec) identical(rec$schema_version, "amr.accountability_system.v1")
+amr_is_accountability <- function(rec) {
+  (rec$schema_version %||% "") %in% c("amr.accountability_system.v1", "amr.accountability.v2")
+}
 amr_type <- function(rec) if (amr_is_accountability(rec)) "accountability" else "assessment"
 amr_system <- function(rec) if (amr_is_accountability(rec)) rec$accountability_system else rec$assessment_system
 amr_sys_id <- function(rec) amr_system(rec)$id
@@ -131,6 +133,17 @@ amr_display_html <- function(rec) {
   parts[[length(parts) + 1L]] <- amr_section("Provenance",
     tags$div(class = "amr-stamp", HTML(if (nzchar(stamp)) htmltools::htmlEscape(stamp) else "—")))
 
+  # Source documents (v2): evidence beyond the primary citation
+  docs <- rec$source_documents %||% list()
+  if (length(docs)) {
+    items <- vapply(docs, function(d) {
+      t <- htmltools::htmlEscape(d$title %||% "")
+      if (!is.null(d$url)) sprintf("<a href='%s'>%s</a>", htmltools::htmlEscape(d$url), t) else t
+    }, character(1))
+    parts[[length(parts) + 1L]] <- amr_section("Source documents",
+      tags$div(class = "amr-stamp", HTML(paste(items, collapse = "<br/>"))))
+  }
+
   as.character(tagList(parts))
 }
 
@@ -153,14 +166,69 @@ amr_display_assessment <- function(rec) {
       tags$div(class = "amr-caveat", rec$cutscores_provenance))
   }
 
-  # Content areas
+  # Content areas (v2 adds the enrollment-grade model, ADR-009)
   cas <- rec$content_areas %||% list()
   if (length(cas)) {
-    rows <- lapply(cas, function(ca) c(
-      sprintf("<code>%s</code>", esc(ca$id)), esc(ca$label),
-      if (isTRUE(ca$vertical_scale)) "yes" else "no", esc(ca$scale_name)))
-    out[[length(out) + 1L]] <- amr_section("Content areas",
-      amr_html_table(c("ID", "Label", "Vertical scale", "Scale name"), rows))
+    has_enr <- any(vapply(cas, function(ca) !is.null(ca$enrollment), logical(1)))
+    rows <- lapply(cas, function(ca) {
+      base <- c(
+        sprintf("<code>%s</code>", esc(ca$id)), esc(ca$label),
+        if (isTRUE(ca$vertical_scale)) "yes" else "no", esc(ca$scale_name))
+      if (has_enr) {
+        enr <- ca$enrollment %||% list()
+        base <- c(base, esc(enr$intended_enrollment_grade %||% "—"),
+                  esc(paste(unlist(enr$enrolled_grades_tested), collapse = ", ")))
+      }
+      base
+    })
+    heads <- c("ID", "Label", "Vertical scale", "Scale name")
+    if (has_enr) heads <- c(heads, "Enrollment", "Enrolled grades tested")
+    out[[length(out) + 1L]] <- amr_section("Content areas", amr_html_table(heads, rows))
+    enr_notes <- Filter(nzchar, vapply(cas, function(ca)
+      as.character((ca$enrollment %||% list())$note %||% ""), character(1)))
+    if (length(enr_notes)) {
+      out[[length(out) + 1L]] <- tags$div(class = "amr-callno",
+        HTML(paste(vapply(enr_notes, htmltools::htmlEscape, character(1)), collapse = "<br/>")))
+    }
+  }
+
+  # Scale bounds (v2): loss/hoss per enrolled grade, mirrors cutscore keying
+  sb <- rec$scale_bounds %||% list()
+  for (ca in names(sb)) {
+    grades <- names(sb[[ca]])
+    grades <- grades[order(suppressWarnings(as.numeric(grades)), na.last = FALSE)]
+    rows <- lapply(grades, function(g) {
+      b <- sb[[ca]][[g]]
+      c(sprintf("Grade %s", esc(g)), format(b$loss), format(b$hoss), esc(b$source %||% "—"))
+    })
+    out[[length(out) + 1L]] <- amr_section(sprintf("Scale bounds · %s", ca),
+      amr_html_table(c("Grade", "LOSS", "HOSS", "Source"), rows, num = c(2, 3)))
+  }
+
+  # Measurement extension blocks (v2): vendor/psychometric facts only
+  elp <- (rec$measurement %||% list())$elp
+  if (!is.null(elp)) {
+    comps <- elp$composites %||% list()
+    comp_html <- paste(vapply(names(comps), function(id) {
+      w <- comps[[id]]$weights %||% list()
+      ws <- paste(sprintf("%s %s", names(w), vapply(w, format, character(1))), collapse = ", ")
+      sprintf("<code>%s</code> (%s)", htmltools::htmlEscape(id), htmltools::htmlEscape(ws))
+    }, character(1)), collapse = "<br/>")
+    out[[length(out) + 1L]] <- amr_section("ELP measurement",
+      amr_dl(list("Instrument" = esc(elp$instrument),
+                  "Domains" = esc(paste(unlist(elp$domains), collapse = ", ")),
+                  "Composites" = comp_html,
+                  "Grade clusters (forms)" = esc(paste(unlist(elp$grade_clusters), collapse = ", ")),
+                  "Band scheme" = esc(elp$band_scheme))))
+  }
+  alt <- (rec$measurement %||% list())$alternate
+  if (!is.null(alt)) {
+    out[[length(out) + 1L]] <- amr_section("Alternate measurement",
+      amr_dl(list("Instrument" = esc(alt$instrument),
+                  "Achievement standard" = esc(alt$achievement_standard),
+                  "Scoring model" = esc(alt$scoring_model),
+                  "Linkage levels" = esc(paste(unlist(alt$linkage_levels), collapse = ", ")),
+                  "Equating notes" = esc(alt$equating_notes))))
   }
 
   # Achievement levels

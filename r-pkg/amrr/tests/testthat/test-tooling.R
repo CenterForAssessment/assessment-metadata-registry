@@ -1,18 +1,16 @@
 # validate_registry() + build_registry() against the bundled fixture registry
 # (inst/extdata/registry: a self-contained mini-registry with schemas + DDL).
+# fixture_registry() lives in helper-registry.R (shared with test-v2.R).
 
-fixture_registry <- function() {
-  reg <- system.file("extdata", "registry", package = "amrr")
-  testthat::skip_if(!nzchar(reg) || !dir.exists(file.path(reg, "schemas")),
-                    "fixture registry (with schemas) not installed")
-  reg
-}
-
-test_that("validate_registry passes on the fixture (5 records, 0 errors)", {
+test_that("validate_registry passes on the fixture (6 records, 0 errors)", {
   skip_if_not_installed("jsonvalidate")
   reg <- fixture_registry()
-  r <- validate_registry(reg, quiet = TRUE, error = FALSE)
-  expect_equal(r$n_files, 5L)
+  # The fixture deliberately mixes v1 and v2 records -> dual-version warning.
+  expect_warning(
+    r <- validate_registry(reg, quiet = TRUE, error = FALSE),
+    "dual-version window"
+  )
+  expect_equal(r$n_files, 6L)
   expect_equal(r$n_errors, 0L)
   expect_length(r$results, 0L)
 })
@@ -27,7 +25,7 @@ test_that("validate_registry(error = TRUE) errors when a sidecar is invalid", {
   rec <- jsonlite::fromJSON(f, simplifyVector = FALSE)
   rec$cutscores$ELA$`3` <- list(500, 100, 900)
   writeLines(jsonlite::toJSON(rec, pretty = TRUE, auto_unbox = TRUE, null = "null"), f)
-  expect_error(validate_registry(tmp, quiet = TRUE), "validation error")
+  expect_error(suppressWarnings(validate_registry(tmp, quiet = TRUE)), "validation error")
 })
 
 test_that("build_registry reproduces the derived layer", {
@@ -38,8 +36,8 @@ test_that("build_registry reproduces the derived layer", {
   out <- withr::local_tempdir()
   m <- build_registry(reg, out = out, quiet = TRUE)
 
-  expect_equal(m$n_records, 5L)
-  expect_equal(m$n_assessment_records, 3L)
+  expect_equal(m$n_records, 6L)
+  expect_equal(m$n_assessment_records, 4L)
   expect_equal(m$n_accountability_records, 2L)
   expect_equal(m$n_jurisdictions, 2L)
   for (f in c("index.json", "targets.json", "changelog.json", "manifest.json",
