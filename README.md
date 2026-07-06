@@ -41,11 +41,11 @@ make validate            # or: Rscript -e 'amrr::validate_registry(".")'
 ```
 ```r
 # Consume from R — pin the exact registry bytes by commit SHA
-md  <- amrr::get_metadata("IN", system = "wida-access", year = 2024, registry = ".")
+md  <- amrr::get_metadata("IN", system = "ilearn", year = 2024, registry = ".")
 ref <- amrr::amrr_registry_ref(md)   # the commit SHA to record with your run
 ```
 
-See **Validate locally** and **Consume from R** below for the full workflow, and
+See **Basic usage** and **Validate & build locally** below for the full workflow, and
 `wiki/decisions/000-registry-architecture.md` for the architecture and roadmap.
 
 ## Layout
@@ -68,10 +68,14 @@ AGENTS.md     Operating manual (read first); CLAUDE.md imports it
 - **Versioning:** Git is the history axis; a recorded **commit SHA** is the reproducibility
   pin. Consumers record the SHA they resolved against, so any past analysis is exactly
   reconstructable.
+- **Enrollment-grade model (v2):** each content area declares whether its instrument targets
+  one enrolled grade (`fixed`) or many (`variable`); cutscores and scale bounds are always
+  keyed by *enrolled grade*, never by instrument/form name (the axis rule, ADR-009).
 - **Governance:** every record carries `status` (draft/reviewed/verified/deprecated),
-  `source_confidence`, and `provenance`. Non-draft claims require a `source_citation`.
+  `source_confidence`, and `provenance`. Non-draft claims require a `source_citation`;
+  proficiency is stored as a single `proficient_from` label, not a positional mask (ADR-010).
 
-## Validate locally
+## Validate & build locally
 
 `make validate` runs the Tier A gate (schema via `jsonvalidate` + registry invariants);
 `make build` regenerates the derived layer after validating. Both are `Rscript` under the
@@ -85,28 +89,56 @@ make build               # validate, then derive Tier B into build/
 make site                # render the human-readable catalog into site/_site/
 ```
 
-## Consume from R
+## Basic usage
 
-Install `amrr` from the monorepo, point it at a registry checkout, and read records. The
-merged `achievement_targets` are re-attached from the accountability record at read time.
+Point `amrr` at a registry checkout and read a cell (`jurisdiction × system × year`).
+Accountability `achievement_targets` are re-merged onto the assessment record at read time,
+and the resolved **commit SHA** pins the exact bytes your analysis used.
 
 ```r
-# install.packages("r-pkg/amrr", repos = NULL, type = "source")  # or devtools::load_all
-md <- amrr::get_metadata("IN", system = "wida-access", year = 2024,
-                         registry = ".")          # a registry checkout
-amrr::amrr_registry_ref(md)                        # commit SHA to pin the run
-amrr::amrr_targets(md[[1]], "ELP_COMPOSITE")       # exit target, merged from accountability
+# install.packages("r-pkg/amrr", repos = NULL, type = "source")   # or devtools::load_all("r-pkg/amrr")
+library(amrr)
+
+md  <- get_metadata("IN", system = "ilearn", year = 2024, registry = ".")
+rec <- md[[1]]
+amrr_registry_ref(md)                       # commit SHA — record this with your run
+
+amrr_cutscores(rec, "ELA")                  # enrolled grade -> level lower bounds
+amrr_achievement_levels(rec, "ELA")$proficient_from   # "At Proficiency" (ADR-010)
+amrr_enrollment(rec, "ELA")                 # $intended_enrollment_grade "fixed" + enrolled grades
+amrr_targets(rec, "ELA")                    # proficiency target, merged from accountability
 ```
+
+Omit `year` to get every year for a system as an `amrr_metadata` set, and project it into the
+compact **assessment-config** authoring shape — reusable level schemes, tests, a grade→test
+map, and unified cuts (ADR-010). `read_config()` expands it back into records.
+
+```r
+cfg <- as_config(get_metadata("IN", system = "ilearn", registry = "."))
+names(cfg$level_schemes)                    # "general_4" — one scheme, shared by ELA + Math
+cfg$tests$ela$intended_enrollment_grade     # "fixed" (the axis a bare grade list can't carry)
+back <- read_config(cfg)                     # -> an amr.assessment.v2 record
+```
+
+Browse the same projection rendered for humans on the
+[**Config view**](https://centerforassessment.github.io/assessment-metadata-registry/config-view.html)
+page of the catalog.
 
 ## Status
 
-- Tier A (canonical): `amr.assessment_system.v1` + `amr.accountability_system.v1`
-  schemas; **48 records across 3 jurisdictions** — Indiana (ILEARN, WIDA-ACCESS, and its
-  accountability system) plus demonstration jurisdictions SC and SD. Records are
-  `status: draft` (scaffold values) pending review.
-- Tier B (derived): `amrr::build_registry()` → index, changelog, per-jurisdiction bundles,
-  SQLite, SHA-stamped manifest; published to Pages by CI.
-- Tier C (consume): `r-pkg/amrr` — `get_metadata()` with SHA pinning and target re-merge;
-  and a Quarto **catalog** (`site/`) that renders the derived JSON for humans (ADR-007).
+- **Tier A (canonical):** `amr.assessment.v2` + `amr.accountability.v2` schemas (the v1
+  schemas remain accepted during the migration window). **48 records across 3
+  jurisdictions** — Indiana (ILEARN, WIDA-ACCESS, and its accountability system) plus
+  demonstration jurisdictions SC and SD, all migrated to v2. Records are `status: draft`
+  (scaffold values) pending review. v2 adds the enrollment-grade model (`fixed`/`variable`
+  + `enrolled_grades_tested`), enrolled-grade-keyed `scale_bounds`, `proficient_from`
+  benchmarks, an end-of-course `"eoc"` cut key, and type-discriminated measurement
+  extensions (ADR-009 / ADR-010).
+- **Tier B (derived):** `amrr::build_registry()` → index, changelog, per-jurisdiction
+  bundles, SQLite, the compact `config/` projection, and a SHA-stamped manifest; published
+  to Pages by CI.
+- **Tier C (consume):** `r-pkg/amrr` 0.3.0 — `get_metadata()` with SHA pinning and target
+  re-merge, v2 accessors, and the `as_config()` / `read_config()` config view; plus a
+  Quarto **catalog** (`site/`) with a **Config view** page (ADR-007 / ADR-010).
 
 See `wiki/decisions/000-registry-architecture.md` for the architecture and roadmap.

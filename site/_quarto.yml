@@ -24,6 +24,8 @@ website:
     right:
       - text: Catalog
         href: index.qmd
+      - text: Usage
+        href: usage.qmd
       - text: Spec
         href: spec.qmd
       - text: Config view
