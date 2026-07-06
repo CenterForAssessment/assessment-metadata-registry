@@ -1,5 +1,5 @@
 {
-  "schema_version": "amr.assessment_system.v1",
+  "schema_version": "amr.assessment.v2",
   "status": "draft",
   "source_confidence": "low",
   "provenance": {
@@ -17,7 +17,7 @@
     "id": "ilearn",
     "name": "Indiana Learning Evaluation Assessment Readiness Network",
     "family": "ILEARN",
-    "assessment_type": "state-summative"
+    "assessment_type": "summative"
   },
   "administration": {
     "id": "ilearn-in-2019",
@@ -41,13 +41,37 @@
       "id": "ELA",
       "label": "English/Language Arts",
       "vertical_scale": false,
-      "scale_name": "ILEARN ELA scale"
+      "scale_name": "ILEARN ELA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+      }
     },
     {
       "id": "MATHEMATICS",
       "label": "Mathematics",
       "vertical_scale": false,
-      "scale_name": "ILEARN Mathematics scale"
+      "scale_name": "ILEARN Mathematics scale",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+      }
     }
   ],
   "achievement_levels": {
