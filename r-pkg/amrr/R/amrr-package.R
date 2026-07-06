@@ -20,6 +20,12 @@ ASSESSMENT_SCHEMAS <- c("amr.assessment.v2",
                         "amr.assessment_system.v1", "sgpc.assessment_metadata.v0.1")
 ACCOUNTABILITY_SCHEMAS <- c("amr.accountability.v2", "amr.accountability_system.v1")
 
+# Sentinel cut key for end-of-course assessments (ADR-010): an EOC standard is
+# instrument-level, not grade-specific, so its cutscores/scale_bounds may be keyed
+# once under this key instead of copied across every enrolled grade. The validator
+# permits it only when assessment_type = "end-of-course".
+INSTRUMENT_LEVEL_KEY <- "eoc"
+
 is_assessment_record <- function(r) {
   is.list(r) && !is.null(r$schema_version) && r$schema_version %in% ASSESSMENT_SCHEMAS
 }

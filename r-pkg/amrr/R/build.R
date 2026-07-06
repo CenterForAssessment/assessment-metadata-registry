@@ -223,12 +223,13 @@
       }
       for (ca in names(r$achievement_levels %||% list())) {
         block <- r$achievement_levels[[ca]]
-        labels <- block$labels %||% list(); prof <- block$proficient %||% vector("list", length(labels))
+        labels <- block$labels %||% list()
+        prof_mask <- .proficient_mask(block)  # derives from proficient_from or legacy mask
         for (i in seq_along(labels)) {
-          pf <- if (i <= length(prof)) prof[[i]] else NULL
+          pf <- if (i <= length(prof_mask)) prof_mask[[i]] else NA
           DBI::dbExecute(con, "INSERT OR REPLACE INTO achievement_level VALUES (?,?,?,?,?,?,?)",
                          params = list(jur$id, sys_$id, ca, as.character(adm$year), i - 1L, labels[[i]],
-                                       if (is.null(pf)) NA_integer_ else if (as_logical_flag(pf)) 1L else 0L))
+                                       if (is.na(pf)) NA_integer_ else if (isTRUE(pf)) 1L else 0L))
         }
       }
       for (ca in names(r$cutscores %||% list())) {
