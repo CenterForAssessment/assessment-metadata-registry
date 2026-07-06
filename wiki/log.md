@@ -4,6 +4,40 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-06] decision + build | ADR-010: reconcile colleague config spec (amrr 0.3.0)
+
+**Action:** decision + build
+
+- **ADR-010 accepted** ([[010-config-view-reconciliation]]). A colleague sent an
+  alternative `amr.assessment_config.v1` spec right after v2 shipped. Review found ~90% of
+  it is the same facts in a different arrangement; ADR-008 already framed it as a
+  naming/structural input, not a canonical format. Decision: **refine v2 additively, offer
+  the compact shape as an `amrr` projection, do not re-model canonical.**
+- **Adopted (additive, non-breaking):** `achievement_levels[ca].proficient_from` (the
+  lowest proficient label) replacing the fragile positional `proficient[]` mask — fixes a
+  smell v2 shared (positional coupling; policy bundled into measurement, contra ADR-002).
+  Legacy mask still accepted; validator checks agreement; `.proficient_mask()` derives it
+  for `proficiency_boundary` resolution + SQLite. **Corpus folded** to `proficient_from`
+  (27 assessment records); `migrate_registry()` now emits it. Also: EOC instrument-level
+  `"eoc"` cut key (validator-gated to `end-of-course`; exemplar added), and
+  `provenance.verified_by`.
+- **Config view:** `as_config()` / `read_config()` project a `jurisdiction × system` into
+  the compact shape (deduped named `level_schemes`, `tests`, `content_area × grade` `map`,
+  unified `{loss,hoss,values}` cuts) and back — a lens on canonical, not a second source of
+  truth (ADR-008 tier-3). `build_registry()` emits `build/config/*.json`; the site gains a
+  **Config view** page. The projection preserves v2's `fixed|variable` axis explicitly (the
+  colleague's `intended_grades` alone can't).
+- **Rejected as canonical (rationale in ADR):** `tests`+`map` container, unified `cuts`,
+  the single-file program container; `level_schemes` deferred to the authoring layer.
+- **Verification:** `make all` green (48 files, 0 errors, no dual-window warning); **132
+  tests** pass; R CMD check OK; build parity held (ILEARN ELA `[0,0,1,1]`, ELA g3
+  boundary = 497, WIDA g5/2024 = 364.4). `amrr` 0.3.0.
+
+**Next:** a `read_config()` sidecar *writer* (authoring CLI); Phase G SGPc resolver; real
+WIDA_IN / EOC Tier A authoring.
+
+---
+
 ## [2026-07-06] build | v2 verified + corpus migrated (first R execution; PR #10)
 
 **Action:** build + release
