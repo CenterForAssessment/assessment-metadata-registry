@@ -32,10 +32,41 @@
   grades[order(rank)]
 }
 
+# Normalize achievement levels to the canonical proficient_from label (ADR-010),
+# replacing the legacy positional proficient[] mask. Deterministic and lossless
+# for a monotonic mask (falses then trues); errors on a non-monotonic mask rather
+# than guessing. A block already using proficient_from, or with no proficiency
+# info, is left untouched.
+.fold_proficient_from <- function(rec) {
+  levels <- rec$achievement_levels
+  if (is.null(levels)) return(rec)
+  rec$achievement_levels <- lapply(levels, function(block) {
+    if (!is.null(block[["proficient_from"]]) || is.null(block[["proficient"]])) return(block)
+    labels <- unlist(block[["labels"]] %||% list())
+    mask <- vapply(block[["proficient"]], as_logical_flag, logical(1))
+    length(mask) <- length(labels)
+    k <- which(mask)
+    if (length(k)) {
+      first <- k[[1]]
+      tail_all <- all(mask[first:length(mask)], na.rm = TRUE)
+      head_none <- !any(mask[seq_len(first - 1L)], na.rm = TRUE)
+      if (!tail_all || !head_none) {
+        stop("non-monotonic proficient[] mask; cannot fold to proficient_from (author manually).",
+             call. = FALSE)
+      }
+      block[["proficient_from"]] <- labels[[first]]
+    }
+    block[["proficient"]] <- NULL
+    block
+  })
+  rec
+}
+
 .migrate_assessment_record <- function(rec) {
   rec$schema_version <- "amr.assessment.v2"
   rec$assessment_system$assessment_type <-
     .migrate_assessment_type(rec$assessment_system$assessment_type)
+  rec <- .fold_proficient_from(rec)  # emit canonical proficient_from (ADR-010)
   is_variable <- identical(rec$assessment_system$assessment_type, "elp")
 
   cutscores <- rec$cutscores %||% list()

@@ -234,6 +234,29 @@ test_that("provenance.verified_by is accepted", {
   expect_equal(r$n_errors, 0L)
 })
 
+test_that(".fold_proficient_from replaces a monotonic mask; rejects a non-monotonic one", {
+  rec <- list(achievement_levels = list(
+    ELA = list(labels = list("BB", "B", "P", "A"), proficient = list(FALSE, FALSE, TRUE, TRUE))))
+  folded <- .fold_proficient_from(rec)
+  expect_identical(folded$achievement_levels$ELA[["proficient_from"]], "P")
+  expect_null(folded$achievement_levels$ELA[["proficient"]])
+
+  bad <- list(achievement_levels = list(
+    X = list(labels = list("a", "b", "c"), proficient = list(FALSE, TRUE, FALSE))))
+  expect_error(.fold_proficient_from(bad), "non-monotonic")
+})
+
+test_that("migrate_registry emits proficient_from, not the legacy mask", {
+  reg <- fixture_registry()
+  tmp <- withr::local_tempdir()
+  file.copy(list.files(reg, full.names = TRUE), tmp, recursive = TRUE)
+  migrate_registry(tmp, quiet = TRUE)
+  ilearn <- read_fixture_record(tmp, c("metadata", "IN", "ilearn", "ilearn-in-2024.json"))
+  ela <- ilearn$achievement_levels$ELA
+  expect_identical(ela[["proficient_from"]], "At Proficiency")
+  expect_null(ela[["proficient"]])
+})
+
 test_that("end-of-course records may key cutscores by the 'eoc' sentinel (ADR-010)", {
   eoc <- list(
     schema_version = "amr.assessment.v2",
