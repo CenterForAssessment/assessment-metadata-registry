@@ -8,6 +8,29 @@ as_logical_flag <- function(x) {
   isTRUE(tolower(as.character(x)) %in% c("true", "1", "yes"))
 }
 
+# Derive the boolean proficiency mask for an achievement-levels block, aligned to
+# labels[]. Prefers the canonical proficient_from label (ADR-010) and derives the
+# monotonic mask from it; falls back to the legacy proficient[] mask. Returns a
+# logical vector of length length(labels) (NA where undetermined), or logical(0)
+# when there are no labels.
+.proficient_mask <- function(block) {
+  labels <- unlist(block[["labels"]] %||% list())
+  n <- length(labels)
+  if (!n) return(logical(0))
+  # Exact-match [[ ]] -- $ partial-matches "proficient" to "proficient_from".
+  pf <- block[["proficient_from"]]
+  if (!is.null(pf)) {
+    idx <- match(pf, labels)
+    if (is.na(idx)) return(rep(NA, n))  # invalid label; the validator reports it
+    return(seq_len(n) >= idx)
+  }
+  mask <- block[["proficient"]]
+  if (is.null(mask)) return(rep(NA, n))
+  vals <- vapply(mask, as_logical_flag, logical(1))
+  length(vals) <- n                     # align to labels (pad with NA / truncate)
+  vals
+}
+
 # Resolve a basis="proficiency_boundary" target to per-grade scale scores from the
 # assessment record's own cutscores + proficient mask: the scale score entering the
 # first proficient level. Returns a named list grade -> number, or NULL if it
@@ -15,11 +38,11 @@ as_logical_flag <- function(x) {
 resolve_proficiency_boundary <- function(record, content_area) {
   levels <- record$achievement_levels[[content_area]]
   cuts <- record$cutscores[[content_area]]
-  if (is.null(levels) || is.null(cuts) || is.null(levels$proficient)) {
+  if (is.null(levels) || is.null(cuts)) {
     return(NULL)
   }
-  proficient <- vapply(levels$proficient, as_logical_flag, logical(1))
-  k <- which(proficient)
+  proficient <- .proficient_mask(levels)  # prefers proficient_from (ADR-010)
+  k <- which(proficient)                  # which() ignores NA
   if (length(k) == 0L) return(NULL)
   k <- k[[1]]                       # first proficient level (1-based)
   if (k < 2L) return(NULL)          # cut k-1 is the boundary entering level k

@@ -26,6 +26,8 @@ website:
         href: index.qmd
       - text: Spec
         href: spec.qmd
+      - text: Config view
+        href: config-view.qmd
       - text: Changelog
         href: changelog.qmd
       - text: About

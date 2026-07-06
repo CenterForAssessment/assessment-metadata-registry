@@ -173,6 +173,127 @@ test_that("accountability v2 accessors return NULL when blocks are absent", {
   expect_null(amrr_participation(acct))
 })
 
+# --- ADR-010 refinements: proficient_from, verified_by, EOC instrument-level cuts ---
+
+test_that(".proficient_mask derives the same mask from proficient_from and legacy proficient[]", {
+  from_label <- .proficient_mask(list(labels = list("BB", "B", "P", "A"), proficient_from = "P"))
+  from_mask  <- .proficient_mask(list(labels = list("BB", "B", "P", "A"),
+                                      proficient = list(FALSE, FALSE, TRUE, TRUE)))
+  expect_identical(from_label, c(FALSE, FALSE, TRUE, TRUE))
+  expect_identical(from_mask, c(FALSE, FALSE, TRUE, TRUE))
+  # An invalid proficient_from yields an all-NA mask (the validator reports it).
+  expect_true(all(is.na(.proficient_mask(list(labels = list("BB", "B"), proficient_from = "X")))))
+})
+
+test_that("proficiency_boundary targets resolve via proficient_from", {
+  rec <- list(
+    achievement_levels = list(ELA = list(labels = list("BB", "B", "P", "A"), proficient_from = "P")),
+    cutscores = list(ELA = list(`3` = list(462, 497, 525)))
+  )
+  out <- resolve_proficiency_boundary(rec, "ELA")
+  expect_equal(out$`3`, 497)  # scale score entering "P" = cut (k-1) with k=3
+})
+
+test_that("a record using proficient_from (no legacy mask) validates cleanly", {
+  skip_if_not_installed("jsonvalidate")
+  r <- validate_mutated_v2(function(rec) {
+    rec$achievement_levels$ELP_COMPOSITE$proficient <- NULL
+    rec$achievement_levels$ELP_COMPOSITE$proficient_from <- "WIDA Level 4"
+    rec
+  })
+  expect_equal(r$n_errors, 0L)
+})
+
+test_that("proficient_from must name a real label", {
+  skip_if_not_installed("jsonvalidate")
+  r <- validate_mutated_v2(function(rec) {
+    rec$achievement_levels$ELP_COMPOSITE$proficient_from <- "Nonexistent Level"
+    rec
+  })
+  expect_true(any(grepl("proficient_from", unlist(r$results))))
+})
+
+test_that("proficient_from disagreeing with a present legacy mask fails", {
+  skip_if_not_installed("jsonvalidate")
+  r <- validate_mutated_v2(function(rec) {
+    # fixture mask is [F,F,F,T,T,T] (implies "WIDA Level 4"); claim Level 5 instead
+    rec$achievement_levels$ELP_COMPOSITE$proficient_from <- "WIDA Level 5"
+    rec
+  })
+  expect_true(any(grepl("disagrees with the legacy proficient", unlist(r$results))))
+})
+
+test_that("provenance.verified_by is accepted", {
+  skip_if_not_installed("jsonvalidate")
+  r <- validate_mutated_v2(function(rec) {
+    rec$provenance$verified_by <- NULL  # null is valid
+    rec$provenance$last_verified_at <- "2026-07-06"
+    rec$provenance$verified_by <- "reviewer:dbetebenner"
+    rec
+  })
+  expect_equal(r$n_errors, 0L)
+})
+
+test_that("amrr_achievement_levels exposes a derived proficient mask for compat", {
+  rec <- list(
+    schema_version = "amr.assessment.v2",
+    achievement_levels = list(ELA = list(labels = list("BB", "B", "P", "A"),
+                                         proficient_from = "P")))
+  blk <- amrr_achievement_levels(rec, "ELA")
+  expect_identical(blk$proficient_from, "P")
+  expect_identical(vapply(blk$proficient, isTRUE, logical(1)), c(FALSE, FALSE, TRUE, TRUE))
+})
+
+test_that(".fold_proficient_from replaces a monotonic mask; rejects a non-monotonic one", {
+  rec <- list(achievement_levels = list(
+    ELA = list(labels = list("BB", "B", "P", "A"), proficient = list(FALSE, FALSE, TRUE, TRUE))))
+  folded <- .fold_proficient_from(rec)
+  expect_identical(folded$achievement_levels$ELA[["proficient_from"]], "P")
+  expect_null(folded$achievement_levels$ELA[["proficient"]])
+
+  bad <- list(achievement_levels = list(
+    X = list(labels = list("a", "b", "c"), proficient = list(FALSE, TRUE, FALSE))))
+  expect_error(.fold_proficient_from(bad), "non-monotonic")
+})
+
+test_that("migrate_registry emits proficient_from, not the legacy mask", {
+  reg <- fixture_registry()
+  tmp <- withr::local_tempdir()
+  file.copy(list.files(reg, full.names = TRUE), tmp, recursive = TRUE)
+  migrate_registry(tmp, quiet = TRUE)
+  ilearn <- read_fixture_record(tmp, c("metadata", "IN", "ilearn", "ilearn-in-2024.json"))
+  ela <- ilearn$achievement_levels$ELA
+  expect_identical(ela[["proficient_from"]], "At Proficiency")
+  expect_null(ela[["proficient"]])
+})
+
+test_that("end-of-course records may key cutscores by the 'eoc' sentinel (ADR-010)", {
+  eoc <- list(
+    schema_version = "amr.assessment.v2",
+    assessment_system = list(assessment_type = "end-of-course"),
+    content_areas = list(list(
+      id = "ALGEBRA_I",
+      enrollment = list(intended_enrollment_grade = "variable",
+                        enrolled_grades_tested = as.list(c("7", "8", "9", "10", "11", "12"))))),
+    cutscores = list(ALGEBRA_I = list(eoc = list(480, 520, 560))),
+    scale_bounds = list(ALGEBRA_I = list(eoc = list(loss = 400, hoss = 640)))
+  )
+  expect_length(.v2_assessment_invariants(eoc), 0L)
+})
+
+test_that("a non-EOC record keying cutscores by 'eoc' fails the axis rule", {
+  bad <- list(
+    schema_version = "amr.assessment.v2",
+    assessment_system = list(assessment_type = "summative"),
+    content_areas = list(list(
+      id = "MATHEMATICS",
+      enrollment = list(intended_enrollment_grade = "fixed",
+                        enrolled_grades_tested = as.list(c("3", "4"))))),
+    cutscores = list(MATHEMATICS = list(eoc = list(480)))
+  )
+  expect_true(any(grepl("axis rule", .v2_assessment_invariants(bad))))
+})
+
 test_that("amrr_materialize round-trips .rds and .rda with the registry ref", {
   reg <- fixture_registry()
   md <- get_metadata("IN", system = "wida-access", year = 2025, registry = reg)

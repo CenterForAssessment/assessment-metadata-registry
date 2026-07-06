@@ -41,6 +41,10 @@
         },
         "entered_at": { "type": "string", "minLength": 1 },
         "last_verified_at": { "type": ["string", "null"] },
+        "verified_by": {
+          "type": ["string", "null"],
+          "description": "Who performed the last verification (reviewer identifier), or null if unverified. Pairs with last_verified_at (ADR-010, adopted from the colleague spec's provenance)."
+        },
         "changed_from_prior": {
           "type": ["string", "null"],
           "description": "What changed vs the prior year/commit and why (assessment-system change vs metadata correction vs modeling decision)."
@@ -176,9 +180,15 @@
             "minItems": 1,
             "items": { "type": "string", "minLength": 1 }
           },
+          "proficient_from": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Canonical proficiency benchmark (ADR-010): the label (one of labels[]) of the LOWEST level counted as proficient. A single value that is robust to label edits and cleanly separates the measurement fact (the levels exist) from the policy fact (where proficiency begins). Consumers derive the boolean mask from it. Preferred over the legacy proficient[] mask; the validator checks it names a real label.",
+            "$comment": "Membership in labels[] is enforced by the R validator, not the schema."
+          },
           "proficient": {
             "type": "array",
-            "description": "Boolean mask aligned to labels[]. A policy-benchmark label is DERIVED from this mask, never stored (ADR-008 SS5).",
+            "description": "DEPRECATED (ADR-010): legacy boolean mask aligned positionally to labels[]. Superseded by proficient_from (a single label), which avoids positional coupling and the non-monotonic masks the array form permits. Still accepted during migration; when both are present the validator checks they agree.",
             "items": { "type": ["string", "boolean"] }
           }
         },
@@ -187,7 +197,7 @@
     },
     "cutscores": {
       "type": "object",
-      "description": "content_area -> ENROLLED grade -> strictly increasing level lower bounds (count = n_levels - 1). Grade keys are enrolled grades, never instrument/form names (axis rule).",
+      "description": "content_area -> ENROLLED grade -> strictly increasing level lower bounds (count = n_levels - 1). Grade keys are enrolled grades, never instrument/form names (axis rule). EXCEPTION (ADR-010): an end-of-course assessment, whose standard is instrument-level rather than grade-specific, may use the single sentinel key \"eoc\" in place of enrolled grades — write the cut once instead of copying it across every enrolled grade. Permitted by the validator only when assessment_type = end-of-course.",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": {
@@ -206,7 +216,7 @@
     },
     "scale_bounds": {
       "type": "object",
-      "description": "content_area -> ENROLLED grade -> scale envelope {loss, hoss, source?}. Mirrors cutscores keying exactly (ADR-009 D2); per-grade because scales may differ by grade (ILEARN); uniform scales simply repeat values. Invariant (validator): loss <= min(cuts) <= max(cuts) <= hoss where both blocks are present.",
+      "description": "content_area -> ENROLLED grade -> scale envelope {loss, hoss, source?}. Mirrors cutscores keying exactly (ADR-009 D2), including the end-of-course \"eoc\" sentinel key (ADR-010); per-grade because scales may differ by grade (ILEARN); uniform scales simply repeat values. Invariant (validator): loss <= min(cuts) <= max(cuts) <= hoss where both blocks are present.",
       "additionalProperties": {
         "type": "object",
         "additionalProperties": {

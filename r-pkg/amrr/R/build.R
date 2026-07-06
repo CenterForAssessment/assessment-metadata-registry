@@ -223,12 +223,13 @@
       }
       for (ca in names(r$achievement_levels %||% list())) {
         block <- r$achievement_levels[[ca]]
-        labels <- block$labels %||% list(); prof <- block$proficient %||% vector("list", length(labels))
+        labels <- block$labels %||% list()
+        prof_mask <- .proficient_mask(block)  # derives from proficient_from or legacy mask
         for (i in seq_along(labels)) {
-          pf <- if (i <= length(prof)) prof[[i]] else NULL
+          pf <- if (i <= length(prof_mask)) prof_mask[[i]] else NA
           DBI::dbExecute(con, "INSERT OR REPLACE INTO achievement_level VALUES (?,?,?,?,?,?,?)",
                          params = list(jur$id, sys_$id, ca, as.character(adm$year), i - 1L, labels[[i]],
-                                       if (is.null(pf)) NA_integer_ else if (as_logical_flag(pf)) 1L else 0L))
+                                       if (is.na(pf)) NA_integer_ else if (isTRUE(pf)) 1L else 0L))
         }
       }
       for (ca in names(r$cutscores %||% list())) {
@@ -268,6 +269,28 @@
 }
 
 .br_clean <- function(rec) { rec[["_source_path"]] <- NULL; rec }
+
+# Compact "assessment config" projection (ADR-010): one file per (jurisdiction,
+# assessment system) in the amr.assessment_config.v1 shape (via as_config()) --
+# an ergonomic authoring/review lens on the normalized records. Emitted under
+# build/config/. Returns the vector of written relative filenames.
+.br_config <- function(records, stamp, out) {
+  by_sys <- list()
+  for (r in records) if (is_assessment_record(r)) {
+    sk <- paste(r$jurisdiction$id, record_system_id(r), sep = .amrr_sep)
+    by_sys[[sk]] <- c(by_sys[[sk]], list(r))
+  }
+  written <- character(0)
+  for (sk in names(by_sys)) {
+    parts <- strsplit(sk, .amrr_sep, fixed = TRUE)[[1]]
+    cfg <- tryCatch(as_config(by_sys[[sk]]), error = function(e) NULL)
+    if (is.null(cfg)) next
+    fname <- paste0(parts[1], "-", parts[2], ".json")
+    .br_write_json(file.path(out, "config", fname), c(list(`_registry` = stamp), cfg))
+    written <- c(written, fname)
+  }
+  written
+}
 
 .br_write_json <- function(path, payload) {
   dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
@@ -335,6 +358,8 @@ build_registry <- function(registry = NULL, out = "build", ddl = NULL, quiet = F
                    list(`_registry` = stamp, jurisdiction_id = parts[1],
                         system_id = parts[2], records = by_sys[[sk]]))
   }
+
+  .br_config(records, stamp, out)  # compact config projection (ADR-010)
 
   .br_sqlite(records, file.path(out, "registry.sqlite"), ddl, prov)
 

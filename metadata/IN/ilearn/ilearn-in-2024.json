@@ -82,12 +82,7 @@
         "At Proficiency",
         "Above Proficiency"
       ],
-      "proficient": [
-        false,
-        false,
-        true,
-        true
-      ]
+      "proficient_from": "At Proficiency"
     },
     "MATHEMATICS": {
       "labels": [
@@ -96,12 +91,7 @@
         "At Proficiency",
         "Above Proficiency"
       ],
-      "proficient": [
-        false,
-        false,
-        true,
-        true
-      ]
+      "proficient_from": "At Proficiency"
     }
   },
   "cutscores": {

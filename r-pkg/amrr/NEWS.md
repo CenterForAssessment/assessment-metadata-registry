@@ -1,3 +1,25 @@
+# amrr 0.3.0 (2026-07-06)
+
+v2 refinements reconciling the colleague's `amr.assessment_config.v1` feedback
+(ADR-010) -- additive, no canonical re-modeling.
+
+* `achievement_levels[ca]` gains `proficient_from` (the lowest proficient
+  label), the canonical proficiency benchmark. It replaces the fragile
+  positional `proficient[]` boolean mask (still accepted, now deprecated;
+  the validator checks the two agree). `.proficient_mask()` derives the mask
+  for consumers; `proficiency_boundary` target resolution and the
+  `achievement_level` projection route through it. The corpus was folded to
+  `proficient_from`; `migrate_registry()` now emits it directly.
+* `provenance.verified_by` (string|null): who performed the last verification.
+* End-of-course assessments may key `cutscores` / `scale_bounds` once under the
+  instrument-level `"eoc"` sentinel instead of copying across enrolled grades;
+  the validator permits it only when `assessment_type = "end-of-course"`.
+* New `as_config()` / `read_config()`: project registry records into the compact
+  "assessment config" authoring/export view (reusable `level_schemes`, `tests`,
+  a `content_area x grade` `map`, unified `cuts`) and back. A lens on canonical
+  v2, not a second source of truth (ADR-008 tier-3); a round-trip preserves the
+  core facts (extension/provenance blocks are dropped).
+
 # amrr 0.2.0 (2026-07-06)
 
 v2 schema surface (ADR-008 / ADR-009).

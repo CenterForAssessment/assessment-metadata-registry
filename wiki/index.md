@@ -10,11 +10,13 @@ updated: 2026-07-03
 Master catalog of the registry's knowledge layer. Read `../AGENTS.md` and `../purpose.md`
 first. This wiki follows the **SGPc house style** (the same page-type taxonomy as SGPc's wiki).
 
-**Status:** v2 implemented (ADR-009 accepted; Phases B–F landed in `amrr` 0.2.0: v2
-schemas + invariants, `migrate_registry()`, v2 accessors, `amrr_materialize()`,
-build/site v2-aware). ADRs 000/004/007/008/009 accepted 2026-07-06. Pending: local
-`make all` + corpus migration commit (needs R toolchain), then SGPc resolver wiring
-(Phase G). WIDA_IN is the v2 dogfood corpus.
+**Status:** v2 implemented and migrated (`amrr` 0.2.0), then refined per ADR-010
+(`amrr` 0.3.0): `proficient_from` (replacing the legacy `proficient[]` mask, corpus
+folded), `verified_by`, the EOC `"eoc"` cut key, and the compact config view
+(`as_config`/`read_config`, `build/config/`, site **Config view** page). ADRs
+000/004/007/008/009/010 accepted 2026-07-06. Pending: SGPc resolver wiring (Phase G);
+a `read_config()` sidecar writer; real WIDA_IN / EOC authoring. WIDA_IN is the v2
+dogfood corpus.
 
 ---
 
@@ -43,6 +45,7 @@ build/site v2-aware). ADRs 000/004/007/008/009 accepted 2026-07-06. Pending: loc
 | [[007-pages-catalog]] | **accepted** | Human-readable Pages catalog: a Quarto site (`site/`) renders the derived JSON — `reactable` browse, per-record Display/Explore/Raw, spec + changelog viewers; additive to the published JSON |
 | [[008-unified-metadata-taxonomy]] | **accepted** | Greenfield five-domain taxonomy; naming alignment first; registry API via `amrr` as primary consumption (SGPc function-argument pattern); optional `.rda` materialization secondary; colleague spec as SGPstateData analog |
 | [[009-v2-implementation]] | **accepted** | v2 implementation: enrollment-grade model (`fixed`/`variable` + `enrolled_grades_tested`), enrolled-grade-keyed `scale_bounds`, type-discriminated extensions, dual-version migration, WIDA_IN dogfood-first delivery |
+| [[010-config-view-reconciliation]] | **accepted** | Reconcile the colleague's `amr.assessment_config.v1`: additive v2 refinements (`proficient_from`, `verified_by`, EOC `"eoc"` cut key) + the compact config shape as an `amrr` projection (`as_config`/`read_config`, `build/config/`, site Config view) — not a canonical re-model |
 
 ---
 

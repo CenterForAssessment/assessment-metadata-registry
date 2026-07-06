@@ -1,0 +1,52 @@
+{
+  "_comment": "DESIGN EXEMPLAR (ADR-010) -- not a live record; lives outside metadata/ and is not validated. Illustrates the v2 shape for an end-of-course (EOC) assessment: variable enrollment across grades 7-12, a single instrument-level 'eoc' cut key (the axis-rule exception adopted from the colleague's amr.assessment_config.v1), and the canonical proficient_from benchmark. Scale-score values are illustrative placeholders.",
+  "schema_version": "amr.assessment.v2",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "design:adr-010-exemplar",
+    "entered_at": "2026-07-06",
+    "last_verified_at": null,
+    "verified_by": null,
+    "changed_from_prior": "ADR-010 EOC exemplar (new)"
+  },
+  "source_documents": [
+    { "title": "State Algebra I EOC cut scores + obtainable score range -- REPLACE placeholder values", "url": null }
+  ],
+  "jurisdiction": { "id": "XX", "name": "Example State", "type": "state" },
+  "assessment_system": {
+    "id": "example-algebra-i-eoc",
+    "name": "Example State Algebra I End-of-Course Assessment",
+    "family": "EXAMPLE-EOC",
+    "assessment_type": "end-of-course"
+  },
+  "administration": { "id": "example-algebra-i-eoc-2025", "year": "2025", "vendor": "State DOE" },
+  "content_areas": [
+    {
+      "id": "ALGEBRA_I",
+      "label": "Algebra I",
+      "vertical_scale": false,
+      "scale_name": "Algebra I EOC scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": ["7", "8", "9", "10", "11", "12"],
+        "note": "EOC: one Algebra I standard, taken by students across enrolled grades 7-12. The cut is instrument-level, not grade-specific, so cutscores/scale_bounds are keyed once under 'eoc' (ADR-010) rather than copied across every enrolled grade."
+      }
+    }
+  ],
+  "achievement_levels": {
+    "ALGEBRA_I": {
+      "labels": ["Below Basic", "Basic", "Proficient", "Advanced"],
+      "proficient_from": "Proficient"
+    }
+  },
+  "cutscores": {
+    "ALGEBRA_I": { "eoc": [480, 520, 560] }
+  },
+  "cutscores_source": {
+    "ALGEBRA_I": { "eoc": "provisional" }
+  },
+  "scale_bounds": {
+    "ALGEBRA_I": { "eoc": { "loss": 400, "hoss": 640, "source": "provisional" } }
+  }
+}

@@ -82,6 +82,26 @@
       }
     }
   }
+  # proficient_from (ADR-010) must name a real label; if the legacy proficient[]
+  # mask is also present the two must agree (so a fold to proficient_from is safe).
+  for (ca in names(levels)) {
+    block <- levels[[ca]]
+    pf <- block[["proficient_from"]]  # exact match: $ would catch "proficient_from" via "proficient"
+    if (is.null(pf)) next
+    labs <- unlist(block[["labels"]] %||% list())
+    if (!(pf %in% labs)) {
+      errs <- c(errs, sprintf("achievement_levels[%s].proficient_from '%s' is not one of labels[]", ca, pf))
+      next
+    }
+    if (!is.null(block[["proficient"]])) {
+      from_label <- .proficient_mask(list(labels = block[["labels"]], proficient_from = pf))
+      from_mask <- .proficient_mask(list(labels = block[["labels"]], proficient = block[["proficient"]]))
+      if (!isTRUE(all.equal(from_label, from_mask))) {
+        errs <- c(errs, sprintf(
+          "achievement_levels[%s]: proficient_from '%s' disagrees with the legacy proficient[] mask", ca, pf))
+      }
+    }
+  }
   if (is_v2_record(rec)) errs <- c(errs, .v2_assessment_invariants(rec))
   errs
 }
@@ -96,9 +116,16 @@
   bounds <- rec$scale_bounds %||% list()
   cut_src <- rec$cutscores_source %||% list()
 
+  # End-of-course standards are instrument-level: the sentinel "eoc" key is a
+  # permitted cut key alongside enrolled grades (ADR-010). Any other assessment
+  # type keying by "eoc" (or any non-enrolled grade) still fails the axis rule.
+  is_eoc <- identical(rec$assessment_system$assessment_type, "end-of-course")
+
   enrolled <- list()
   for (ca in rec$content_areas %||% list()) {
-    enrolled[[ca$id]] <- as.character(unlist((ca$enrollment %||% list())$enrolled_grades_tested))
+    grades <- as.character(unlist((ca$enrollment %||% list())$enrolled_grades_tested))
+    if (is_eoc) grades <- c(grades, INSTRUMENT_LEVEL_KEY)
+    enrolled[[ca$id]] <- grades
   }
 
   check_keys <- function(block, block_name) {

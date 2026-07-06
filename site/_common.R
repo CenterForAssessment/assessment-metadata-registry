@@ -24,6 +24,17 @@ amr_manifest <- function() {
 
 amr_registry_stamp <- function() (amr_manifest()[["_registry"]]) %||% list()
 
+# Load the compact assessment-config projections (build/config/*.json), keyed by
+# "<JUR>-<system>" (ADR-010).
+amr_configs <- function() {
+  dir <- file.path(BUILD_DIR, "config")
+  if (!dir.exists(dir)) return(list())
+  files <- sort(list.files(dir, pattern = "\\.json$", full.names = TRUE))
+  cfgs <- lapply(files, function(f) fromJSON(f, simplifyVector = FALSE))
+  names(cfgs) <- sub("\\.json$", "", basename(files))
+  cfgs
+}
+
 # ---- record model ----------------------------------------------------------
 amr_is_accountability <- function(rec) {
   (rec$schema_version %||% "") %in% c("amr.accountability_system.v1", "amr.accountability.v2")
@@ -147,6 +158,22 @@ amr_display_html <- function(rec) {
   as.character(tagList(parts))
 }
 
+# Derive the boolean proficiency mask for an achievement-levels block, preferring
+# the canonical proficient_from label (ADR-010) over the legacy proficient[] mask.
+# Exact [[ ]] — $ would partial-match "proficient" to "proficient_from".
+amr_proficient_mask <- function(block) {
+  labels <- unlist(block[["labels"]] %||% list())
+  n <- length(labels)
+  if (!n) return(logical(0))
+  pf <- block[["proficient_from"]]
+  if (!is.null(pf)) return(seq_len(n) >= match(pf, labels))
+  mask <- block[["proficient"]]
+  if (is.null(mask)) return(rep(NA, n))
+  vals <- vapply(mask, function(x) isTRUE(x) || identical(tolower(as.character(x)), "true"), logical(1))
+  length(vals) <- n
+  vals
+}
+
 amr_display_assessment <- function(rec) {
   out <- list()
   # Program
@@ -234,11 +261,11 @@ amr_display_assessment <- function(rec) {
   # Achievement levels
   lv <- rec$achievement_levels %||% list()
   for (ca in names(lv)) {
-    labels <- lv[[ca]]$labels %||% list()
-    prof <- lv[[ca]]$proficient %||% vector("list", length(labels))
+    labels <- lv[[ca]][["labels"]] %||% list()
+    mask <- amr_proficient_mask(lv[[ca]])   # derives from proficient_from (ADR-010)
     rows <- lapply(seq_along(labels), function(i) {
-      p <- if (i <= length(prof)) prof[[i]] else NULL
-      pf <- if (isTRUE(p) || identical(p, "true")) "<span class='amr-proficient'>proficient</span>" else "—"
+      p <- if (i <= length(mask)) mask[[i]] else NA
+      pf <- if (isTRUE(p)) "<span class='amr-proficient'>proficient</span>" else "—"
       c(as.character(i - 1L), esc(labels[[i]]), pf)
     })
     out[[length(out) + 1L]] <- amr_section(sprintf("Achievement levels · %s", ca),
@@ -273,6 +300,74 @@ amr_display_assessment <- function(rec) {
       amr_dl(list("Administered" = yn(comp$administered), "Scale transition" = yn(comp$scale_transition),
                   "Comparable to prior year" = yn(comp$comparable_to_prior_year),
                   "Prior scale name" = esc(comp$prior_scale_name), "Notes" = esc(comp$notes))))
+  }
+  out
+}
+
+# Render a compact assessment-config projection (ADR-010; build/config/*.json).
+amr_display_config <- function(cfg) {
+  out <- list()
+  prog <- cfg$program %||% list()
+  out[[length(out) + 1L]] <- amr_section("Program (= one assessment system)",
+    amr_dl(list("System" = sprintf("<code>%s</code>", esc(prog$id)),
+                "Name" = esc(prog$name),
+                "Type" = sprintf("<code>%s</code>", esc(prog$type)),
+                "Umbrella" = esc(prog$umbrella_name),
+                "Snapshot year" = esc(prog$year),
+                "Vendor" = esc(prog$vendor))))
+
+  schemes <- cfg$level_schemes %||% list()
+  if (length(schemes)) {
+    rows <- lapply(names(schemes), function(nm) {
+      s <- schemes[[nm]]
+      pf <- if (!is.null(s$proficient_from))
+        sprintf("<span class='amr-proficient'>%s</span>", esc(s$proficient_from)) else "—"
+      c(sprintf("<code>%s</code>", esc(nm)), esc(paste(unlist(s$labels), collapse = " · ")), pf)
+    })
+    out[[length(out) + 1L]] <- amr_section("Level schemes · reusable, referenced by tests",
+      amr_html_table(c("Name", "Labels", "Proficient from"), rows))
+  }
+
+  tests <- cfg$tests %||% list()
+  if (length(tests)) {
+    rows <- lapply(names(tests), function(tid) {
+      t <- tests[[tid]]
+      ig <- if (identical(t$intended_grades, "not_grade_bound")) "not_grade_bound"
+            else paste(unlist(t$intended_grades), collapse = ", ")
+      sc <- t$scale %||% list()
+      c(sprintf("<code>%s</code>", esc(tid)), sprintf("<code>%s</code>", esc(t$content_area)),
+        esc(t$intended_enrollment_grade), esc(ig),
+        sprintf("<code>%s</code>", esc(t$level_scheme)),
+        sprintf("%s%s", esc(sc$name), if (isTRUE(sc$vertical)) " · vertical" else ""))
+    })
+    out[[length(out) + 1L]] <- amr_section("Tests",
+      amr_html_table(c("Test", "Content area", "Enrollment", "Intended grades", "Level scheme", "Scale"), rows))
+  }
+
+  map <- cfg$map %||% list()
+  if (length(map)) {
+    rows <- lapply(names(map), function(ca) {
+      gm <- map[[ca]]
+      cells <- paste(vapply(names(gm), function(g)
+        sprintf("%s&rarr;<code>%s</code>", esc(g), esc(gm[[g]])), character(1)), collapse = "&ensp;")
+      c(sprintf("<code>%s</code>", esc(ca)), cells)
+    })
+    out[[length(out) + 1L]] <- amr_section("Map · enrolled grade &rarr; test",
+      amr_html_table(c("Content area", "grade &rarr; test"), rows))
+  }
+
+  for (tid in names(tests)) {
+    cuts <- tests[[tid]]$cuts %||% list()
+    if (!length(cuts)) next
+    gk <- names(cuts); gk <- gk[order(suppressWarnings(as.numeric(gk)), na.last = TRUE)]
+    rows <- lapply(gk, function(g) {
+      e <- cuts[[g]]
+      c(esc(g), if (!is.null(e$loss)) format(e$loss) else "—",
+        if (!is.null(e$hoss)) format(e$hoss) else "—",
+        esc(paste(unlist(e$values), collapse = ", ")))
+    })
+    out[[length(out) + 1L]] <- amr_section(sprintf("Cuts · %s · {loss, hoss, values}", tid),
+      amr_html_table(c("Grade", "LOSS", "HOSS", "Values"), rows, num = c(2, 3)))
   }
   out
 }
@@ -348,4 +443,15 @@ amr_render_record <- function(rec) {
   cat("## Explore\n", amr_raw_html(amr_explore_html(rec)))
   cat("## Raw JSON\n\n```json\n", amr_json(rec, pretty = TRUE), "\n```\n\n", sep = "")
   cat(":::\n")
+}
+
+# Render one compact config projection as a section: rendered Display + a
+# collapsible raw `amr.assessment_config.v1` block (call from `#| output: asis`).
+amr_render_config <- function(cfg) {
+  prog <- cfg$program %||% list()
+  cat(sprintf("\n\n## %s — %s\n\n", esc(prog$id), esc(prog$name)))
+  cat(amr_raw_html(as.character(tagList(amr_display_config(cfg)))))
+  cat("\n::: {.callout-note collapse=\"true\"}\n",
+      "## Raw `amr.assessment_config.v1` (the compact authoring shape)\n\n```json\n",
+      amr_json(cfg, pretty = TRUE), "\n```\n:::\n\n", sep = "")
 }

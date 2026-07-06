@@ -27,11 +27,22 @@ amrr_cutscores <- function(x, content_area = NULL) {
 #' Achievement levels for a record
 #'
 #' @inheritParams amrr_cutscores
-#' @return A named list of achievement-level blocks (labels + proficient mask), or
-#'   just the requested content area's block, or `NULL` if absent.
+#' @return A named list of achievement-level blocks (`labels`, the canonical
+#'   `proficient_from` label, and a derived boolean `proficient` mask), just the
+#'   requested content area's block, or `NULL` if absent.
+#' @details Canonical records carry `proficient_from` (ADR-010); for consumer
+#'   backward compatibility this accessor also attaches the derived boolean
+#'   `proficient` mask when only `proficient_from` is present.
 #' @export
 amrr_achievement_levels <- function(x, content_area = NULL) {
   levels <- as_record(x)$achievement_levels
+  if (is.null(levels)) return(NULL)
+  levels <- lapply(levels, function(block) {
+    if (is.null(block[["proficient"]]) && !is.null(block[["proficient_from"]])) {
+      block[["proficient"]] <- as.list(.proficient_mask(block))
+    }
+    block
+  })
   if (is.null(content_area)) levels else levels[[content_area]]
 }
 

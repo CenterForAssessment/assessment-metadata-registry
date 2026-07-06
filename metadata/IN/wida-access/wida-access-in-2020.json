@@ -58,14 +58,7 @@
         "WIDA Level 5",
         "WIDA Level 6"
       ],
-      "proficient": [
-        false,
-        false,
-        false,
-        true,
-        true,
-        true
-      ]
+      "proficient_from": "WIDA Level 4"
     }
   }
 }

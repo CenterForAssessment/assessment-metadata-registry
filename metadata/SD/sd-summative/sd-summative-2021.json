@@ -81,12 +81,7 @@
         "Level 3",
         "Level 4"
       ],
-      "proficient": [
-        false,
-        false,
-        true,
-        true
-      ]
+      "proficient_from": "Level 3"
     },
     "READING": {
       "labels": [
@@ -95,12 +90,7 @@
         "Level 3",
         "Level 4"
       ],
-      "proficient": [
-        false,
-        false,
-        true,
-        true
-      ]
+      "proficient_from": "Level 3"
     }
   },
   "cutscores": {
