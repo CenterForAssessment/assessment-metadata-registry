@@ -4,6 +4,41 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-06] decision + build | ADR-011: reproducible remote consumption (amrr 0.5.0)
+
+**Action:** decision + build
+
+- **ADR-011 accepted** ([[011-remote-sha-pinning]]). Resolves the deferred remote-pinning
+  **Open item** in the [[sgpc-registry-consumption-contract]]. `get_metadata()` gains a
+  third `registry` kind: `registry = "github://owner/repo"` (also `https://github.com/...`)
+  + the existing `ref` (SHA | branch | tag | `NULL`→HEAD). It reads the **canonical Tier A
+  sidecars** straight from GitHub **pinned to an exact commit SHA** — no checkout,
+  byte-for-byte reconstructable. Because only `metadata/`/`schemas/` are committed per SHA
+  (the derived `dist/` is git-ignored), reproducibility must come from the sidecars, not the
+  bundle: enumerate `metadata/<jur>/*.json` via the git-trees API, fetch each blob's raw
+  content at the SHA (both immutable), parse identically to a local read, then run the
+  unchanged filter/attach pipeline.
+- **Resolve-then-pin:** `ref` resolves to a concrete 40-hex SHA (full SHA short-circuits;
+  branch/tag/HEAD via the commits API) that is fetched and recorded as `amrr_registry_ref()`
+  — even "latest" is pinned. **Fail-closed:** a missing jurisdiction or any failed
+  fetch/parse aborts (never a partial jurisdiction). Read-only, no microdata, federation
+  preserved. Optional token (`AMRR_GITHUB_TOKEN`/`GITHUB_PAT`/`GITHUB_TOKEN`) raises the API
+  rate limit; `curl` is a soft dep (Suggests) with a base-R unauthenticated fallback.
+- **Build:** new `r-pkg/amrr/R/remote.R` (classifier `.registry_kind`, `.parse_github_registry`,
+  HTTP primitives = cache seam, `.gh_resolve_sha`, git-trees enumeration w/ truncation
+  subtree-walk, `.fetch_github_records`); 3-way dispatch in `R/get_metadata.R`; DESCRIPTION
+  0.4.0→0.5.0 (+`curl`), NEWS. Tests: mocked assemble-equals-local + classifier/parse/
+  short-circuit/rate-limit/fail-closed, plus a guarded **live** read at `b824b20` (ELA g3
+  target 497). `make test` 182 pass; `make check` OK. Cache *store* and blob-SHA
+  verification deferred (seam shipped).
+- Positions the two remotes clearly: `github://`+SHA = **reproducible**; derived-URL
+  (0.4.0) = **convenience/latest** only.
+
+**Next:** SGPc resolver may adopt the `github://` source (Phase G); optional on-disk cache
+store; real WIDA_IN / EOC authoring.
+
+---
+
 ## [2026-07-06] decision + build | ADR-010: reconcile colleague config spec (amrr 0.3.0)
 
 **Action:** decision + build

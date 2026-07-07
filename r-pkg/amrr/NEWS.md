@@ -1,3 +1,30 @@
+# amrr 0.5.0 (2026-07-06)
+
+* **Reproducible remote mode.** `get_metadata()` now accepts a GitHub repo as the
+  `registry` -- `"github://owner/repo"` (or `"https://github.com/owner/repo"`) --
+  and reads the canonical Tier A sidecars straight from GitHub **pinned to an exact
+  commit SHA**, no checkout required (ADR-011). `ref` (SHA | branch | tag | default
+  `HEAD`) is resolved to a concrete 40-hex commit SHA, which is fetched and recorded
+  as `amrr_registry_ref()` -- so a remote read is byte-for-byte reconstructable,
+  unlike the (latest-only) derived-URL mode added in 0.4.0. Enumerates via the
+  git-trees API and fetches raw content at the SHA (both immutable); fails closed on
+  a partial jurisdiction. Optional auth via `AMRR_GITHUB_TOKEN` / `GITHUB_PAT` /
+  `GITHUB_TOKEN` raises the API rate limit. \pkg{curl} (new soft dependency,
+  Suggests) is the preferred HTTP engine, with a base-R unauthenticated fallback so
+  a public read needs no new hard dependency. This resolves the previously deferred
+  remote-SHA-pinning open item in the SGPc consumption contract.
+
+# amrr 0.4.0 (2026-07-06)
+
+* `get_metadata()` now accepts a **URL registry** as well as a local checkout:
+  when `registry` is an `http(s)://` or `file://` base (e.g. the published GitHub
+  Pages root), it fetches the jurisdiction bundle `<registry>/dist/<jur>.json` over
+  HTTP (via jsonlite) and reads the metadata from there — no checkout required. The
+  bundle's `_registry.git_sha` becomes the pin; filtering and the accountability
+  target re-merge are identical to the local path. A URL registry serves the
+  *latest* published build, so for byte-reproducible pinning read the canonical
+  sidecars from a checkout at a commit SHA.
+
 # amrr 0.3.0 (2026-07-06)
 
 v2 refinements reconciling the colleague's `amr.assessment_config.v1` feedback
