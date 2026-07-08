@@ -20,6 +20,8 @@ test_that("unknown jurisdiction errors", {
 })
 
 test_that("missing registry root errors clearly", {
+  # Run from outside any checkout so working-directory auto-discovery finds nothing.
+  withr::local_dir(withr::local_tempdir())
   withr::local_options(amrr.registry = NULL)
   withr::local_envvar(AMRR_REGISTRY = "")
   expect_error(get_metadata("IN"), "No registry root")
