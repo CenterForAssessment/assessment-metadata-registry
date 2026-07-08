@@ -1,127 +1,158 @@
-# HANDOFF — assessment-metadata-registry → CLI (v2 implementation: verify, migrate, ship)
+# HANDOFF — assessment-metadata-registry
 
-**Date:** 2026-07-06
-**From:** Cowork session (no R toolchain; all R code written but **not executed**)
-**To:** Claude Code CLI (R available, GitHub authorized, native filesystem)
-**Repo:** `/Users/conet/GitHub/CenterForAssessment/assessment-metadata-registry` (branch `main`;
-everything below is **uncommitted** — a mix of untracked files and modifications)
+**Date:** 2026-07-08
+**Repo:** `CenterForAssessment/assessment-metadata-registry` (branch `main`, clean; this is
+the canonical remote)
+**State:** All remote-consumption + local-ergonomics work is **shipped and merged**
+(`amrr` 0.5.0). `main` is the only branch. No open PRs. Nothing in flight.
 
-Read `AGENTS.md` first (session-start protocol), then this file. The wiki is current:
-`wiki/log.md` top two entries describe exactly what landed today.
+This file hands the project to the next AI agent. Read `AGENTS.md` first (session-start
+protocol), then `purpose.md`, then `wiki/index.md`, then the top few entries of
+`wiki/log.md` — those are always the freshest truth. This file is the orientation layer.
 
 ---
 
-## 1. What happened today (context)
+## 1. What this repo is (30-second version)
 
-All open ADRs were signed off by Damian (2026-07-06) and the **v2 schema implementation
-(ADR-009)** was built end-to-end — `amrr` 0.2.0:
+A **general U.S. state assessment-metadata registry**. Version-controlled annual JSON
+sidecars are the canonical source of truth; everything else is derived. Three tiers:
 
-- **ADRs 000, 004, 007, 008, 009 → accepted.** ADR-009 (`wiki/decisions/009-v2-implementation.md`)
-  is the spec for everything below. Key design: the **enrollment-grade model** — every v2
-  content area carries `enrollment` (`intended_enrollment_grade: fixed|variable` +
-  `enrolled_grades_tested[]` + `note`), and the **axis rule**: `cutscores`, `scale_bounds`,
-  `cutscores_source` are always keyed by *enrolled grade*, never instrument/form names.
-- **Phase B** — `schemas/amr.assessment.v2.schema.json` + `schemas/amr.accountability.v2.schema.json`;
-  `validate_registry()` routes v1/v2 (dual-version window), adds v2 invariants (axis rule;
-  `loss <= min(cuts) <= max(cuts) <= hoss`), warns on v1 stragglers once any v2 record exists.
-- **Phase C** — `amrr::migrate_registry()` (`r-pkg/amrr/R/migrate.R`): mechanical v1→v2
-  restamp; `assessment_type` normalization (`state-summative→summative`,
-  `english-language-proficiency→elp`); enrollment seeded from cutscore grade keys
-  (`elp→variable`, else `fixed`). Never invents facts. **The corpus (48 records under
-  `metadata/`) has NOT been migrated — that is your job (Task 3).**
-- **Phase D** — v2 accessors: `amrr_enrollment()`, `amrr_scale_bounds()`, `amrr_elp()`,
-  `amrr_alternate()`, `amrr_source_documents()`, `amrr_growth_targets()`, `amrr_timelines()`,
-  `amrr_participation()`.
-- **Phase E** — `build_registry()` index rows carry the enrollment fields + `has_scale_bounds`;
-  `site/spec.qmd` renders all four schemas; `site/_common.R` renders v2 blocks (and fixes a
-  latent bug: `amr_is_accountability` matched only the v1 string).
-- **Phase F** — `amrr_materialize()` → SHA-stamped `.rds`/`.rda` (the colleague-bridge).
-- **Tests** — fixture registry gained the v2 schemas + a v2 record
-  (`inst/extdata/registry/metadata/IN/wida-access/wida-access-in-2025.json`); new
-  `tests/testthat/test-v2.R`; `test-tooling.R` updated (fixture is now **6** records and its
-  v1/v2 mix intentionally raises the dual-window warning); shared `helper-registry.R`.
-- **Sandbox verification already done** (Python jsonschema, throwaway — not in repo): all 54
-  corpus+fixture records validate under routing; 7 negative cases reject; a shadow of the
-  migration transform over all 48 corpus records validates as v2. **The R test suite is the
-  real gate and has not run.**
-
-## 2. Ground rules (from AGENTS.md — non-negotiable)
-
-- Tier A (`metadata/`, `schemas/`) is canonical; never hand-edit `build/`.
-- Migration must never invent facts; new v2 fields stay absent until authored.
-- Never promote a record's `status` toward `verified` — human-reviewed commits only.
-- Update `wiki/log.md` (and `wiki/index.md` if pages change) after substantive steps.
-- Small commits, each gated on a green loop (`make validate` / `make all`).
-
-## 3. Task list (in order; stop and report if any gate fails)
-
-**Task 0 — Baseline.** `make validate` must pass on the still-v1 corpus with **no**
-dual-window warning. If R packages are missing: `make setup`.
-
-**Task 1 — Commit the 2026-07-03 taxonomy work** (predates today; untracked):
-`wiki/decisions/008-unified-metadata-taxonomy.md`, `wiki/patterns/metadata-taxonomy.md`,
-`wiki/analyses/schema-crosswalk.md`, `wiki/sources/colleague-assessment-spec-r.md`.
-Suggested: `docs(wiki): ADR-008 unified metadata taxonomy + crosswalk + colleague-spec source`.
-(The status flips inside ADR files are part of today's work — fine if they ride along here
-or in Task 2; keep the split sensible, not fussy.)
-
-**Task 2 — Commit the v2 implementation** (everything except the not-yet-run corpus
-migration): schemas (+ `schemas/examples/`), all `r-pkg/amrr` changes, `site/` changes,
-ADR-009 + wiki updates, remaining ADR status flips. Before committing:
-1. `make validate` (still green, still no warning — corpus untouched).
-2. `make test` — the full testthat suite including `test-v2.R`. **This is the first
-   execution of today's R code.** Fix surgically if anything fails; the tests encode the
-   intended behavior, so prefer fixing code to weakening tests.
-3. `make check` — roxygenise regenerates `NAMESPACE` (should match the hand-written one)
-   and generates `man/*.Rd` for the ~10 new exports; **commit the generated man pages**.
-   R CMD check must be clean (NOTEs acceptable if pre-existing).
-Suggested: `feat(v2): ADR-009 schemas, validator invariants, migrate_registry, accessors, materialize (amrr 0.2.0)`.
-
-**Task 3 — Migrate the corpus (one reviewed commit, ADR-009 D6).**
-```r
-pkgload::load_all("r-pkg/amrr")
-amrr::migrate_registry(".", write = FALSE)  # dry run: expect 48 would-migrate, 0 skipped
-amrr::migrate_registry(".")                 # write
 ```
-Review the diff before committing — expect per-file: `schema_version` restamp,
-`assessment_type` normalized, `enrollment` block added per content area. jsonlite's
-2-space serialization may reformat lines beyond the semantic change; use
-`git diff --word-diff` (or `jq -S` on before/after) to confirm nothing semantic drifted.
-Spot-check: `metadata/IN/ilearn/ilearn-in-2024.json` (fixed, grades 3–8, `summative`) and
-`metadata/IN/wida-access/wida-access-in-2024.json` (variable, **empty**
-`enrolled_grades_tested` — correct: the v1 record has no per-grade facts; authoring fills it).
-Then `make all` — validation must be green with **no** dual-window warning (all-v2 corpus),
-and build parity must hold: **21 targets, 117 per-grade exit thresholds, WIDA grade-5 2024
-exit = 364.4** (check `build/targets.json` / the SQLite projection).
-Suggested: `feat(metadata): migrate corpus v1 -> v2 (mechanical, ADR-009 D6)`.
+Tier A  Authored JSON sidecars   metadata/<jur>/<system>/*.json   (CANONICAL, gated by schemas/)
+Tier B  Derived layer            amrr::build_registry() -> build/  (index, changelog, dist/ bundles, SQLite, manifest) — GIT-IGNORED, rebuilt by CI
+Tier C  Consumed                 r-pkg/amrr (get_metadata + accessors) + site/ Quarto catalog
+```
 
-**Task 4 — Site.** `make site`; open `site/_site/index.html`. Check: the spec page shows
-four tabs (v2 primary, v1 marked "migration window"); a migrated assessment record page
-shows the enrollment columns; the v1 JSON fetch URLs still exist under `_site/` (additive
-deploy, ADR-007). Headless screenshots are the house pattern if available.
+Founding architecture: `wiki/decisions/000-registry-architecture.md` (read it). The pin for
+reproducibility is a **Git commit SHA** — consumers record it, and any past state is
+reconstructable from it.
 
-**Task 5 — PR + CI.** Push a feature branch (e.g. `v2-implementation`), open a PR to
-`main`, watch `validate`, `R-CMD-check`, and `build-publish` (on merge) go green. Do not
-merge without green CI. Wiki: append a short `wiki/log.md` entry recording the local
-verification results + PR link.
+## 2. Where things stand
 
-## 4. Follow-ups (after this handoff ships — do not start unbidden)
+- **Corpus:** 48 sidecars, all **v2** (`amr.assessment.v2` / `amr.accountability.v2`), 3
+  jurisdictions — **IN** (Indiana: ILEARN, WIDA-ACCESS, accountability) is the real one; **SC**
+  and **SD** are demonstration jurisdictions. All records are `status: draft` (scaffold
+  values) pending human review — **never self-promote toward `verified`.**
+- **Schemas:** v2 is primary; the v1 schemas remain accepted during the migration window.
+  Key v2 ideas: the **enrollment-grade model** (`intended_enrollment_grade: fixed|variable`
+  + `enrolled_grades_tested[]`) and the **axis rule** (cutscores / scale_bounds keyed by
+  *enrolled grade*, never instrument/form name). `proficient_from` (a single label) is the
+  canonical proficiency benchmark, replacing the legacy positional `proficient[]` mask; EOC
+  assessments may use the instrument-level `"eoc"` cut key. Design exemplars live in
+  `schemas/examples/` (not Tier A — the validator ignores them).
+- **`amrr` R package (0.5.0)** — `r-pkg/amrr/R/`: `get_metadata.R` + `accessors.R` +
+  `targets.R` (consume), `remote.R` (remote registries), `config.R` (`as_config`/`read_config`
+  view), `validate.R` + `build.R` + `migrate.R` + `materialize.R` (tooling),
+  `registry.R` + `tooling-internal.R` (internals).
+- **ADRs accepted (000-011):** all accepted except **005** (AI authoring pipeline) and **006**
+  (governance / promotion policy), which are `planned`. `wiki/index.md` has the full table.
 
-1. **WIDA_IN real authoring**: fill enrolled grades, official proficiency-level lookups,
-   scale bounds, `measurement.elp` for the nine WIDA records (exemplar to riff on:
-   `schemas/examples/wida-access-in-2024.v2.example.json`).
-2. **Phase G**: SGPc-side `registry` resolver source (SGPc repo; see
-   `wiki/connections/sgpc-registry-consumption-contract.md`).
-3. **ADR-006** (governance / promotion policy) — draftable in parallel.
-4. **ADR-005** (AI authoring pipeline) — deferred until after v2 corpus is stable.
+### The one thing most likely to be new to you: how consumers reach the registry
 
-## 5. Known sharp edges
+`get_metadata(jurisdiction, system, year, registry, ref, attach_targets)` resolves the
+`registry` argument three ways (`.registry_kind()` in `R/remote.R` dispatches):
 
-- `test-v2.R` uses `expect_no_warning` (needs testthat >= 3.1.5) and `withr`.
-- The dual-window warning is a `warning()`, not an error, and fires whenever v1 and v2
-  records coexist — the fixture triggers it by design; the live corpus should only
-  trigger it between Task 2 and Task 3 (never in a committed state).
-- `jsonvalidate` needs `V8`; CI installs it, local `make setup` covers it.
-- The PostToolUse hook (`.claude/hooks/validate-metadata.sh`) auto-validates on edits to
-  `metadata/`/`schemas/` — silence is success; exit 2 shows validator errors to fix.
-- `schemas/examples/` is design documentation, not Tier A — the validator ignores it.
+1. **Local checkout** — a directory with `metadata/`. If `registry` is omitted, resolution is
+   `option("amrr.registry")` → `AMRR_REGISTRY` env → **auto-discovery** (walk up from the
+   working directory to the nearest checkout: a dir with both `metadata/` and `schemas/`).
+   So running R anywhere inside a clone just works with no argument. Pin = git `HEAD`.
+2. **Reproducible remote** — `registry = "github://owner/repo"` (or `https://github.com/...`)
+   + `ref` (SHA | branch | tag | default HEAD). Reads the **canonical sidecars** straight
+   from GitHub, pinned to an exact commit SHA (git-trees enumeration + raw content, both
+   immutable) — no checkout, byte-for-byte reproducible (ADR-011).
+3. **Derived-URL** — a base URL (e.g. GitHub Pages root) serving `dist/<jur>.json`.
+   **Convenience only — serves the latest build, not reproducible.**
+
+The github classifier must intercept before the generic URL matcher (a `https://github.com/`
+URL also matches `.is_url_registry()`). `ref` resolves-and-fetches for `github://` (no
+mismatch warning) and asserts-and-warns for local/derived.
+
+## 3. Ground rules (from AGENTS.md — non-negotiable)
+
+- **Tier A is the only place edits happen.** `metadata/`, `schemas/` are authored. The
+  `build/` layer is derived, disposable, git-ignored — never hand-edit it; regenerate it.
+- **No microdata, ever.** System-level metadata only. Never add/read student- or
+  school-level records. If a task implies microdata, stop and flag it.
+- **Every non-draft claim needs a citation** (`provenance.source_citation`). Machine-drafted
+  records stay `status: draft` + low confidence until a human promotes them.
+- **Validate before you project.** A malformed / identity-conflicting sidecar fails the build.
+- **Federation, not duplication.** A fact lives in one place; consumers point at the
+  registry, they don't fork it.
+- **Keep the wiki current** — append a `wiki/log.md` entry after substantive work; update
+  `wiki/index.md` when the state or ADR set changes.
+
+## 4. Working the repo
+
+Local loop (all R behind a Makefile — same gates as CI; prefer it over ad-hoc commands):
+
+```bash
+make setup      # once: install R tooling + site packages
+make validate   # Tier A gate (schema + registry invariants)
+make build      # validate, then derive Tier B into build/
+make test       # full testthat suite
+make check      # R CMD check (roxygenise regenerates man/ + NAMESPACE)
+make site       # render the Quarto catalog into site/_site/
+make all        # validate -> build -> test
+```
+
+- **CI (required on PRs):** `validate` (path-filtered to `metadata/`/`schemas/`),
+  `R-CMD-check` (path-filtered to `r-pkg/**`), and `build-publish` (Pages deploy on merge to
+  `main`, SHA-stamped). `main` is **branch-protected — a PR is required.** Do not merge
+  without green CI.
+- **Auto-validate hook:** `.claude/hooks/validate-metadata.sh` runs on edits to
+  `metadata/`/`schemas/` — silence = success; a failure is fed back. Degrades to a no-op
+  without the R toolchain.
+- **Subagents** (`.claude/agents/`): `metadata-author` (draft-only authoring from a cited
+  source), `registry-librarian` (regenerate + diff the derived layer, read-only on Tier A),
+  `consumption-lint` (verify the SGPc consumption contract still holds — run before merging
+  any Tier A schema or `amrr` change).
+
+> **⚠ Local toolchain caveat (2026-07-08):** the dev machine's R was upgraded to **4.6.1**
+> and its package library is currently **bare** (no `testthat`/`devtools`/`withr`/…), so
+> `make test` / `make check` will not run locally until you `make setup` (or
+> `install.packages(c("devtools","testthat","withr","jsonvalidate","DBI","RSQLite","digest","curl"))`).
+> Until then, **CI R-CMD-check is the authoritative full-suite gate.** You can still
+> parse-check and functionally smoke-test dependency-free R with base `Rscript`.
+
+## 5. Open work (pick up here — none started; do not start unbidden without confirming)
+
+Roughly in priority order:
+
+1. **Phase G — SGPc resolver wiring.** Wire SGPc's metadata resolver to consume this
+   registry as a `registry` source — ideally the new `github://` reproducible remote (pin by
+   SHA, no submodule). Contract + open questions: `wiki/connections/sgpc-registry-consumption-contract.md`
+   (its former "remote pinning" open item is now **resolved** by ADR-011). Verify SGPc output
+   stays byte-identical for metadata-unaware runs; run the `consumption-lint` subagent.
+   *Note:* any SGPc path reading raw `proficient[]` directly from sidecar JSON must migrate to
+   `proficient_from` / `amrr_achievement_levels()` (the raw mask is deprecated).
+2. **Real WIDA_IN authoring.** Fill the nine WIDA-ACCESS records with real enrolled grades,
+   official proficiency-level lookups, scale bounds, and `measurement.elp` — replacing the
+   migration scaffold. Exemplar: `schemas/examples/wida-access-in-2024.v2.example.json`. Use
+   the `metadata-author` subagent (draft-only, cited).
+3. **On-disk cache store for the `github://` remote.** The immutable-read *seam* exists
+   (`.gh_get_json` / `.gh_get_raw` in `R/remote.R`); add a store keyed by owner/repo/SHA/path
+   under `tools::R_user_dir("amrr","cache")` (safe forever — content at a SHA is immutable —
+   enabling offline replay). Optional hardening: verify each fetched blob's git SHA-1 against
+   the tree entry.
+4. **ADR-006 — governance / promotion policy** (`draft`→`reviewed`→`verified`). Draftable
+   independently; gates real authoring.
+5. **`read_config()` sidecar writer.** Currently the config view round-trips in memory; a
+   writer that emits authored sidecars from the compact shape would close the authoring loop.
+6. **ADR-005 — AI authoring/scraping pipeline.** Deferred until the v2 corpus is stable.
+
+## 6. Known sharp edges
+
+- **Squash-merges delete the branch and rewrite SHAs.** After a merge, `git cherry` shows the
+  original commits as "unmerged" (patch-id mismatch) even though their content is on `main` —
+  don't be fooled. Branch off fresh `origin/main` for new work; don't reuse a squash-merged
+  branch.
+- **Reproducibility only holds for Tier A over a SHA.** The derived `dist/` bundles are
+  git-ignored, so the derived-URL mode is latest-only. For a reproducible remote read, use
+  `github://` + `ref`, or a checkout at a SHA.
+- **Auto-discovery finds *any* registry-shaped ancestor.** A test that asserts "no registry →
+  error" must `setwd()` to a tmpdir outside any checkout (see `test-get_metadata.R`).
+- **`jsonvalidate` needs V8; the remote path prefers `curl`** (both `Suggests`). CI installs
+  them; `make setup` covers them.
+- **R `$` partial matching bit us once:** `block$proficient` silently matched `proficient_from`.
+  Use exact `[[ ]]` on records with overlapping key prefixes (see `.proficient_mask()`).
+- **`schemas/examples/` is documentation, not Tier A** — the validator ignores it.
