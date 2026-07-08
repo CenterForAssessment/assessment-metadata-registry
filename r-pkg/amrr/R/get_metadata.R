@@ -39,9 +39,14 @@
 #' @param system Optional assessment-system id (e.g. `"ilearn"`, `"wida-access"`).
 #' @param year Optional four-digit administration year (character or numeric).
 #' @param registry One of three forms:
-#'   * **Local checkout** -- a directory containing `metadata/` (the default;
-#'     falls back to `option("amrr.registry")` then `AMRR_REGISTRY`). The pin is
-#'     git `HEAD`; byte-reproducible when you check out a commit SHA.
+#'   * **Local checkout** -- a directory containing `metadata/`. If omitted,
+#'     `amrr` resolves it from `option("amrr.registry")`, then the `AMRR_REGISTRY`
+#'     environment variable, then by **auto-discovery**: it walks up from the
+#'     working directory to the nearest checkout (a directory with both `metadata/`
+#'     and `schemas/`). So starting R anywhere inside a checkout just works with no
+#'     `registry` argument; set `options(amrr.registry = "/path/to/checkout")` in
+#'     your `.Rprofile` for a machine-wide default. The pin is git `HEAD`;
+#'     byte-reproducible when you check out a commit SHA.
 #'   * **GitHub repo** -- `"github://owner/repo"` (or
 #'     `"https://github.com/owner/repo"`). Fetches the canonical sidecars for the
 #'     jurisdiction straight from GitHub **pinned to an exact commit SHA** (via the
@@ -65,9 +70,10 @@
 #'   records, with attributes `registry_ref`, `registry_root`, and `jurisdiction`.
 #' @examples
 #' \dontrun{
-#' # From a local checkout (byte-reproducible when pinned to a commit SHA):
-#' md <- get_metadata("IN", system = "wida-access", year = 2024,
-#'                    registry = "~/GitHub/CenterForAssessment/assessment-metadata-registry")
+#' # From a local checkout. With R started inside the checkout, no registry
+#' # argument is needed (amrr discovers it from the working directory); otherwise
+#' # pass registry = or set options(amrr.registry=).
+#' md <- get_metadata("IN", system = "wida-access", year = 2024)
 #' amrr_registry_ref(md)
 #' amrr_targets(md[[1]], "ELP_COMPOSITE")
 #'

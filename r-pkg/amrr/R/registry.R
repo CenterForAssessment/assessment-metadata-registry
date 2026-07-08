@@ -1,17 +1,41 @@
 # Registry root resolution + provenance (the reproducibility pin).
 
+# Walk up from `start` (default: the working directory) to the nearest ancestor
+# that looks like a registry checkout -- a directory holding both metadata/ and
+# schemas/. Returns that path, or NULL if none is found before the filesystem
+# root. This is what makes "start R anywhere inside a checkout and it just works".
+.discover_registry_root <- function(start = getwd()) {
+  dir <- normalizePath(start, mustWork = FALSE)
+  repeat {
+    if (dir.exists(file.path(dir, "metadata")) &&
+        dir.exists(file.path(dir, "schemas"))) {
+      return(dir)
+    }
+    parent <- dirname(dir)
+    if (identical(parent, dir)) return(NULL)   # reached the filesystem root
+    dir <- parent
+  }
+}
+
 # Resolve the registry root (the directory that contains metadata/). Precedence:
-#   registry argument > option("amrr.registry") > Sys.getenv("AMRR_REGISTRY").
+#   registry argument > option("amrr.registry") > Sys.getenv("AMRR_REGISTRY") >
+#   auto-discovery from the working directory upward.
 # Accepts either the repo root or the metadata/ directory itself.
 amrr_registry_root <- function(registry = NULL) {
   root <- registry %||% getOption("amrr.registry") %||% Sys.getenv("AMRR_REGISTRY", unset = "")
   if (is.null(root) || !nzchar(root)) {
-    stop(
-      "No registry root. Pass registry=, set options(amrr.registry=), or the ",
-      "AMRR_REGISTRY environment variable to a checkout of the ",
-      "assessment-metadata-registry.",
-      call. = FALSE
-    )
+    # Nothing set explicitly -- try to find a checkout at/above the working dir.
+    root <- .discover_registry_root()
+    if (is.null(root)) {
+      stop(
+        "No registry root, and no checkout was found in the working directory or ",
+        "its parents. Run R from inside a checkout, pass registry=, or set a ",
+        "default with options(amrr.registry=) (e.g. in .Rprofile) or the ",
+        "AMRR_REGISTRY environment variable. To read without a checkout, pass a ",
+        "URL or 'github://owner/repo' as registry.",
+        call. = FALSE
+      )
+    }
   }
   if (dir.exists(file.path(root, "metadata"))) {
     return(normalizePath(root, mustWork = TRUE))

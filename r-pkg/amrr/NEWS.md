@@ -13,6 +13,13 @@
   Suggests) is the preferred HTTP engine, with a base-R unauthenticated fallback so
   a public read needs no new hard dependency. This resolves the previously deferred
   remote-SHA-pinning open item in the SGPc consumption contract.
+* **Local registry auto-discovery.** When no `registry` is given (and neither
+  `option("amrr.registry")` nor `AMRR_REGISTRY` is set), `get_metadata()` now walks
+  up from the working directory to the nearest checkout (a directory with both
+  `metadata/` and `schemas/`). So running R from anywhere inside a clone just works
+  with no `registry` argument; set `options(amrr.registry=)` in `.Rprofile` for a
+  machine-wide default. The error message when none is found now points at all four
+  options (run inside a checkout / `registry=` / option / env / a `github://` remote).
 
 # amrr 0.4.0 (2026-07-06)
 
