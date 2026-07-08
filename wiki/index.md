@@ -2,7 +2,7 @@
 title: Assessment Metadata Registry — Wiki Index
 type: index
 created: 2026-07-02
-updated: 2026-07-03
+updated: 2026-07-08
 ---
 
 # Assessment Metadata Registry — Master Index
@@ -16,8 +16,10 @@ folded), `verified_by`, the EOC `"eoc"` cut key, and the compact config view
 (`as_config`/`read_config`, `build/config/`, site **Config view** page). `amrr` 0.4.0
 added a derived-URL remote (latest build); 0.5.0 added a **reproducible remote** —
 `get_metadata(registry = "github://…", ref = <SHA>)` reads canonical sidecars raw-by-SHA,
-no checkout (ADR-011). ADRs 000/004/007/008/009/010/011 accepted 2026-07-06. Pending: SGPc
-resolver wiring (Phase G); a `read_config()` sidecar writer; real WIDA_IN / EOC authoring.
+no checkout (ADR-011) — plus **local auto-discovery** (run R anywhere inside a checkout and
+no `registry` argument is needed). ADRs 000/004/007/008/009/010/011 accepted 2026-07-06.
+Pending: SGPc resolver wiring (Phase G); a `read_config()` sidecar writer; real WIDA_IN /
+EOC authoring.
 WIDA_IN is the v2 dogfood corpus.
 
 ---

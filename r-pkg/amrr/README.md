@@ -31,17 +31,19 @@ remotes::install_github("CenterForAssessment/assessment-metadata-registry",
                         subdir = "r-pkg/amrr")
 ```
 
-A `get_metadata()` consumer needs only `jsonlite`. To *build* or *validate* the registry,
-also install the `Suggests`: `jsonvalidate`, `DBI`, `RSQLite`, `digest`.
+A `get_metadata()` consumer needs only `jsonlite` (a `github://` remote also works without
+new deps, but installing `curl` is recommended for robust, optionally-authenticated GitHub
+reads). To *build* or *validate* the registry, also install the `Suggests`: `jsonvalidate`,
+`DBI`, `RSQLite`, `digest`, `curl`.
 
 ## Consume
 
 ```r
 library(amrr)
 
-# Read one jurisdiction/system/year from a registry checkout.
-md <- get_metadata("IN", system = "wida-access", year = 2024,
-                   registry = "~/GitHub/CenterForAssessment/assessment-metadata-registry")
+# Read one jurisdiction/system/year. With R started inside a registry checkout,
+# no `registry` argument is needed (see "Locating the registry" below).
+md <- get_metadata("IN", system = "wida-access", year = 2024)
 
 md                      # an `amrr_metadata` object (a list of records; has a print method)
 rec <- md[[1]]          # the first matching record
@@ -51,13 +53,26 @@ rec <- md[[1]]          # the first matching record
 attach_targets = TRUE)` returns an `amrr_metadata` list of assessment records. Omit `system`
 or `year` to get everything for the jurisdiction.
 
-**Locating the registry.** The `registry` argument points at a checkout (the directory
-containing `metadata/`). If omitted, `amrr` falls back to `option("amrr.registry")` and then
-the `AMRR_REGISTRY` environment variable:
+**Locating the registry.** `registry` accepts three forms — a **local checkout**, a
+**`github://` remote** (reproducible, pinned by SHA), or a **derived-layer URL** (convenience):
 
 ```r
-options(amrr.registry = "~/GitHub/CenterForAssessment/assessment-metadata-registry")
+# 1. Local checkout. If `registry` is omitted, amrr resolves it in order:
+#    option("amrr.registry") -> AMRR_REGISTRY env -> auto-discovery (walk up from the
+#    working directory to the nearest checkout: a dir with both metadata/ and schemas/).
+#    So starting R anywhere inside a clone just works. For a machine-wide default:
+options(amrr.registry = "/path/to/assessment-metadata-registry")   # e.g. in ~/.Rprofile
 md <- get_metadata("IN", "ilearn", 2024)
+
+# 2. Reproducible remote — read canonical sidecars straight from GitHub, pinned by SHA
+#    (no checkout). `ref` (SHA | branch | tag) is resolved to a concrete commit SHA.
+repo <- "github://CenterForAssessment/assessment-metadata-registry"
+md <- get_metadata("IN", "ilearn", 2024, registry = repo, ref = "b824b20")
+
+# 3. Convenience remote — the published derived layer over HTTP (LATEST build only,
+#    not reproducible): fetches <base>/dist/<jur>.json.
+pages <- "https://centerforassessment.github.io/assessment-metadata-registry"
+md <- get_metadata("IN", "ilearn", 2024, registry = pages)
 ```
 
 **Accessors** pull fields out of a record (`content_area` is optional and filters where it
@@ -86,8 +101,12 @@ bytes can be reconstructed later.
 ref <- amrr_registry_ref(md)   # the registry commit SHA this run resolved against
 ```
 
-Pass `ref =` to `get_metadata()` to assert an expected SHA; if the checkout's `HEAD` differs
-you get a warning (check out that ref yourself to guarantee the bytes).
+`ref` behaves by registry kind: for a **`github://`** remote it is *resolved and fetched* —
+the exact commit is read and recorded, so the read is byte-for-byte reproducible with no
+checkout. For a **local checkout** or **derived-URL**, `ref` is an *assertion*: if the
+resolved SHA differs you get a warning (check out that ref yourself to guarantee the bytes).
+Note the derived-URL mode serves the *latest* published build only — use `github://` or a
+checkout at a SHA for reproducible pins.
 
 ## Maintain (registry tooling)
 

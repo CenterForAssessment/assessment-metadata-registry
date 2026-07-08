@@ -4,6 +4,42 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-08] build + docs | Remote modes shipped, local auto-discovery, docs refresh
+
+**Action:** build + docs
+
+- **Shipped the remote-consumption work** (both PRs merged to `main`):
+  - **PR #13** — `amrr` 0.4.0 derived-URL remote (`registry = <base>` → `dist/<jur>.json`,
+    convenience/latest) **and** 0.5.0 reproducible `github://` remote (canonical sidecars
+    raw-by-SHA, [[011-remote-sha-pinning]]). Squash-merged `8245c0a`.
+  - **PR #14** — `amrr` 0.5.0 **local registry auto-discovery**: when no `registry` is given
+    (and neither `option("amrr.registry")` nor `AMRR_REGISTRY` is set), `amrr_registry_root()`
+    walks up from the working directory to the nearest checkout (a dir with both `metadata/`
+    and `schemas/`). So running R anywhere inside a clone just works with no `registry` arg;
+    `options(amrr.registry=)` in `.Rprofile` gives a machine-wide default. Strictly additive
+    (only fires where the function previously errored). Squash-merged `048da0a`. Caught one
+    pre-existing test that assumed no discovery — fixed to run outside any checkout.
+  - Resolution order is now: `registry=` arg → `option("amrr.registry")` → `AMRR_REGISTRY` →
+    auto-discovery → a not-found error naming every option (incl. the `github://` remote).
+- **Branch hygiene:** deleted the stale merged branches `remote-registry` (PR #13) and
+  `v2-implementation` (PR #10) from GitHub — both squash-merged and strictly behind `main`
+  (merging `v2-implementation` would have reverted ADR-010/011). `main` is the only branch.
+- **Docs refreshed for currency:** the `amrr` package README now documents all three
+  `registry` forms + auto-discovery (and drops the machine-specific `~/GitHub/...` path);
+  top-level README + `site/usage.qmd` gained the reproducible-remote / auto-discovery
+  sections; [[index]] status line updated; **`HANDOFF.md` rewritten** for the next agent
+  (the previous one covered the long-since-shipped v2/ADR-009 work).
+- **Local toolchain note:** the dev machine's R was upgraded to 4.6.1 with a bare package
+  library, so `make test`/`make check` could not run locally this session — CI R-CMD-check
+  (full `testthat` suite + `--as-cran`) is the authoritative gate and is green on `main`.
+  Restore local runs with `make setup`.
+
+**Next:** SGPc resolver adopts a `registry` source, ideally the `github://` remote (Phase G,
+[[sgpc-registry-consumption-contract]]); optional on-disk cache *store* for the remote;
+real WIDA_IN / EOC authoring; ADR-006 governance.
+
+---
+
 ## [2026-07-06] decision + build | ADR-011: reproducible remote consumption (amrr 0.5.0)
 
 **Action:** decision + build
