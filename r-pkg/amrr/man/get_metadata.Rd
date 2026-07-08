@@ -22,9 +22,14 @@ get_metadata(
 
 \item{registry}{One of three forms:
 \itemize{
-\item \strong{Local checkout} -- a directory containing \verb{metadata/} (the default;
-falls back to \code{option("amrr.registry")} then \code{AMRR_REGISTRY}). The pin is
-git \code{HEAD}; byte-reproducible when you check out a commit SHA.
+\item \strong{Local checkout} -- a directory containing \verb{metadata/}. If omitted,
+\code{amrr} resolves it from \code{option("amrr.registry")}, then the \code{AMRR_REGISTRY}
+environment variable, then by \strong{auto-discovery}: it walks up from the
+working directory to the nearest checkout (a directory with both \verb{metadata/}
+and \verb{schemas/}). So starting R anywhere inside a checkout just works with no
+\code{registry} argument; set \code{options(amrr.registry = "/path/to/checkout")} in
+your \code{.Rprofile} for a machine-wide default. The pin is git \code{HEAD};
+byte-reproducible when you check out a commit SHA.
 \item \strong{GitHub repo} -- \code{"github://owner/repo"} (or
 \code{"https://github.com/owner/repo"}). Fetches the canonical sidecars for the
 jurisdiction straight from GitHub \strong{pinned to an exact commit SHA} (via the
@@ -67,9 +72,10 @@ the run reproducible.
 }
 \examples{
 \dontrun{
-# From a local checkout (byte-reproducible when pinned to a commit SHA):
-md <- get_metadata("IN", system = "wida-access", year = 2024,
-                   registry = "~/GitHub/CenterForAssessment/assessment-metadata-registry")
+# From a local checkout. With R started inside the checkout, no registry
+# argument is needed (amrr discovers it from the working directory); otherwise
+# pass registry = or set options(amrr.registry=).
+md <- get_metadata("IN", system = "wida-access", year = 2024)
 amrr_registry_ref(md)
 amrr_targets(md[[1]], "ELP_COMPOSITE")
 

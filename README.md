@@ -95,11 +95,19 @@ Point `amrr` at a registry checkout and read a cell (`jurisdiction × system × 
 Accountability `achievement_targets` are re-merged onto the assessment record at read time,
 and the resolved **commit SHA** pins the exact bytes your analysis used.
 
+**Where `amrr` looks for the registry.** If you don't pass `registry=`, it resolves in
+order: `options(amrr.registry=)`, the `AMRR_REGISTRY` environment variable, then
+**auto-discovery** — walking up from the working directory to the nearest checkout (a
+directory with both `metadata/` and `schemas/`). So if you start R anywhere inside a clone,
+no `registry` argument is needed. For a machine-wide default, add
+`options(amrr.registry = "/path/to/assessment-metadata-registry")` to your `~/.Rprofile`.
+
 ```r
 # install.packages("r-pkg/amrr", repos = NULL, type = "source")   # or devtools::load_all("r-pkg/amrr")
 library(amrr)
 
-md  <- get_metadata("IN", system = "ilearn", year = 2024, registry = ".")
+# No registry= needed when R is running inside a checkout (equivalent to registry = ".").
+md  <- get_metadata("IN", system = "ilearn", year = 2024)
 rec <- md[[1]]
 amrr_registry_ref(md)                       # commit SHA — record this with your run
 

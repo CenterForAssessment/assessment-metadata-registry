@@ -15,11 +15,19 @@ Point `amrr` at a registry checkout and read one cell
 the assessment record at read time, and the resolved **commit SHA** pins the exact bytes
 your analysis used — record it so any past run is reconstructable.
 
+If you don't pass `registry=`, `amrr` resolves it from `options(amrr.registry=)`, then the
+`AMRR_REGISTRY` environment variable, then by **auto-discovery** — walking up from the
+working directory to the nearest checkout (a directory with both `metadata/` and
+`schemas/`). So starting R anywhere inside a clone just works; set
+`options(amrr.registry = "/path/to/checkout")` in your `.Rprofile` for a machine-wide
+default.
+
 ```r
 # install.packages("r-pkg/amrr", repos = NULL, type = "source")   # or devtools::load_all("r-pkg/amrr")
 library(amrr)
 
-md  <- get_metadata("IN", system = "ilearn", year = 2024, registry = ".")
+# No registry= needed when R runs inside a checkout (equivalent to registry = ".").
+md  <- get_metadata("IN", system = "ilearn", year = 2024)
 rec <- md[[1]]
 amrr_registry_ref(md)                       # commit SHA — record this with your run
 
