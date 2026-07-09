@@ -1,0 +1,73 @@
+{
+  "$comment": "Dual REST + MCP contract for the registry query API (ADR-012). The MCP tools in server.py are the source of truth for shapes; this file documents each tool's input schema and its equivalent Datasette REST endpoint so a client (or another agent) can use either surface. Every successful response carries the registry `git_sha` (latest build, not a reproducibility pin).",
+  "registry": "assessment-metadata-registry",
+  "schema_version": "amr.registry.v1",
+  "envelope": {
+    "success": { "git_sha": "string", "schema_version": "string", "row_count": "int", "truncated": "bool", "rows": "array" },
+    "error": { "error": { "code": "string", "message": "string" } }
+  },
+  "tools": [
+    {
+      "name": "describe_schema",
+      "description": "List tables + columns and build provenance (git_sha, built_at, schema_version).",
+      "input_schema": { "type": "object", "properties": {}, "additionalProperties": false },
+      "rest": "GET /registry.json  (table list)  and  GET /registry/<table>.json"
+    },
+    {
+      "name": "query_registry",
+      "description": "Run one read-only SELECT / WITH…SELECT. Writes, DDL, multiple statements, and PRAGMA are rejected.",
+      "input_schema": {
+        "type": "object",
+        "properties": { "sql": { "type": "string", "description": "a single SELECT statement" } },
+        "required": ["sql"],
+        "additionalProperties": false
+      },
+      "rest": "GET /registry.json?sql=<SELECT>&_shape=objects  (read-only; Datasette rejects writes)"
+    },
+    {
+      "name": "get_metadata",
+      "description": "All metadata for one jurisdiction × system × year (administration, program, comparability, content-area vertical-scale facts).",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "jurisdiction": { "type": "string", "description": "upper-case id, e.g. IN" },
+          "system": { "type": "string", "description": "lower-case id, e.g. ilearn" },
+          "year": { "type": "integer", "description": "e.g. 2024" }
+        },
+        "required": ["jurisdiction", "system", "year"],
+        "additionalProperties": false
+      },
+      "rest": "GET /registry/administration.json?jurisdiction_id=IN&assessment_system_id=ilearn&year=2024 (+ sibling tables)"
+    },
+    {
+      "name": "compare_jurisdictions",
+      "description": "Compare a dimension across jurisdictions for a content area + year.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "jurisdictions": { "type": "array", "items": { "type": "string" }, "description": "upper-case ids; empty = all" },
+          "content_area": { "type": "string", "enum": ["ELA", "MATHEMATICS", "READING", "ELP_COMPOSITE"] },
+          "year": { "type": "integer" },
+          "dimension": { "type": "string", "enum": ["achievement_levels", "cutscores", "vendor", "vertical_scale"], "default": "achievement_levels" }
+        },
+        "required": ["jurisdictions", "content_area", "year"],
+        "additionalProperties": false
+      },
+      "rest": "GET /registry/compare_achievement_levels.json?content_area=ELA&year=2024  (canned query; cutscores via ?sql=)"
+    },
+    {
+      "name": "list_changes",
+      "description": "Scale breaks / non-comparable years (comparability.scale_transition=1 or comparable_to_prior_year=0), optional filters.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "jurisdiction": { "type": ["string", "null"] },
+          "system": { "type": ["string", "null"] },
+          "since_year": { "type": ["integer", "null"] }
+        },
+        "additionalProperties": false
+      },
+      "rest": "GET /registry/changes_since.json?since_year=2015"
+    }
+  ]
+}

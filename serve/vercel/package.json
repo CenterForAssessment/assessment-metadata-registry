@@ -1,0 +1,25 @@
+{
+  "name": "amr-serve-vercel",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "ADR-012 Tier 1: the registry query contract (REST + stateless streamable-http MCP) as serverless functions over the bundled read-only registry.sqlite.",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "fixture": "node scripts/make-fixture-db.mjs",
+    "dev": "tsx local-server.ts",
+    "smoke": "node scripts/smoke.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,0 +1,59 @@
+# Read-only query API for the Assessment Metadata Registry (Tier C, ADR-012).
+#
+# Datasette (JSON + SQL-over-HTTP + web UI) and a thin MCP server both read the SAME
+# immutable registry.sqlite, behind Caddy (automatic HTTPS). The DB and the rendered
+# Datasette metadata are DATA — rsync'd into ${AMR_DATA_DIR} at deploy time and mounted
+# READ-ONLY (:ro). No service can write the DB: Datasette runs immutable (-i); the MCP
+# server opens the file mode=ro. The Datasette image is used as-is (nothing static to
+# bake — metadata is rendered per-SHA as data), so there is no custom Datasette image.
+#
+# Local (needs Docker): `AMR_DATA_DIR=$(pwd)/../build docker compose up` after `make api-render`.
+# No local Docker? Use `make serve-native` (Datasette without containers).
+services:
+  datasette:
+    image: datasetteproject/datasette:0.65.2
+    restart: unless-stopped
+    command: >
+      datasette -i /data/registry.sqlite
+      -m /data/metadata.rendered.yaml
+      --cors --setting max_returned_rows 2000
+      -h 0.0.0.0 -p 8001
+    volumes:
+      - ${AMR_DATA_DIR:-./data}:/data:ro
+    expose:
+      - "8001"
+
+  mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    restart: unless-stopped
+    environment:
+      AMRR_REGISTRY_DB: /data/registry.sqlite
+      MCP_TRANSPORT: streamable-http
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "8010"
+    volumes:
+      - ${AMR_DATA_DIR:-./data}:/data:ro
+    expose:
+      - "8010"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      AMR_API_HOST: ${AMR_API_HOST:-:80}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - datasette
+      - mcp
+
+volumes:
+  caddy_data:
+  caddy_config:

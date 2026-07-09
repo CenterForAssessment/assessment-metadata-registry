@@ -4,6 +4,207 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-09] deploy | ADR-012 Tier 1 milestone MET — live at assessment-metadata-registry.vercel.app (22/22)
+
+**Action:** deploy + live verification (ADR-012 rev 2, Tier 1)
+
+- **Live:** `https://assessment-metadata-registry.vercel.app` (Vercel team `dataimago-projects`,
+  project `assessment-metadata-registry`, runtime `nodejs24.x`). MCP endpoint:
+  `https://assessment-metadata-registry.vercel.app/mcp` (streamable-http, no auth — public
+  metadata only).
+- **22/22 smoke green against the live URL**, including the milestone criterion: a real MCP
+  `initialize → tools/list → call-all-5` round-trip **plus a second independent client with no
+  session carryover**. The SELECT-only guard rejects writes on the deployed SQL surface
+  (`delete from administration` → `400 not_select`). The envelope's `git_sha` **equals the
+  deployed commit** — the DB is rebuilt from a clean tree at that commit before every deploy,
+  so the provenance stamp is true rather than merely present. Verify with
+  `curl -s <url>/api/schema | jq -r .git_sha` against `git rev-parse HEAD`; it is a release
+  step, not a comment.
+- **Three on-platform findings the local harness could not have produced:**
+  1. `better-sqlite3` **does not build against current Node** (V8 header removals; no prebuild).
+     Swapped to **`node:sqlite`**, a Node builtin — no native addon, nothing to compile in the
+     Vercel build image, and the function bundle carries no `.node` artifact. `engines.node`
+     pins `24.x`, where `node:sqlite` is stable and flag-free.
+  2. **`.vercelignore` is load-bearing.** `data/*.sqlite` is git-ignored by design but must be
+     *uploaded* for `functions.includeFiles` to bundle it.
+  3. **`outputDirectory: "public"` is a disclosure control.** Absent it, Vercel published the
+     project root as static assets, exposing `lib/*.ts` and the DB at `/data/registry.sqlite`.
+     Verified 404 on all three after the fix. Nothing leaked (CC BY 4.0 public metadata), but
+     the same default over a classification-gated store would breach a disclosure boundary.
+     Recorded in ADR-012 as an assertion every future instance must make.
+- **Also fixed before deploy:** the corpus-dependent smoke checks were **fixture-shaped**. The
+  hard-coded `compare` cell (`ELA/2024 → IN,SC`) is unsatisfiable against the real registry —
+  SC's ELA achievement levels end in 2017, IN's begin in 2019, so **no year has both**. Smoke
+  now asks `/api/query` which cell actually spans ≥ 2 jurisdictions and compares on that
+  (`MATHEMATICS/2025 → IN,SD` on the real corpus; `ELA/2024 → IN,SC` on the fixture). Green
+  against both, and against any future corpus.
+
+**Verification:** `22/22` local against the real `build/registry.sqlite`; `22/22` against the
+live URL; `tsc --noEmit` clean; `/data/registry.sqlite`, `/lib/registry-db.ts`, `/DEPLOY.md`
+all 404 in production.
+
+**Status:** ADR-012 remains **proposed** — acceptance is Damian's call now that the milestone
+is met.
+
+**Next:** author the L1 generalization in dataimago-design's wiki (`dataimago.store.v1`);
+per-SHA Release-asset DB and an opt-in CI deploy workflow remain deferred.
+
+---
+
+## [2026-07-09] build | Tier 1 serverless slice: serve/vercel — validated on the real corpus (22/22)
+
+**Action:** build (ADR-012 rev 1, Tier 1)
+
+- **New `serve/vercel/`** — the D1 query contract as Vercel functions, TypeScript over the
+  bundled read-only `registry.sqlite`. Five REST endpoints
+  (`/api/{schema,query,metadata,compare,changes}`) + the five MCP tools over **stateless
+  streamable-http** at `/mcp` (fresh `McpServer` + transport per request,
+  `sessionIdGenerator: undefined`, `enableJsonResponse: true`). `lib/registry-db.ts` is a
+  line-faithful port of `serve/mcp/registry_db.py` (SELECT-only guard, `MAX_ROWS`,
+  SHA-stamped envelope); `lib/tools.ts` ports the 5 tools so REST and MCP share one
+  implementation (shapes = `serve/mcp/tool_schemas.json`).
+- **SQLite engine: `node:sqlite`, not `better-sqlite3`.** The native addon does not build
+  against current Node (V8 header removals; no prebuild), and a native binary must compile
+  in the Vercel build image besides. `node:sqlite` is a Node builtin (≥ 22.5; stable and
+  flag-free on 24, which `engines.node` now pins), so the function bundle carries no `.node`
+  artifact. Read-only semantics are preserved (`new DatabaseSync(path, { readOnly: true })`
+  rejects writes at the driver layer); the guard, `MAX_ROWS`, and envelope are byte-for-byte
+  the same contract.
+- **Validated locally, 22/22 smoke checks against the REAL `amrr::build_registry()` output**
+  (`scripts/smoke.mjs`, re-runnable against a deployed URL): REST parity + error statuses;
+  guard rejections (delete / multi-statement / pragma / insert-via-WITH) **and** a positive
+  control (keyword-substring identifiers allowed); `git_sha`-stamped envelopes everywhere;
+  real MCP client round-trip (initialize → list_tools = 5 → all tools) plus a second
+  independent client proving no session affinity. `tsc --noEmit` clean.
+- **Corpus-dependent checks are self-discovering.** `smoke.mjs` asks `/api/query` which
+  `(content_area, year)` cell actually spans ≥ 2 jurisdictions, then compares on that cell.
+  A hard-coded cell only ever held for one corpus: the fixture has `ELA/2024 → IN,SC`,
+  while the real registry has **no IN∩SC year at all** (SC ELA ends 2017, IN ELA begins 2019)
+  and resolves to `MATHEMATICS/2025 → IN,SD`. The suite is now green against the fixture,
+  the real corpus, and any future corpus.
+- **`.vercelignore` is load-bearing.** `data/*.sqlite` is git-ignored by design, but must be
+  uploaded for `functions.includeFiles` to bundle it; absent a `.vercelignore` the CLI falls
+  back to `.gitignore` and every endpoint fails `db_not_found`.
+- **Fixture discipline:** local iteration may use a fixture DB generated from the **real
+  DDL** (`schemas/sql/amr-registry.v1.sql`) and stamped `registry_meta.fixture=true`; the
+  deployed DB must be `amrr::build_registry()` output (`make build` → copy). The build
+  pipeline was not duplicated.
+- **Handoff:** `serve/vercel/DEPLOY.md` — `vercel deploy` steps + live-URL smoke. The Tier 1
+  milestone ("validate stateless streamable-http MCP on the serverless platform") completes
+  on the first green live-URL smoke run.
+
+**Next:** `vercel deploy` + live smoke; then extract the generic half of `lib/` toward the
+dataimago L1 store contract / `database` producer driver (the five tools are domain, the
+guard + envelope + read-only substrate are generic); per-SHA Release-asset DB stays deferred.
+
+---
+
+## [2026-07-09] decision (revision) | ADR-012 rev 1: host-agnostic query contract, serverless-first tiers
+
+**Action:** decision revision (no code changes)
+
+- **ADR-012 revised** ([[012-query-api-mcp-backend]]), prompted by a same-day workspace-level
+  dataimago decision: runtime data exposure is **serverless-first** (a blessed always-on
+  Datasette would hand a VPS back to every vertical; dataimago's producer-driver architecture
+  reserves a deferred `database` driver as the seam). Restructured as D1–D4:
+  - **D1 — the durable query contract** (host-agnostic): immutable read-only
+    `registry.sqlite` + SELECT-only guard + `git_sha`-stamped envelope + dual REST/MCP with a
+    single tool-schema source of truth + self-describing surface.
+  - **D2 — Datasette as the local/CI authoring–exploration engine** (unconditional;
+    `serve-native`/`serve-local` carry forward unchanged).
+  - **D3 — deployment tiers:** Tier 0 local/CI (done); **Tier 1 serverless default**
+    (bundled read-only SQLite behind serverless functions, REST + stateless streamable-http
+    MCP; graduation path = dataimago's `database` producer driver; milestone: validate
+    stateless MCP on-platform); Tier 2 = the existing VPS+Docker+Caddy Datasette stack,
+    demoted to opt-in (`AMR_API_DEPLOY_ENABLED`), retained as working code.
+  - **D4 — placement:** the registry is a standalone upstream **attribute registry**, not a
+    dataimago vertical. SGPc-ai consumes it via `amrr` SHA-pinned reads and will host its own
+    **second instance** of the D1 contract over SGPc's aggregate-classified output bundles
+    (SGPc ADR-009); the contract + explorer graduate into the dataimago L1 toolkit, with this
+    registry as instance #1 / validation case.
+- Reproducibility posture unchanged (convenience/latest, SHA-stamped, never the pin); the
+  deferred per-SHA Release-asset follow-on now also serves Tier 1. Prior M3–M6 (VPS) next
+  steps are re-scoped to Tier-2-optional; the new critical path is the Tier 1 serverless
+  slice.
+
+**Next:** validate stateless streamable-http MCP serverless; extract `serve/datasette/` into
+the dataimago L1 explorer toolkit; spec the `data`/`store` block in `@dataimago/spec`.
+
+---
+
+## [2026-07-09] decision + build | ADR-012: query API + MCP backend — Track B, M1+M2 (local stack green)
+
+**Action:** decision + build (new parallel Track B)
+
+- **ADR-012 proposed** ([[012-query-api-mcp-backend]]). A read-only query API + MCP backend
+  for building product against the registry and for AI-guided exploration. Realizes ADR-000
+  D7.4 (the long-anticipated optional read-only, SHA-stamped API). Grounded by exploring the
+  early dataimago app `HelloWorld-ai` — whose reusable value is a **contract + governance
+  model** (response envelope, self-describing surface, dual REST+MCP contract), not its
+  R/RestRserve server (the large per-language JSON / Noto fonts / map UI there are documented
+  *vision*, not built).
+- **New Tier C `serve/`** (sibling of `metadata/`,`schemas/`,`site/`,`r-pkg/`): **Datasette**
+  over the immutable `build/registry.sqlite` (JSON, SQL-over-HTTP, canned queries, browse UI)
+  + a thin **Python MCP server** (FastMCP, `mcp>=1.28`) reading the same DB `mode=ro`. Both
+  read-only; every response is `git_sha`-stamped. Pinned Datasette 0.65.2; official image
+  used as-is (metadata rendered per-SHA as data).
+- **MCP tools:** `describe_schema`, `query_registry(sql)` (SELECT-only guard over the
+  read-only connection), `get_metadata`, `compare_jurisdictions`, `list_changes`. stdio (local
+  Claude Code) + streamable-http `/mcp` (VPS behind Caddy).
+- **Deploy scaffolding (M3–M4, untested pending a box):** `docker-compose.yml` (Datasette +
+  MCP + Caddy auto-TLS), `Dockerfile.mcp`, `Caddyfile`, `deploy/{bootstrap-vps,deploy}.sh`,
+  and an **independent** `.github/workflows/deploy-api.yml` (own `api-deploy` concurrency,
+  opt-in via repo var `AMR_API_DEPLOY_ENABLED`, never touches `build-publish`). New Makefile
+  targets: `api-render`, `serve-native`, `serve-local`, `serve-down`, `api-image`, `mcp-local`.
+- **Verified locally (no Docker on the dev box):** Datasette run natively — jurisdiction/
+  provenance/SQL/canned-query endpoints, CORS header, and a `delete` via `?sql=` refused
+  ("Statement must be a SELECT"). MCP — all 5 tools exercised directly and over a real **stdio
+  protocol round-trip** (initialize → list_tools → call_tool), git_sha-stamped envelopes, and
+  the SELECT-only guard firing through the protocol (write/multi-statement/pragma rejected).
+- **Reproducibility posture:** convenience/latest + SHA-stamped, **not** the pin (the
+  `github://…`+SHA remote of [[011-remote-sha-pinning]] stays canonical for pinned reads);
+  per-SHA retention deferred. Honors all bright lines: read-only/no write path, no microdata,
+  federation, never on the critical path. Branch `serve-datasette-api`.
+
+**Next:** M3 provision the VPS + Caddy TLS on a hostname; M4 wire `deploy-api` secrets + smoke
+test; M5 validate MCP over HTTPS with a real agent; M6 finalize docs. Track A (WIDA authoring
+etc.) proceeds in parallel, unblocked.
+
+---
+
+## [2026-07-08] fix | github:// remote tolerates raw.githubusercontent 429 throttling (amrr 0.5.1)
+
+**Action:** bugfix
+
+- **Symptom:** a live `get_metadata("IN", system="ilearn", year=2024,
+  registry="github://…", ref="b824b20")` aborted with `HTTP 429` on
+  `raw.githubusercontent.com/.../ilearn-in-2019.json`.
+- **Root cause:** a `github://` read fetches the *whole* jurisdiction's sidecars (24 raw
+  files for IN) sequentially, and `.gh_http_get()` fired each request exactly once with no
+  retry. Unauthenticated `raw.githubusercontent.com` 429-throttles that burst; the first
+  throttled request tripped the (correct) fail-closed abort with no chance to recover.
+- **Fix (`R/remote.R`):** split the single attempt into a mockable `.gh_http_attempt()` and
+  wrapped it in `.gh_http_get()` with bounded exponential-backoff retry — retries a 429 /
+  403 / transient 5xx, honoring a `Retry-After` header (both waits capped at 60s). Tunable
+  via `options(amrr.github_max_tries=)` (default 4) and `options(amrr.github_retry_base=)`
+  (default 1s). Retry applies to *every* github request (SHA resolve + git-trees + raw), all
+  of which route through `.gh_http_get()`. The 403/429 error now points at
+  `AMRR_GITHUB_TOKEN` (a token both raises the limit and eases the throttle) and the retry
+  knob. Fail-closed still holds — after retries are exhausted it errors.
+- **Verification:** new unit tests (retry-then-succeed, give-up-after-max, no-retry-on-404,
+  `.gh_retryable`, `.gh_backoff_seconds` cap + Retry-After) mock `.gh_http_attempt`/`.gh_sleep`
+  so they run network-free. Full `testthat` suite green; the guarded **live** read now
+  reproduces the user's exact call successfully (ELA g3 target 497, pin resolved to a full
+  SHA). `amrr` 0.5.0 → **0.5.1** (+ NEWS). No contract surface touched (schema alias,
+  resolver source, manifest pins, target re-merge all unchanged) — run `consumption-lint`
+  before merge as usual.
+
+**Next:** unchanged — Phase G SGPc resolver wiring; optional on-disk cache *store* for the
+`github://` remote (the immutable-read seam still sits at `.gh_get_json`/`.gh_get_raw`);
+real WIDA_IN / EOC authoring; ADR-006 governance.
+
+---
+
 ## [2026-07-08] build + docs | Remote modes shipped, local auto-discovery, docs refresh
 
 **Action:** build + docs

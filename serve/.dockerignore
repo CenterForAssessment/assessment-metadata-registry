@@ -1,0 +1,12 @@
+# Never send data or secrets into the MCP image build context. The DB is a runtime
+# read-only mount, not baked in (keeps the image disposable/regenerable).
+../build/
+data/
+*.sqlite
+*.sqlite-*
+*.rendered.yaml
+deploy/*.key
+deploy/*.pem
+deploy/*.pub
+**/__pycache__/
+**/*.pyc

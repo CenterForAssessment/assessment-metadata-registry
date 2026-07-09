@@ -1,0 +1,106 @@
+# Datasette human metadata + canned queries for the Assessment Metadata Registry
+# query API (Tier C, ADR-012). Datasette 0.65.x single-file config form.
+#
+# DERIVED / READ-ONLY. This serves `build/registry.sqlite` — a disposable projection
+# of the canonical Tier A JSON sidecars (amrr::build_registry()). It is NEVER a source
+# of truth and NEVER a write path. The `{{GIT_SHA}}` / `{{BUILT_AT}}` placeholders are
+# stamped at deploy time by serve/datasette/render_metadata.sh from the DB's
+# registry_meta row, so the served instance always advertises the SHA it holds.
+title: "Assessment Metadata Registry — query API"
+description_html: |
+  <p>A <strong>read-only, derived</strong> query surface over U.S. state assessment-system
+  and accountability-system metadata. Every fact here is projected from the canonical
+  version-controlled JSON sidecars; this API is regenerated on each change and is
+  <strong>disposable</strong>.</p>
+  <p><strong>Convenience / latest — not the reproducibility pin.</strong> For byte-for-byte
+  reproducible reads, pin to a commit with
+  <code>amrr::get_metadata(registry = "github://CenterForAssessment/assessment-metadata-registry", ref = &lt;SHA&gt;)</code>
+  (ADR-011) or check out that SHA. This instance serves the latest build only.</p>
+license: "CC BY 4.0"
+license_url: "https://creativecommons.org/licenses/by/4.0/"
+source: "assessment-metadata-registry (canonical JSON sidecars under metadata/)"
+source_url: "https://github.com/CenterForAssessment/assessment-metadata-registry"
+databases:
+  registry:
+    description_html: |
+      <p><strong>Registry commit:</strong> <code>{{GIT_SHA}}</code> ·
+      <strong>built:</strong> <code>{{BUILT_AT}}</code> ·
+      schema <code>amr.registry.v1</code>. Year-keyed: ask "what was true in 2021?" with
+      <code>WHERE year = '2021'</code>. Content areas are upper-case
+      (<code>ELA</code>, <code>MATHEMATICS</code>, <code>READING</code>,
+      <code>ELP_COMPOSITE</code>).</p>
+    tables:
+      registry_meta:
+        description: "Build provenance (one row per key): git_sha, built_at, schema_version."
+      jurisdiction:
+        description: "Stable identity per jurisdiction (state/entity). Names live in year-keyed tables."
+      assessment_system:
+        description: "Stable identity per assessment system (family, assessment_type)."
+      administration:
+        description: "One row per authored sidecar (jurisdiction × system × year): vendor, window, governance status, citation."
+      assessment_program:
+        description: "Descriptive program facts per year (names/orgs can drift across years)."
+      vertical_scale:
+        description: "Vertical-scale flag + scale name per content area × year."
+      achievement_level:
+        description: "Achievement-level labels + proficiency mapping per content area × year (level_index 0-based)."
+      cutscore:
+        description: "Lower bound of each performance level, per content area × grade × year (level_index 1 = first cut)."
+      comparability:
+        description: "Year-over-year comparability to the prior administered year (scale breaks, vendor/blueprint changes, gaps)."
+      accountability_system:
+        description: "Accountability-system identity (state-wide; uses assessment systems)."
+      accountability_target:
+        description: "Criterion-referenced achievement targets (state policy): semantics exit|proficiency, basis proficiency_boundary|scale_score."
+      accountability_target_scale_score:
+        description: "Per-grade scale-score thresholds for basis='scale_score' targets (e.g. WIDA exit)."
+    queries:
+      provenance:
+        title: "Build provenance (git_sha / built_at / schema_version)"
+        sql: "select key, value from registry_meta order by key"
+      vendor_by_year:
+        title: "Vendor by jurisdiction × system × year"
+        sql: |
+          select jurisdiction_id, assessment_system_id, year, vendor
+          from administration
+          order by jurisdiction_id, assessment_system_id, year
+      vertical_scale_matrix:
+        title: "Vertical-scale flag by jurisdiction × system × content area × year"
+        sql: |
+          select jurisdiction_id, assessment_system_id, content_area, year,
+                 vertical_scale, scale_name
+          from vertical_scale
+          order by jurisdiction_id, assessment_system_id, content_area, year
+      cutscores_for:
+        title: "Cutscores for a jurisdiction × system × year (parameterized)"
+        sql: |
+          select content_area, grade, level_index, lower_bound
+          from cutscore
+          where jurisdiction_id = :jur
+            and assessment_system_id = :sys
+            and year = :year
+          order by content_area, cast(grade as text), level_index
+      compare_achievement_levels:
+        title: "Compare achievement levels across jurisdictions (parameterized: content_area, year)"
+        sql: |
+          select jurisdiction_id, assessment_system_id, level_index, label, proficient
+          from achievement_level
+          where content_area = :content_area
+            and year = :year
+          order by jurisdiction_id, assessment_system_id, level_index
+      targets:
+        title: "Accountability targets (semantics + basis) by jurisdiction × year"
+        sql: |
+          select jurisdiction_id, accountability_system_id, assessment_system_id,
+                 content_area, year, semantics, basis
+          from accountability_target
+          order by jurisdiction_id, accountability_system_id, year, content_area
+      changes_since:
+        title: "Scale breaks / non-comparable years at or after a year (parameterized: since_year)"
+        sql: |
+          select jurisdiction_id, assessment_system_id, year,
+                 scale_transition, comparable_to_prior_year, prior_scale_name, notes
+          from comparability
+          where year >= :since_year
+            and (scale_transition = 1 or comparable_to_prior_year = 0)
+          order by jurisdiction_id, assessment_system_id, year

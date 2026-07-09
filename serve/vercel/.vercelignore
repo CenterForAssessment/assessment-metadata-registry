@@ -1,0 +1,8 @@
+# Upload filter for `vercel deploy`. This file exists because `data/*.sqlite` is
+# git-ignored (the DB is a derived, disposable projection and must stay out of git),
+# but it MUST be uploaded so `vercel.json`'s functions.includeFiles can bundle it.
+# Without a .vercelignore the CLI falls back to .gitignore and the DB never arrives,
+# and every endpoint fails with `db_not_found`.
+node_modules/
+.vercel/
+dist/
