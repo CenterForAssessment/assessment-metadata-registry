@@ -77,14 +77,35 @@ regardless of deployment tier.
 
 - **Tier 0 — local/CI (always on, costs nothing):** D2 above, plus the stdio MCP transport
   for local agents (Claude Code et al.). Already implemented and verified.
-- **Tier 1 — serverless deploy (the default target):** the D1 contract served without a
-  persistent server — the read-only `registry.sqlite` bundled into serverless functions
-  (the DB is metadata-scale, well under bundle limits) exposing the REST surface and MCP
-  over stateless streamable-http. This is the registry-local instance of dataimago's
-  deferred `database` producer driver, and the graduation path is to implement it **once**
-  there and consume it here, rather than maintaining a bespoke function set long-term.
-  *Milestone: validate stateless streamable-http MCP on the serverless platform before
-  declaring Tier 1 done.*
+- **Tier 1 — serverless deploy (the default target): DELIVERED 2026-07-09.** The D1
+  contract served without a persistent server — the read-only `registry.sqlite` bundled
+  into serverless functions (the DB is metadata-scale, well under bundle limits) exposing
+  the REST surface and MCP over stateless streamable-http. This is the registry-local
+  instance of dataimago's deferred `database` producer driver, and the graduation path is
+  to implement it **once** there and consume it here, rather than maintaining a bespoke
+  function set long-term.
+
+  *Milestone — MET.* Live at **`https://assessment-metadata-registry.vercel.app`**
+  (MCP endpoint: `.../mcp`), **22/22 smoke checks green against the live URL**, including a
+  real MCP `initialize → tools/list → call` round-trip and a **second independent client with
+  no session carryover**, which is the statelessness property the milestone existed to prove.
+  Every deploy rebuilds the DB from a clean tree at the deployed commit, so the envelope's
+  `git_sha` names the code that is running. Implementation notes worth carrying:
+
+  - **Engine: `node:sqlite`, not `better-sqlite3`.** The native addon does not build
+    against current Node and would have to compile in the Vercel build image; the builtin
+    removes that risk class entirely (`engines.node: "24.x"` pins a runtime where it is
+    stable and flag-free). The function bundle carries no `.node` artifact. Read-only
+    semantics, the SELECT-only guard, `MAX_ROWS`, and the envelope are unchanged.
+  - **`.vercelignore` is load-bearing.** `data/*.sqlite` is git-ignored by design, but must
+    still be *uploaded* for `functions.includeFiles` to bundle it.
+  - **`outputDirectory: "public"` is a disclosure control, not cosmetics.** Without it,
+    Vercel publishes the project root as static assets — which made `lib/*.ts` and the
+    SQLite DB itself downloadable at `/data/registry.sqlite`. The store must reach the
+    **functions**, never the static surface. For this registry the data is public CC BY 4.0
+    metadata so nothing leaked, but the same default applied to a classification-gated store
+    (SGPc) would breach the disclosure boundary. **Any future instance of this contract must
+    assert that its store is not reachable as a static asset.**
 - **Tier 2 — hosted Datasette (optional, opt-in):** the existing VPS + Docker + Caddy stack
   (`docker-compose.yml`, `Caddyfile`, `Dockerfile.mcp`, `deploy/`, independent
   `deploy-api.yml` gated by `AMR_API_DEPLOY_ENABLED`). Retained as working code for the
@@ -107,6 +128,16 @@ dataimago applications consume. The concrete relationships:
 - **dataimago L1 (pattern owner):** the D1 contract + D2 explorer graduate into the
   dataimago Level-1 toolkit (data-store pattern, `database` producer driver, zero-config
   explorer target). This registry is instance #1 and the validation case.
+
+  The graduation is a **split, not a move** (rev 2). dataimago's `ProducerDriver` contract is
+  `fetch(endpoint, params)`; four of the five tools are named queries with typed params and map
+  onto it directly, but `query_registry(sql)` takes arbitrary SQL and never will. So: the
+  read-only substrate, the SELECT-only guard, `MAX_ROWS`, the provenance-stamped envelope, and
+  schema introspection are **generic** and graduate to L1; `DIMENSIONS`, `get_metadata`,
+  `compare_jurisdictions`, and `list_changes` are **domain** and stay in this repo. Raw SQL
+  becomes an opt-in capability (default off), because SGPc's `restricted` classification makes
+  an always-on SQL surface a footgun. The L1 contract is specified in dataimago-design's wiki
+  as `dataimago.store.v1` (pattern `data-store-contract`, ADR `generalized-data-store`).
 
 ## Reproducibility posture
 
@@ -145,6 +176,17 @@ pull the exact DB by SHA instead of rebuilding).
 
 ## Revision history
 
+- **2026-07-09 (rev 2):** Tier 1 **delivered and verified on-platform** — live at
+  `https://assessment-metadata-registry.vercel.app`, 22/22 smoke green against the live URL,
+  stateless streamable-http MCP proven with a second independent client. Engine swapped to
+  `node:sqlite` (no native addon); `.vercelignore` + `outputDirectory: "public"` recorded as
+  load-bearing. Corpus-dependent smoke checks made self-discovering (a hard-coded
+  `(content_area, year)` cell held only for the fixture — the real corpus has no IN∩SC year).
+  The L1 graduation target now has a concrete shape: the **generic** half of
+  `serve/vercel/lib/` (read-only substrate, SELECT-only guard, `MAX_ROWS`, provenance-stamped
+  envelope, schema introspection) graduates; the **five tools are domain** and stay here.
+  `query_registry(sql)` does not fit dataimago's `fetch(endpoint, params)` producer contract
+  and becomes an opt-in capability, default off. No change to the contract, guards, or tiers.
 - **2026-07-09 (rev 1):** Reframed from "Datasette on a VPS" to "host-agnostic query
   contract, Datasette-authored, serverless-first deployment." Added D1–D4 structure,
   deployment tiers, and the dataimago placement statement (registry = upstream attribute

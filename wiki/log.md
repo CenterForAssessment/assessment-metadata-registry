@@ -4,6 +4,53 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-09] deploy | ADR-012 Tier 1 milestone MET — live at assessment-metadata-registry.vercel.app (22/22)
+
+**Action:** deploy + live verification (ADR-012 rev 2, Tier 1)
+
+- **Live:** `https://assessment-metadata-registry.vercel.app` (Vercel team `dataimago-projects`,
+  project `assessment-metadata-registry`, runtime `nodejs24.x`). MCP endpoint:
+  `https://assessment-metadata-registry.vercel.app/mcp` (streamable-http, no auth — public
+  metadata only).
+- **22/22 smoke green against the live URL**, including the milestone criterion: a real MCP
+  `initialize → tools/list → call-all-5` round-trip **plus a second independent client with no
+  session carryover**. The SELECT-only guard rejects writes on the deployed SQL surface
+  (`delete from administration` → `400 not_select`). The envelope's `git_sha` **equals the
+  deployed commit** — the DB is rebuilt from a clean tree at that commit before every deploy,
+  so the provenance stamp is true rather than merely present. Verify with
+  `curl -s <url>/api/schema | jq -r .git_sha` against `git rev-parse HEAD`; it is a release
+  step, not a comment.
+- **Three on-platform findings the local harness could not have produced:**
+  1. `better-sqlite3` **does not build against current Node** (V8 header removals; no prebuild).
+     Swapped to **`node:sqlite`**, a Node builtin — no native addon, nothing to compile in the
+     Vercel build image, and the function bundle carries no `.node` artifact. `engines.node`
+     pins `24.x`, where `node:sqlite` is stable and flag-free.
+  2. **`.vercelignore` is load-bearing.** `data/*.sqlite` is git-ignored by design but must be
+     *uploaded* for `functions.includeFiles` to bundle it.
+  3. **`outputDirectory: "public"` is a disclosure control.** Absent it, Vercel published the
+     project root as static assets, exposing `lib/*.ts` and the DB at `/data/registry.sqlite`.
+     Verified 404 on all three after the fix. Nothing leaked (CC BY 4.0 public metadata), but
+     the same default over a classification-gated store would breach a disclosure boundary.
+     Recorded in ADR-012 as an assertion every future instance must make.
+- **Also fixed before deploy:** the corpus-dependent smoke checks were **fixture-shaped**. The
+  hard-coded `compare` cell (`ELA/2024 → IN,SC`) is unsatisfiable against the real registry —
+  SC's ELA achievement levels end in 2017, IN's begin in 2019, so **no year has both**. Smoke
+  now asks `/api/query` which cell actually spans ≥ 2 jurisdictions and compares on that
+  (`MATHEMATICS/2025 → IN,SD` on the real corpus; `ELA/2024 → IN,SC` on the fixture). Green
+  against both, and against any future corpus.
+
+**Verification:** `22/22` local against the real `build/registry.sqlite`; `22/22` against the
+live URL; `tsc --noEmit` clean; `/data/registry.sqlite`, `/lib/registry-db.ts`, `/DEPLOY.md`
+all 404 in production.
+
+**Status:** ADR-012 remains **proposed** — acceptance is Damian's call now that the milestone
+is met.
+
+**Next:** author the L1 generalization in dataimago-design's wiki (`dataimago.store.v1`);
+per-SHA Release-asset DB and an opt-in CI deploy workflow remain deferred.
+
+---
+
 ## [2026-07-09] build | Tier 1 serverless slice: serve/vercel — validated on the real corpus (22/22)
 
 **Action:** build (ADR-012 rev 1, Tier 1)
