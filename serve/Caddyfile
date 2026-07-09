@@ -1,0 +1,23 @@
+# Caddy reverse proxy for the registry query API (Tier C, ADR-012).
+#
+# AMR_API_HOST selects the site address: a real hostname (e.g. api.example.org) makes
+# Caddy provision a Let's Encrypt cert automatically (needs a public A record + ports
+# 80/443 open); the default ":80" serves plain HTTP for a box without a hostname yet.
+#
+# Routing: /mcp* -> the MCP server (SSE); everything else -> Datasette.
+{$AMR_API_HOST} {
+	encode gzip
+
+	# MCP server (Server-Sent Events transport). Kept un-stripped so the MCP app
+	# mounts its own /mcp path; long-lived SSE streams must not be buffered.
+	handle /mcp* {
+		reverse_proxy mcp:8010 {
+			flush_interval -1
+		}
+	}
+
+	# Datasette: JSON API, SQL-over-HTTP, canned queries, and the browse UI.
+	handle {
+		reverse_proxy datasette:8001
+	}
+}

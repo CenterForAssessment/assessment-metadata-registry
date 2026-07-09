@@ -1,0 +1,65 @@
+name: deploy-api
+
+# Tier C (ADR-012): on merge to main, build the derived registry.sqlite and ship it to the
+# self-managed VPS that runs Datasette + the MCP server. INDEPENDENT of build-publish.yml
+# (different concurrency group) so it never contends with the Pages deploy. Opt-in: it
+# no-ops until the repo variable AMR_API_DEPLOY_ENABLED is 'true', so merging this workflow
+# before the box exists cannot fail CI.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "metadata/**"
+      - "schemas/**"
+      - "r-pkg/amrr/**"
+      - "serve/**"
+      - ".github/workflows/deploy-api.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy-api:
+    if: vars.AMR_API_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::jsonlite
+            any::jsonvalidate
+            any::DBI
+            any::RSQLite
+            any::digest
+      - name: Install amrr
+        run: R CMD INSTALL --no-docs r-pkg/amrr
+      - name: Validate (Tier A gate) + build derived layer (Tier B)
+        run: |
+          Rscript -e 'amrr::validate_registry(".")'
+          Rscript -e 'amrr::build_registry(".", out = "build")'
+      - name: Configure SSH deploy key
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+      - name: Sync serve/ and the fresh DB to the VPS
+        env:
+          DEST: ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}
+        run: |
+          rsync -az --delete --exclude='.env' -e "ssh -i ~/.ssh/id_deploy" serve/ "$DEST:/opt/amr-api/serve/"
+          rsync -az        -e "ssh -i ~/.ssh/id_deploy" build/registry.sqlite "$DEST:/opt/amr-api/data/registry.sqlite.new"
+      - name: Render, atomic-swap, and restart the stack on the VPS
+        env:
+          DEST: ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}
+        run: |
+          ssh -i ~/.ssh/id_deploy "$DEST" 'bash /opt/amr-api/serve/deploy/deploy.sh'

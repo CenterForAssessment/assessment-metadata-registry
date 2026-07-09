@@ -1,0 +1,13 @@
+[project]
+name = "amr-registry-mcp"
+version = "0.1.0"
+description = "Read-only MCP server over the Assessment Metadata Registry (Tier C, ADR-012)"
+requires-python = ">=3.11"
+# Pinned to the mcp SDK line whose API this server targets (FastMCP, run(transport=),
+# streamable_http_path default /mcp). Bump deliberately — the transport surface moves.
+dependencies = [
+  "mcp>=1.28,<2",
+]
+
+[project.scripts]
+amr-registry-mcp = "server:mcp.run"

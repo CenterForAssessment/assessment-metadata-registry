@@ -8,7 +8,14 @@ RPKG := r-pkg/amrr
 R    := Rscript
 
 .DEFAULT_GOAL := help
-.PHONY: help setup validate build check test all clean site site-preview
+.PHONY: help setup validate build check test all clean site site-preview \
+        api-render serve-native api-image serve-local serve-down mcp-local
+
+# Track B: read-only query API + MCP backend (Tier C, ADR-012). Serves the derived
+# build/registry.sqlite; never a write path, never canonical.
+SERVE    := serve
+API_DB   := build/registry.sqlite
+API_META := build/metadata.rendered.yaml
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -43,3 +50,21 @@ all: build test ## Full fast loop: validate -> build -> R tests
 
 clean: ## Remove derived artifacts (never canonical)
 	rm -rf build
+
+api-render: build ## Stamp git_sha/built_at from the DB into build/metadata.rendered.yaml
+	bash $(SERVE)/datasette/render_metadata.sh $(API_DB) $(SERVE)/datasette/metadata.yaml $(API_META)
+
+serve-native: api-render ## Run Datasette locally WITHOUT Docker (needs `pipx install datasette`); :8001
+	datasette -i $(API_DB) -m $(API_META) --cors --setting max_returned_rows 2000 -p 8001
+
+api-image: ## Build the API container images (Datasette pulled, MCP built) — needs Docker
+	cd $(SERVE) && docker compose build
+
+serve-local: api-render ## Run the full API stack via Docker compose (Datasette + MCP + Caddy) — needs Docker
+	AMR_DATA_DIR=$(abspath build) docker compose -f $(SERVE)/docker-compose.yml up
+
+serve-down: ## Stop the local Docker API stack
+	docker compose -f $(SERVE)/docker-compose.yml down
+
+mcp-local: build ## Run the MCP server over stdio against the freshly-built DB (for Claude Code)
+	AMRR_REGISTRY_DB=$(API_DB) python3 $(SERVE)/mcp/server.py
