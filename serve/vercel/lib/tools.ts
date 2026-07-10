@@ -4,7 +4,8 @@
  * identical shapes. Read-only end to end; every response is git_sha-stamped.
  */
 import * as db from "./registry-db.js";
-import { RegistryError, type Db } from "./registry-db.js";
+import { MAX_ROWS, RegistryError, type Db } from "./registry-db.js";
+import { ENDPOINTS } from "./endpoints.js";
 
 type Result = Record<string, unknown>;
 
@@ -50,6 +51,44 @@ function withDb(fn: (conn: Db) => Result): Result {
   } finally {
     conn.close();
   }
+}
+
+/**
+ * The service index: what this deployment exposes, and which registry build it is serving.
+ *
+ * Deliberately never fails. Every other surface returns 503 when the bundled DB is missing,
+ * which is the right answer for a data endpoint — but the front door has to stay readable
+ * during exactly that outage, or a caller who lands here learns nothing about why. So the
+ * provenance block degrades to nulls and the underlying error is surfaced beside it, rather
+ * than replacing the catalog with an error envelope. It is an index, not a health check.
+ */
+export function describeService(): Result {
+  const provenance = withDb((conn) => {
+    const meta = db.provenance(conn);
+    return {
+      git_sha: meta["git_sha"] ?? null,
+      built_at: meta["built_at"] ?? null,
+      schema_version: meta["schema_version"] ?? null,
+    };
+  });
+  const failure = provenance["error"] as Result | undefined;
+
+  return {
+    service: "assessment-metadata-registry",
+    description:
+      "Read-only query contract over a disposable SQLite projection of the registry's " +
+      "canonical JSON sidecars. Every answer is stamped with the commit SHA it was built from.",
+    git_sha: failure ? null : provenance["git_sha"],
+    built_at: failure ? null : provenance["built_at"],
+    schema_version: failure ? null : provenance["schema_version"],
+    // Present only when the registry DB could not be opened. Its absence means provenance
+    // is real; do not read a null git_sha as "no commit".
+    ...(failure ? { provenance_error: failure } : {}),
+    max_rows: MAX_ROWS,
+    compare_dimensions: DIMENSION_NAMES,
+    endpoints: ENDPOINTS,
+    source: "https://github.com/CenterForAssessment/assessment-metadata-registry",
+  };
 }
 
 /** List tables + columns and build provenance. Call first to learn the shape. */
