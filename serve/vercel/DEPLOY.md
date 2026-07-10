@@ -67,6 +67,7 @@ never reaches the build — every endpoint then fails `db_not_found`. Do not del
 1. **Real DB, not the fixture:**
    ```sh
    make build                                  # repo root: amrr::build_registry()
+   mkdir -p serve/vercel/data     # only .gitkeep is tracked there; the DB is git-ignored
    cp build/registry.sqlite serve/vercel/data/registry.sqlite
    ```
 2. **Deploy:**
