@@ -316,3 +316,62 @@ test_that("amrr_materialize round-trips .rds and .rda with the registry ref", {
   expect_error(amrr_materialize(md, withr::local_tempfile(fileext = ".txt")), "must end in")
   expect_error(amrr_materialize(list(), "x.rds"), "amrr_metadata")
 })
+
+
+# The authored WIDA_IN corpus (metadata/IN/wida-access/*.json) carries measurement.elp
+# and NO cutscores -- official per-grade proficiency-level lookups are not in hand, and
+# an absent cut score is better than an invented one. That shape has to survive a
+# get_metadata() round-trip, or the first real consumer resolves a broken record.
+#
+# The fixture record is mutated in a tempdir rather than adding a cutscore-free sidecar,
+# because this fixture's 2025 record is the corpus's only cutscore *bearing* v2 record and
+# the axis-rule and scale-envelope tests above depend on it.
+test_that("a v2 record with absent cutscores round-trips through get_metadata()", {
+  skip_if_not_installed("jsonvalidate")
+  reg <- fixture_registry()
+  tmp <- withr::local_tempdir()
+  file.copy(list.files(reg, full.names = TRUE), tmp, recursive = TRUE)
+
+  f <- do.call(file.path, c(list(tmp), as.list(v2_fixture_path)))
+  rec <- jsonlite::fromJSON(f, simplifyVector = FALSE)
+  rec$cutscores <- NULL
+  rec$cutscores_source <- NULL
+  rec$scale_bounds <- NULL
+  writeLines(jsonlite::toJSON(rec, pretty = 2, auto_unbox = TRUE,
+                              null = "null", digits = NA), f)
+
+  # The axis rule and the scale envelope have nothing to constrain, and say so quietly.
+  expect_equal(suppressWarnings(validate_registry(tmp, quiet = TRUE, error = FALSE))$n_errors, 0L)
+
+  md <- get_metadata("IN", system = "wida-access", year = 2025, registry = tmp)
+  expect_null(amrr_cutscores(md[[1]], "ELP_COMPOSITE"))
+  expect_false(is.null(amrr_elp(md[[1]])))
+  expect_identical(amrr_vendor(md[[1]]), "DRC")
+
+  # Absent cutscores must not take the achievement levels down with them: SGPc reads
+  # `labels` to size its level scheme even when no cut separates the levels.
+  lv <- amrr_achievement_levels(md[[1]], "ELP_COMPOSITE")
+  expect_length(lv$labels, 6L)
+})
+
+
+# Regression: `$` partial-matches. On a record with `cutscores_provenance` but no
+# `cutscores`, `record$cutscores` returns the provenance *sentence*. Found while
+# authoring WIDA-ACCESS, which has no official cut scores and says so.
+test_that("amrr_cutscores does not partial-match cutscores_provenance", {
+  rec <- list(
+    schema_version = "amr.assessment.v2",
+    cutscores_provenance = "No official WIDA proficiency-level lookups in hand."
+  )
+  expect_null(amrr_cutscores(rec))
+  expect_null(amrr_cutscores(rec, "ELP_COMPOSITE"))
+
+  # And an unknown content area is absent, not an error (`list(a=1)[["b"]]` throws).
+  with_cuts <- list(
+    schema_version = "amr.assessment.v2",
+    cutscores = list(ELA = list(`3` = list(462, 497, 525)))
+  )
+  expect_null(amrr_cutscores(with_cuts, "READING"))
+  expect_equal(unlist(amrr_cutscores(with_cuts, "ELA")$`3`), c(462, 497, 525))
+  expect_null(amrr_scale_bounds(with_cuts, "READING"))
+})
