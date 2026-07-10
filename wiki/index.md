@@ -84,3 +84,4 @@ WIDA_IN is the v2 dogfood corpus.
 | Page | Summary |
 |------|---------|
 | [[schema-crosswalk]] | Field-level mapping of `amr.*`, SGPc sidecar, and `assessment_spec.R` onto the five-domain taxonomy — conflicts, gaps, reclassifications |
+| [[grade-encoding-split]] | `^(PK\|K\|[0-9]{1,2})$` admits both `"K"` and `"0"` for kindergarten; assessment records use one, accountability records and SGPc the other. Validates cleanly, and becomes a silent `NULL` the moment WIDA cut scores are authored. Filed, not fixed |

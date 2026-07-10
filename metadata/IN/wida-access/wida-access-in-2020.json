@@ -1,13 +1,23 @@
 {
   "schema_version": "amr.assessment.v2",
   "status": "draft",
-  "source_confidence": "low",
+  "source_confidence": "medium",
   "provenance": {
-    "entered_by": "migration:sgpc-foundry",
-    "entered_at": "2026-07-02",
+    "entered_by": "ai:amr-harness",
+    "entered_at": "2026-07-10",
     "last_verified_at": null,
-    "changed_from_prior": null
+    "changed_from_prior": "Structural authoring pass: content_areas expanded from ELP_COMPOSITE alone to the four WIDA language domains plus the three reported composites; enrollment.enrolled_grades_tested populated (K-12); measurement.elp and source_documents added. cutscores, scale_bounds and comparability deliberately NOT authored -- no official source in hand. status remains draft."
   },
+  "source_documents": [
+    {
+      "title": "WIDA ACCESS for ELLs Interpretive Guide for Score Reports",
+      "url": "https://wida.wisc.edu/resources/access-ells-interpretive-guide-score-reports"
+    },
+    {
+      "title": "WIDA Consortium member page: Indiana",
+      "url": "https://wida.wisc.edu/memberships/consortium/in"
+    }
+  ],
   "jurisdiction": {
     "id": "IN",
     "name": "Indiana",
@@ -37,18 +47,222 @@
   },
   "content_areas": [
     {
+      "id": "LISTENING",
+      "label": "Listening",
+      "vertical_scale": true,
+      "scale_name": "WIDA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": [
+          "K",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "note": "Grade-cluster (form) instrument -- see measurement.elp.grade_clusters. Scores, proficiency-level lookups, and accountability exit thresholds are interpreted by ENROLLED grade, not by cluster form."
+      }
+    },
+    {
+      "id": "SPEAKING",
+      "label": "Speaking",
+      "vertical_scale": true,
+      "scale_name": "WIDA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": [
+          "K",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "note": "Grade-cluster (form) instrument -- see measurement.elp.grade_clusters. Scores, proficiency-level lookups, and accountability exit thresholds are interpreted by ENROLLED grade, not by cluster form."
+      }
+    },
+    {
+      "id": "READING",
+      "label": "Reading",
+      "vertical_scale": true,
+      "scale_name": "WIDA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": [
+          "K",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "note": "Grade-cluster (form) instrument -- see measurement.elp.grade_clusters. Scores, proficiency-level lookups, and accountability exit thresholds are interpreted by ENROLLED grade, not by cluster form."
+      }
+    },
+    {
+      "id": "WRITING",
+      "label": "Writing",
+      "vertical_scale": true,
+      "scale_name": "WIDA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": [
+          "K",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "note": "Grade-cluster (form) instrument -- see measurement.elp.grade_clusters. Scores, proficiency-level lookups, and accountability exit thresholds are interpreted by ENROLLED grade, not by cluster form."
+      }
+    },
+    {
       "id": "ELP_COMPOSITE",
       "label": "Overall (Composite)",
       "vertical_scale": true,
       "scale_name": "WIDA scale",
       "enrollment": {
         "intended_enrollment_grade": "variable",
-        "enrolled_grades_tested": [],
-        "note": "No per-grade facts in the v1 record; populate enrolled_grades_tested during authoring."
+        "enrolled_grades_tested": [
+          "K",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "note": "Grade-cluster (form) instrument -- see measurement.elp.grade_clusters. Scores, proficiency-level lookups, and accountability exit thresholds are interpreted by ENROLLED grade, not by cluster form."
+      }
+    },
+    {
+      "id": "ORAL",
+      "label": "Oral Language",
+      "vertical_scale": true,
+      "scale_name": "WIDA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": [
+          "K",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "note": "Grade-cluster (form) instrument -- see measurement.elp.grade_clusters. Scores, proficiency-level lookups, and accountability exit thresholds are interpreted by ENROLLED grade, not by cluster form."
+      }
+    },
+    {
+      "id": "LITERACY",
+      "label": "Literacy",
+      "vertical_scale": true,
+      "scale_name": "WIDA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "variable",
+        "enrolled_grades_tested": [
+          "K",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "note": "Grade-cluster (form) instrument -- see measurement.elp.grade_clusters. Scores, proficiency-level lookups, and accountability exit thresholds are interpreted by ENROLLED grade, not by cluster form."
       }
     }
   ],
   "achievement_levels": {
+    "LISTENING": {
+      "labels": [
+        "WIDA Level 1",
+        "WIDA Level 2",
+        "WIDA Level 3",
+        "WIDA Level 4",
+        "WIDA Level 5",
+        "WIDA Level 6"
+      ]
+    },
+    "SPEAKING": {
+      "labels": [
+        "WIDA Level 1",
+        "WIDA Level 2",
+        "WIDA Level 3",
+        "WIDA Level 4",
+        "WIDA Level 5",
+        "WIDA Level 6"
+      ]
+    },
+    "READING": {
+      "labels": [
+        "WIDA Level 1",
+        "WIDA Level 2",
+        "WIDA Level 3",
+        "WIDA Level 4",
+        "WIDA Level 5",
+        "WIDA Level 6"
+      ]
+    },
+    "WRITING": {
+      "labels": [
+        "WIDA Level 1",
+        "WIDA Level 2",
+        "WIDA Level 3",
+        "WIDA Level 4",
+        "WIDA Level 5",
+        "WIDA Level 6"
+      ]
+    },
     "ELP_COMPOSITE": {
       "labels": [
         "WIDA Level 1",
@@ -59,6 +273,71 @@
         "WIDA Level 6"
       ],
       "proficient_from": "WIDA Level 4"
+    },
+    "ORAL": {
+      "labels": [
+        "WIDA Level 1",
+        "WIDA Level 2",
+        "WIDA Level 3",
+        "WIDA Level 4",
+        "WIDA Level 5",
+        "WIDA Level 6"
+      ]
+    },
+    "LITERACY": {
+      "labels": [
+        "WIDA Level 1",
+        "WIDA Level 2",
+        "WIDA Level 3",
+        "WIDA Level 4",
+        "WIDA Level 5",
+        "WIDA Level 6"
+      ]
+    }
+  },
+  "measurement": {
+    "elp": {
+      "instrument": "ACCESS for ELLs Online",
+      "domains": [
+        "LISTENING",
+        "SPEAKING",
+        "READING",
+        "WRITING"
+      ],
+      "composites": {
+        "ELP_COMPOSITE": {
+          "label": "Overall",
+          "weights": {
+            "READING": 0.35,
+            "WRITING": 0.35,
+            "LISTENING": 0.15,
+            "SPEAKING": 0.15
+          }
+        },
+        "ORAL": {
+          "label": "Oral Language",
+          "weights": {
+            "LISTENING": 0.5,
+            "SPEAKING": 0.5
+          }
+        },
+        "LITERACY": {
+          "label": "Literacy",
+          "weights": {
+            "READING": 0.5,
+            "WRITING": 0.5
+          }
+        }
+      },
+      "grade_clusters": [
+        "K",
+        "1",
+        "2-3",
+        "4-5",
+        "6-8",
+        "9-12"
+      ],
+      "band_scheme": "WIDA proficiency levels 1.0-6.0 reported to tenths; scale scores 100-600"
     }
   }
 }

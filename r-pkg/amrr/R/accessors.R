@@ -20,8 +20,13 @@ as_record <- function(x) {
 #' @return A named list of cutscores, or `NULL` if absent.
 #' @export
 amrr_cutscores <- function(x, content_area = NULL) {
-  cuts <- as_record(x)$cutscores
-  if (is.null(content_area)) cuts else cuts[[content_area]]
+  # `[[` and not `$`: `$cutscores` partial-matches `cutscores_provenance`, so a
+  # record that documents *why* it has no cut scores would hand back that
+  # sentence as its cut scores. WIDA-ACCESS is exactly such a record.
+  cuts <- as_record(x)[["cutscores"]]
+  if (is.null(content_area)) return(cuts)
+  if (!content_area %in% names(cuts)) return(NULL)
+  cuts[[content_area]]
 }
 
 #' Achievement levels for a record
@@ -35,7 +40,7 @@ amrr_cutscores <- function(x, content_area = NULL) {
 #'   `proficient` mask when only `proficient_from` is present.
 #' @export
 amrr_achievement_levels <- function(x, content_area = NULL) {
-  levels <- as_record(x)$achievement_levels
+  levels <- as_record(x)[["achievement_levels"]]
   if (is.null(levels)) return(NULL)
   levels <- lapply(levels, function(block) {
     if (is.null(block[["proficient"]]) && !is.null(block[["proficient_from"]])) {
@@ -57,7 +62,7 @@ amrr_achievement_levels <- function(x, content_area = NULL) {
 #'   requested content area's target, or `NULL` if none.
 #' @export
 amrr_targets <- function(x, content_area = NULL) {
-  targets <- as_record(x)$achievement_targets
+  targets <- as_record(x)[["achievement_targets"]]
   if (is.null(content_area)) targets else targets[[content_area]]
 }
 
@@ -70,7 +75,7 @@ amrr_targets <- function(x, content_area = NULL) {
 #' @return The comparability list, or `NULL` if absent.
 #' @export
 amrr_comparability <- function(x) {
-  as_record(x)$comparability
+  as_record(x)[["comparability"]]
 }
 
 #' Operational vendor for a record's administration year
@@ -79,7 +84,7 @@ amrr_comparability <- function(x) {
 #' @return The vendor string, or `NA_character_` if absent.
 #' @export
 amrr_vendor <- function(x) {
-  as_record(x)$administration$vendor %||% NA_character_
+  as_record(x)[["administration"]][["vendor"]] %||% NA_character_
 }
 
 #' Enrollment-grade model for a record's content areas (v2)
@@ -115,8 +120,10 @@ amrr_enrollment <- function(x, content_area = NULL) {
 #'   block (grade -> `{loss, hoss, source}`), or `NULL` if absent.
 #' @export
 amrr_scale_bounds <- function(x, content_area = NULL) {
-  bounds <- as_record(x)$scale_bounds
-  if (is.null(content_area)) bounds else bounds[[content_area]]
+  bounds <- as_record(x)[["scale_bounds"]]
+  if (is.null(content_area)) return(bounds)
+  if (!content_area %in% names(bounds)) return(NULL)
+  bounds[[content_area]]
 }
 
 #' ELP measurement extension block (v2)
@@ -130,7 +137,7 @@ amrr_scale_bounds <- function(x, content_area = NULL) {
 #' @return The `measurement.elp` list, or `NULL` if absent.
 #' @export
 amrr_elp <- function(x) {
-  (as_record(x)$measurement %||% list())$elp
+  (as_record(x)[["measurement"]] %||% list())[["elp"]]
 }
 
 #' Alternate-assessment measurement extension block (v2)
@@ -143,7 +150,7 @@ amrr_elp <- function(x) {
 #' @return The `measurement.alternate` list, or `NULL` if absent.
 #' @export
 amrr_alternate <- function(x) {
-  (as_record(x)$measurement %||% list())$alternate
+  (as_record(x)[["measurement"]] %||% list())[["alternate"]]
 }
 
 #' Source documents for a record (v2)
@@ -154,7 +161,7 @@ amrr_alternate <- function(x) {
 #' @return A list of `{title, url}` entries, or `NULL` if absent.
 #' @export
 amrr_source_documents <- function(x) {
-  as_record(x)$source_documents
+  as_record(x)[["source_documents"]]
 }
 
 #' Growth targets from an accountability record (v2)
@@ -163,7 +170,7 @@ amrr_source_documents <- function(x) {
 #' @return A list of growth-target blocks, or `NULL` if absent.
 #' @export
 amrr_growth_targets <- function(x) {
-  as_record(x)$growth_targets
+  as_record(x)[["growth_targets"]]
 }
 
 #' Policy timelines from an accountability record (v2)
@@ -175,7 +182,7 @@ amrr_growth_targets <- function(x) {
 #' @return The timelines list, or `NULL` if absent.
 #' @export
 amrr_timelines <- function(x) {
-  as_record(x)$timelines
+  as_record(x)[["timelines"]]
 }
 
 #' Participation policy from an accountability record (v2)
@@ -186,5 +193,5 @@ amrr_timelines <- function(x) {
 #' @return The participation list, or `NULL` if absent.
 #' @export
 amrr_participation <- function(x) {
-  as_record(x)$participation
+  as_record(x)[["participation"]]
 }

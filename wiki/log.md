@@ -4,6 +4,63 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-10] authoring + analysis | WIDA_IN structural authoring; the grade-encoding split filed
+
+**Action:** authoring (Tier A, `metadata/IN/wida-access/*.json` × 9) + analysis (`grade-encoding-split`)
+
+Closing the registry's founding use case for its first real consumer: SGPc needs WIDA ACCESS
+Indiana metadata it can resolve, and the records were structural stubs — `enrolled_grades_tested: []`,
+`content_areas` = `[ELP_COMPOSITE]` alone, no `measurement.elp`, no `source_documents`.
+
+- **All 9 sidecars (2017–2025) authored** to a complete `amr.assessment.v2` shape: the four WIDA
+  language domains (`LISTENING`, `SPEAKING`, `READING`, `WRITING`) plus the three reported
+  composites (`ELP_COMPOSITE`, `ORAL`, `LITERACY`) as `content_areas`; `enrolled_grades_tested`
+  = K–12; `measurement.elp` (instrument, domains, composite weights, grade-cluster forms, band
+  scheme); `source_documents` (WIDA Interpretive Guide + the Indiana consortium page).
+  `source_confidence` raised `low` → `medium`.
+- **`content_areas` gained the domains because SGPc analyses `READING`.** The record previously
+  exposed only `ELP_COMPOSITE`, so the consumer's actual analysis had no resolvable metadata.
+- **Deliberately NOT authored: `cutscores`, `scale_bounds`, `comparability`.** No official source
+  in hand. Cut scores are a lookup we do not have; `loss`/`hoss` are sourceable but unsourced (the
+  v2 exemplar's `100/600` flags itself `provisional`); year-over-year comparability is a
+  psychometric claim across ACCESS 2.0 and the 2020 standards refresh. Absent beats invented.
+- **`status` stays `draft`.** The schema requires `provenance.source_citation` for `reviewed` /
+  `verified`, and promotion is a human act on a checked record — per `AGENTS.md`'s `author`
+  workflow. Nothing self-promoted.
+- **`proficient_from` set only on `ELP_COMPOSITE`.** Indiana's EL exit criterion is composite-based
+  and per-grade, and lives in the accountability record's `targets[]`. A per-domain proficiency
+  benchmark would be inventing policy.
+
+**Bug found by the authoring, and fixed** (`r-pkg/amrr/R/accessors.R`): R's `$` partial-matches
+list names, and `cutscores` is a prefix of `cutscores_provenance`. On a record that has **no** cut
+scores but explains why in `cutscores_provenance`, `as_record(x)$cutscores` returned that
+*sentence*, and `amrr_cutscores(x, ca)` then died with `subscript out of bounds`. WIDA-ACCESS is
+precisely such a record, so the first real consumer would have hit it. Every accessor now uses
+exact `[[` matching, and `amrr_cutscores()` / `amrr_scale_bounds()` honour their own documented
+"`NULL` if absent" for an unknown content area (`list(ELA=…)[["READING"]]` throws). Regression
+tests added; verified they fail against the old accessors (10 failures) and pass against the new.
+
+Pages created:
+- `wiki/analyses/grade-encoding-split.md` — the schema's grade pattern admits **both** `"K"` and
+  `"0"`; the new `enrolled_grades_tested` uses `"K"` while `targets[].per_grade_scale_score` and
+  SGPc both use `"0"`. The axis rule constrains `cutscores`/`scale_bounds`/`cutscores_source` only,
+  never `per_grade_scale_score`, so the corpus is internally inconsistent **and validates cleanly**.
+  The moment WIDA cut scores land, a kindergarten lookup silently returns `NULL`. Four options laid
+  out; none taken. Filed, not reconciled.
+
+Pages updated: `wiki/index.md` (Analyses).
+
+Verification: `make validate` → **48 files, 0 errors**, and the green is not vacuous — a negative
+control (`cutscores.READING["13"]` against `enrolled_grades_tested`) fails with
+`grade key(s) not in enrollment.enrolled_grades_tested: 13`. That axis rule was **dormant until
+now**: it had nothing to check while `enrolled_grades_tested` was `[]`. `make build` → 63 WIDA index
+rows (7 content areas × 9 years), `has_cutscores: false` throughout, `vertical_scale: true`.
+
+**Next:** mirror the v2 WIDA records into `amrr`'s fixture registry, then implement the three
+additive SGPc changes in [[sgpc-registry-consumption-contract]].
+
+---
+
 ## [2026-07-09] decision + build | ADR-012 accepted; the Tier 1 deploy loop closed by CI
 
 **Action:** decision (ADR-012 → **accepted**, rev 3) + build (`deploy-vercel.yml`)
