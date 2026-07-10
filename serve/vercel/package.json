@@ -11,6 +11,7 @@
     "fixture": "node scripts/make-fixture-db.mjs",
     "dev": "tsx local-server.ts",
     "smoke": "node scripts/smoke.mjs",
+    "test:guard": "tsx scripts/guard-corpus.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
