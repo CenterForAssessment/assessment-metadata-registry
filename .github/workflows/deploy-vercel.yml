@@ -94,11 +94,12 @@ jobs:
           rm -f serve/vercel/data/registry.sqlite-journal
           ls -l serve/vercel/data/registry.sqlite
 
-      - name: Install + typecheck
+      - name: Install + typecheck + guard corpus
         working-directory: serve/vercel
         run: |
           npm ci
           npm run typecheck
+          npm run test:guard
 
       - name: Deploy to production
         working-directory: serve/vercel

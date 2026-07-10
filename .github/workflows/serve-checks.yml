@@ -1,0 +1,51 @@
+name: serve-checks
+
+# Fast, unconditional checks for the Tier 1 serve slice (ADR-012). No R, no
+# database, no deploy credentials — so this runs on pull requests, which
+# deploy-vercel.yml cannot: that workflow only fires on push to main, and only
+# when AMR_VERCEL_DEPLOY_ENABLED is set.
+#
+# The SELECT-only guard is the store contract's defense-in-depth layer. Its
+# behaviour is specified by a corpus (serve/vercel/lib/__fixtures__/select-only-cases.json)
+# that is vendored byte-identically into dataimago-ai, where a second, independent
+# implementation runs the same cases. A guard that silently drifts from that corpus
+# would make the L1 extraction unsafe to consume here. This is the gate that stops it.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "serve/vercel/**"
+      - ".github/workflows/serve-checks.yml"
+  pull_request:
+    paths:
+      - "serve/vercel/**"
+      - ".github/workflows/serve-checks.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  serve-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24 # node:sqlite is stable and flag-free here; see serve/vercel/DEPLOY.md
+          cache: npm
+          cache-dependency-path: serve/vercel/package-lock.json
+
+      - name: Install
+        working-directory: serve/vercel
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: serve/vercel
+        run: npm run typecheck
+
+      - name: SELECT-only guard conforms to the shared corpus
+        working-directory: serve/vercel
+        run: npm run test:guard

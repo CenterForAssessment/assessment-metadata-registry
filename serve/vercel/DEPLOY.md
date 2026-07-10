@@ -98,8 +98,29 @@ never reaches the build — every endpoint then fails `db_not_found`. Do not del
 ```sh
 npm run fixture     # data/registry.sqlite from the real DDL (fixture=true stamped)
 npm run dev         # http://127.0.0.1:3000
-npm run smoke       # 21 checks
+npm run smoke       # 22 checks
+npm run test:guard  # SELECT-only guard vs the shared corpus (no DB needed)
 ```
+
+## The guard corpus is shared with dataimago-ai
+
+`lib/__fixtures__/select-only-cases.json` specifies `assertSelectOnly()` by example.
+A byte-identical copy lives in `dataimago-ai` at
+`packages/shared-utils/src/store/__fixtures__/`, where the Level-1 port of this guard
+(`@dataimago/shared-utils/store`) runs the same cases. Two independent implementations,
+one specification — which is what makes it safe to eventually consume the L1 primitives
+here instead of `lib/registry-db.ts`.
+
+To change guard behaviour, change the corpus and **both** implementations, and bump
+`_corpus_version`. Nothing checks byte-identity across the two orgs automatically;
+`_corpus_version` is the tripwire. `.github/workflows/serve-checks.yml` runs the corpus
+on every pull request that touches `serve/vercel/`, and `deploy-vercel.yml` runs it again
+before deploying.
+
+One case is a **deliberate false positive**: `select ';' as x` is rejected as
+`multiple_statements`, because the guard does not tokenize string literals. It is locked
+in the corpus so both implementations fail identically. The real backstop is the
+read-only connection, not the guard.
 
 ## Invariants (D1 contract — do not relax)
 

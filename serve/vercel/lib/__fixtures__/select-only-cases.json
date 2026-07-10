@@ -1,0 +1,107 @@
+{
+  "_comment": [
+    "Shared behavioural corpus for the SELECT-only guard.",
+    "Two independent implementations execute this file: `store/guard.ts` here, and",
+    "`serve/vercel/lib/registry-db.ts` in CenterForAssessment/assessment-metadata-registry.",
+    "Codes are engine-neutral; each repo maps them onto its own error type.",
+    "Keep the two copies byte-identical, and bump _corpus_version when cases change."
+  ],
+  "_corpus_version": 1,
+  "cases": [
+    {
+      "name": "rejects a bare write",
+      "sql": "delete from administration",
+      "expect": { "ok": false, "code": "not_select" }
+    },
+    {
+      "name": "rejects two statements",
+      "sql": "select 1; select 2",
+      "expect": { "ok": false, "code": "multiple_statements" }
+    },
+    {
+      "name": "rejects pragma (not a select head)",
+      "sql": "pragma table_info(x)",
+      "expect": { "ok": false, "code": "not_select" }
+    },
+    {
+      "name": "rejects a write smuggled behind a CTE",
+      "sql": "with x as (select 1) insert into administration values (1)",
+      "expect": { "ok": false, "code": "forbidden_keyword" }
+    },
+    {
+      "name": "allows a forbidden keyword inside an identifier (whole-word regex)",
+      "sql": "select jurisdiction_id as delete_me from jurisdiction limit 1",
+      "expect": { "ok": true, "normalized": "select jurisdiction_id as delete_me from jurisdiction limit 1" }
+    },
+    {
+      "name": "allows a column whose name begins with a forbidden keyword",
+      "sql": "select created_at from t",
+      "expect": { "ok": true, "normalized": "select created_at from t" }
+    },
+    {
+      "name": "allows a leading line comment",
+      "sql": "-- a comment\nselect 1",
+      "expect": { "ok": true, "normalized": "-- a comment\nselect 1" }
+    },
+    {
+      "name": "allows a leading block comment",
+      "sql": "/* a comment */ select 1",
+      "expect": { "ok": true, "normalized": "/* a comment */ select 1" }
+    },
+    {
+      "name": "allows a leading paren",
+      "sql": "(select 1)",
+      "expect": { "ok": true, "normalized": "(select 1)" }
+    },
+    {
+      "name": "strips a single trailing semicolon",
+      "sql": "select 1;",
+      "expect": { "ok": true, "normalized": "select 1" }
+    },
+    {
+      "name": "rejects a leading semicolon as a second statement",
+      "sql": "; select 1",
+      "expect": { "ok": false, "code": "multiple_statements" }
+    },
+    {
+      "name": "allows uppercase SELECT",
+      "sql": "SELECT 1",
+      "expect": { "ok": true, "normalized": "SELECT 1" }
+    },
+    {
+      "name": "allows uppercase WITH ... SELECT",
+      "sql": "WITH x AS (SELECT 1) SELECT * FROM x",
+      "expect": { "ok": true, "normalized": "WITH x AS (SELECT 1) SELECT * FROM x" }
+    },
+    {
+      "name": "allows a union of selects",
+      "sql": "select 1 union select 2",
+      "expect": { "ok": true, "normalized": "select 1 union select 2" }
+    },
+    {
+      "name": "rejects explain (not a select head)",
+      "sql": "explain select 1",
+      "expect": { "ok": false, "code": "not_select" }
+    },
+    {
+      "name": "rejects a bare VALUES clause",
+      "sql": "values (1)",
+      "expect": { "ok": false, "code": "not_select" }
+    },
+    {
+      "name": "rejects empty SQL",
+      "sql": "",
+      "expect": { "ok": false, "code": "empty_sql" }
+    },
+    {
+      "name": "rejects whitespace-only SQL",
+      "sql": "   ",
+      "expect": { "ok": false, "code": "empty_sql" }
+    },
+    {
+      "name": "KNOWN FALSE POSITIVE: a semicolon in a string literal reads as a second statement. The guard does not tokenize; read-only connections are the real backstop. Locked so both implementations fail identically.",
+      "sql": "select ';' as x",
+      "expect": { "ok": false, "code": "multiple_statements" }
+    }
+  ]
+}
