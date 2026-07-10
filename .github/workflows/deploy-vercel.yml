@@ -86,9 +86,13 @@ jobs:
           cache-dependency-path: serve/vercel/package-lock.json
 
       - name: Stage the real DB into the function bundle
+        # `data/` holds only git-ignored artifacts, so a fresh checkout has no such directory
+        # (a .gitkeep now tracks it; the mkdir is the belt to that suspenders).
         run: |
+          mkdir -p serve/vercel/data
           cp build/registry.sqlite serve/vercel/data/registry.sqlite
           rm -f serve/vercel/data/registry.sqlite-journal
+          ls -l serve/vercel/data/registry.sqlite
 
       - name: Install + typecheck
         working-directory: serve/vercel
