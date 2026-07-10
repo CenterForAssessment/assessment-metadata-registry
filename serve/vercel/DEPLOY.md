@@ -31,6 +31,30 @@ serve/vercel/
 └── vercel.json          /mcp rewrite + includeFiles for the DB
 ```
 
+## Vercel's Git integration must stay OFF
+
+**Vercel can never build this project.** `registry.sqlite` is a derived artifact produced by
+`amrr::build_registry()` — it needs R and the `amrr` package, which the Vercel build image does
+not have, and it is git-ignored so it is not in the repo either. A Git-triggered build can
+therefore only ever produce a broken deployment, and it would promote that to production.
+
+Deploys happen **only** from `.github/workflows/deploy-vercel.yml`, which has R, rebuilds the DB
+from the canonical sidecars, and then asserts the result.
+
+Two files enforce this, and **both are needed** — do not delete either as redundant:
+
+| File | Read when | Why |
+|---|---|---|
+| `vercel.json` (repo root) | Vercel project **Root Directory = `.`** | Kills Git-triggered builds even with the default root setting |
+| `serve/vercel/vercel.json` | Root Directory = `serve/vercel` | Kills them once the root is set correctly |
+
+Both set `"git": { "deploymentEnabled": false }`. This governs *Git-triggered* deployments only —
+an explicit `vercel deploy` from the CLI (what CI does) is unaffected.
+
+If you connect the repo in the Vercel dashboard, also set **Root Directory = `serve/vercel`**,
+or a Git build would try to publish the repository root — `metadata/`, `wiki/`, and all — as a
+static site.
+
 ## `.vercelignore` is load-bearing
 
 `data/*.sqlite` is **git-ignored** (the DB is a derived, disposable projection and must
