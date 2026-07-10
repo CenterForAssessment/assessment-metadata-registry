@@ -4,6 +4,39 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-09] decision + build | ADR-012 accepted; the Tier 1 deploy loop closed by CI
+
+**Action:** decision (ADR-012 → **accepted**, rev 3) + build (`deploy-vercel.yml`)
+
+- **ADR-012 accepted** on its own done-criterion: stateless streamable-http MCP validated
+  on-platform, 22/22 against the live URL. Tier 1 is the serverless default; Tier 2 (VPS
+  Datasette) remains opt-in working code; D1 remains the durable, host-agnostic unit of reuse.
+- **`.github/workflows/deploy-vercel.yml`** (opt-in via `AMR_VERCEL_DEPLOY_ENABLED`, mirroring
+  `deploy-api.yml`'s gate) rebuilds the DB from the canonical sidecars on every push to `main`,
+  deploys to Vercel, then **asserts**: (1) 22/22 smoke against the live URL; (2)
+  `live git_sha == GITHUB_SHA`; (3) HTTP 404 on `/data/registry.sqlite`, `/lib/registry-db.ts`,
+  `/DEPLOY.md`. It also refuses to deploy a DB carrying `registry_meta.fixture`.
+- **Why this stopped being a deferred nicety.** `build_registry()` stamps the DB from the checked-out
+  HEAD, so the envelope's provenance is true only if the DB is rebuilt at the commit being deployed.
+  A hand-deploy is silently orphaned by the next history rewrite — and that happened **twice** on
+  the day Tier 1 shipped: once when the branch was rebased onto `main` (dropping an already-merged
+  commit), and again when PR #16 was squash-merged. Both times production went on serving a
+  `git_sha` that no longer existed in the repository, and both times the only sensor was a human
+  looking. Provenance maintained by memory is not provenance. The workflow makes it a gate.
+- **Also hardened:** ADR-012's `outputDirectory` finding is now assertion (3) — a store must never
+  be reachable as a static asset. This is the assertion every future instance of `dataimago.store.v1`
+  inherits, and the one that matters most for SGPc, where the store is classification-gated.
+
+**Verification:** production redeployed from merged `main`; `live git_sha == origin/main` (`75e97ef`);
+22/22 live smoke; `/data/registry.sqlite` → 404. Workflow YAML parses; `smoke.mjs` exits non-zero on
+failure, so the gate bites.
+
+**Next:** extract the generic half of `serve/vercel/lib/` into the dataimago L1 store primitives
+(`@dataimago/shared-utils/store`) and consume it here (instance #1). Per-SHA `registry-<sha>.sqlite`
+Release assets remain deferred.
+
+---
+
 ## [2026-07-09] deploy | ADR-012 Tier 1 milestone MET — live at assessment-metadata-registry.vercel.app (22/22)
 
 **Action:** deploy + live verification (ADR-012 rev 2, Tier 1)

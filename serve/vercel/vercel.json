@@ -1,6 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "outputDirectory": "public",
+  "git": {
+    "deploymentEnabled": false
+  },
   "rewrites": [{ "source": "/mcp", "destination": "/api/mcp" }],
   "functions": {
     "api/*.ts": {

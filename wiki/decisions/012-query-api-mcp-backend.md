@@ -3,7 +3,7 @@ title: "ADR-012: Read-only query contract + MCP backend (Datasette-authored, hos
 type: decision
 created: 2026-07-09
 updated: 2026-07-09
-status: proposed
+status: accepted
 deciders: Damian Betebenner
 curated: true
 sources:
@@ -17,7 +17,7 @@ tags: [api, mcp, datasette, consumption, tier-c, serve, dataimago, sqlite, serve
 
 # ADR-012: Read-only query contract + MCP backend
 
-**Status:** Proposed (Damian Betebenner, 2026-07-09; revised same day — see Revision history)
+**Status:** Accepted (Damian Betebenner, 2026-07-09; revised same day — see Revision history). Accepted on the Tier 1 milestone: the stateless streamable-http MCP surface was validated on-platform, 22/22 against the live URL.
 
 ## Context
 
@@ -176,6 +176,18 @@ pull the exact DB by SHA instead of rebuilding).
 
 ## Revision history
 
+- **2026-07-09 (rev 3):** **Accepted**, and the deploy loop closed. `.github/workflows/deploy-vercel.yml`
+  (opt-in via `AMR_VERCEL_DEPLOY_ENABLED`) rebuilds the DB from the canonical sidecars on every
+  push to `main`, deploys, and then *asserts* three things: 22/22 smoke against the live URL;
+  `live git_sha == GITHUB_SHA`; and HTTP 404 on `/data/registry.sqlite`.
+
+  The middle assertion is why the workflow exists. `build_registry()` stamps the DB from the
+  checked-out HEAD, so provenance is true only if the DB is rebuilt at the commit being deployed.
+  A hand-deploy is silently orphaned by the next rebase or squash-merge — which happened **twice**
+  on the day Tier 1 shipped, caught both times only because a human looked. Provenance that depends
+  on someone remembering is not provenance. The third assertion generalizes the `outputDirectory`
+  finding: a store must never be reachable as a static asset, and that is now a gate rather than a
+  sentence in an ADR.
 - **2026-07-09 (rev 2):** Tier 1 **delivered and verified on-platform** — live at
   `https://assessment-metadata-registry.vercel.app`, 22/22 smoke green against the live URL,
   stateless streamable-http MCP proven with a second independent client. Engine swapped to

@@ -31,6 +31,30 @@ serve/vercel/
 └── vercel.json          /mcp rewrite + includeFiles for the DB
 ```
 
+## Vercel's Git integration must stay OFF
+
+**Vercel can never build this project.** `registry.sqlite` is a derived artifact produced by
+`amrr::build_registry()` — it needs R and the `amrr` package, which the Vercel build image does
+not have, and it is git-ignored so it is not in the repo either. A Git-triggered build can
+therefore only ever produce a broken deployment, and it would promote that to production.
+
+Deploys happen **only** from `.github/workflows/deploy-vercel.yml`, which has R, rebuilds the DB
+from the canonical sidecars, and then asserts the result.
+
+Two files enforce this, and **both are needed** — do not delete either as redundant:
+
+| File | Read when | Why |
+|---|---|---|
+| `vercel.json` (repo root) | Vercel project **Root Directory = `.`** | Kills Git-triggered builds even with the default root setting |
+| `serve/vercel/vercel.json` | Root Directory = `serve/vercel` | Kills them once the root is set correctly |
+
+Both set `"git": { "deploymentEnabled": false }`. This governs *Git-triggered* deployments only —
+an explicit `vercel deploy` from the CLI (what CI does) is unaffected.
+
+If you connect the repo in the Vercel dashboard, also set **Root Directory = `serve/vercel`**,
+or a Git build would try to publish the repository root — `metadata/`, `wiki/`, and all — as a
+static site.
+
 ## `.vercelignore` is load-bearing
 
 `data/*.sqlite` is **git-ignored** (the DB is a derived, disposable projection and must
@@ -86,8 +110,35 @@ npm run smoke       # 21 checks
 - The deployed DB is always `amrr::build_registry()` output; the fixture never ships
   (`registry_meta.fixture = "true"` marks it).
 
+## CI (the normal path — prefer it over deploying by hand)
+
+`.github/workflows/deploy-vercel.yml` runs on every push to `main` that touches `metadata/`,
+`schemas/`, `r-pkg/amrr/`, or `serve/vercel/`. It rebuilds the DB from the canonical sidecars,
+deploys, and then **asserts**: 22/22 smoke against the live URL · `live git_sha == GITHUB_SHA` ·
+HTTP 404 on `/data/registry.sqlite`.
+
+Deploy by hand only when you must, and understand what you are giving up: `build_registry()`
+stamps the DB from the checked-out HEAD, so a hand-deploy's `git_sha` is orphaned by the next
+rebase or squash-merge, and every API response then cites a commit that no longer exists. If you
+do deploy by hand, re-verify:
+
+```sh
+[ "$(curl -s "$PROD/api/schema" | jq -r .git_sha)" = "$(git rev-parse HEAD)" ] && echo ok
+```
+
+Enable the workflow with the repo variable `AMR_VERCEL_DEPLOY_ENABLED=true` and these secrets:
+
+| Secret | Where to find it |
+|---|---|
+| `VERCEL_TOKEN` | Vercel → Account Settings → Tokens |
+| `VERCEL_ORG_ID` | `serve/vercel/.vercel/project.json` → `orgId` |
+| `VERCEL_PROJECT_ID` | `serve/vercel/.vercel/project.json` → `projectId` |
+
+Optional repo variable `AMR_VERCEL_URL` overrides the production alias.
+
 ## Follow-ons (deferred)
 
-- CI: build DB + `vercel deploy` in an opt-in workflow (mirror of `deploy-api.yml`).
 - Publish `registry-<sha>.sqlite` as a Release asset (per-SHA retention, ADR-012).
-- Graduate `lib/` into the dataimago L1 `database` producer driver and consume it here.
+- Graduate the **generic** half of `lib/` into the dataimago L1 store primitives
+  (`@dataimago/shared-utils/store`) and consume it here. The five tools are domain and stay.
+  Contract: `dataimago.store.v1` (dataimago-design `data-store-contract`).

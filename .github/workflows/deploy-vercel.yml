@@ -1,0 +1,127 @@
+name: deploy-vercel
+
+# Tier 1 (ADR-012): on merge to main, rebuild the derived registry.sqlite from the canonical
+# sidecars and ship it to Vercel as serverless functions (REST + stateless streamable-http MCP).
+#
+# This workflow exists to hold ONE invariant that a human cannot be trusted to hold:
+#
+#     the git_sha stamped in every API response == the commit deployed
+#
+# `amrr::build_registry()` stamps the DB from the checked-out HEAD, so rebuilding here is what
+# makes the envelope's provenance true. A hand-deploy is orphaned by the next rebase or
+# squash-merge — which is exactly how this was discovered — and nothing catches it. The
+# post-deploy assertions below make that a gate rather than a claim.
+#
+# Independent of build-publish.yml and deploy-api.yml (own concurrency group), so it never
+# contends with the Pages deploy or the Tier 2 VPS. Opt-in: no-ops until the repo variable
+# AMR_VERCEL_DEPLOY_ENABLED is 'true', so merging it before the secrets exist cannot fail CI.
+#
+# Required secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+# Optional repo variable: AMR_VERCEL_URL (defaults to the production alias below)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "metadata/**"
+      - "schemas/**"
+      - "r-pkg/amrr/**"
+      - "serve/vercel/**"
+      - ".github/workflows/deploy-vercel.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vercel-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy-vercel:
+    if: vars.AMR_VERCEL_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    env:
+      # The CLI reads these to resolve the project without a committed .vercel/ directory.
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      PROD_URL: ${{ vars.AMR_VERCEL_URL || 'https://assessment-metadata-registry.vercel.app' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::jsonlite
+            any::jsonvalidate
+            any::DBI
+            any::RSQLite
+            any::digest
+      - name: Install amrr
+        run: R CMD INSTALL --no-docs r-pkg/amrr
+
+      - name: Validate (Tier A gate) + build the derived registry.sqlite (Tier B)
+        run: |
+          Rscript -e 'amrr::validate_registry(".")'
+          Rscript -e 'amrr::build_registry(".", out = "build")'
+
+      - name: The DB must be a real build, stamped with this commit
+        run: |
+          command -v sqlite3 >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq sqlite3; }
+          db=build/registry.sqlite
+          sha=$(sqlite3 "$db" "select value from registry_meta where key='git_sha';")
+          fixture=$(sqlite3 "$db" "select count(*) from registry_meta where key='fixture';")
+          echo "  built git_sha : $sha"
+          echo "  GITHUB_SHA    : $GITHUB_SHA"
+          [ "$fixture" = "0" ] || { echo "::error::the fixture DB must never be deployed"; exit 1; }
+          [ "$sha" = "$GITHUB_SHA" ] || { echo "::error::DB git_sha != deployed commit"; exit 1; }
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24  # node:sqlite is stable and flag-free here; see serve/vercel/DEPLOY.md
+          cache: npm
+          cache-dependency-path: serve/vercel/package-lock.json
+
+      - name: Stage the real DB into the function bundle
+        run: |
+          cp build/registry.sqlite serve/vercel/data/registry.sqlite
+          rm -f serve/vercel/data/registry.sqlite-journal
+
+      - name: Install + typecheck
+        working-directory: serve/vercel
+        run: |
+          npm ci
+          npm run typecheck
+
+      - name: Deploy to production
+        working-directory: serve/vercel
+        run: npx --yes vercel@latest deploy --prod --yes --token="${{ secrets.VERCEL_TOKEN }}"
+
+      # ── The three assertions. Any failure fails the deploy loudly. ──────────────────────
+
+      - name: Smoke the live URL (the same script that runs locally)
+        working-directory: serve/vercel
+        run: node scripts/smoke.mjs "$PROD_URL"
+
+      - name: Provenance — the live git_sha must name the deployed commit
+        run: |
+          live=$(curl -fsS "$PROD_URL/api/schema" | sed -n 's/.*"git_sha":"\([^"]*\)".*/\1/p')
+          echo "  live git_sha : $live"
+          echo "  GITHUB_SHA   : $GITHUB_SHA"
+          [ "$live" = "$GITHUB_SHA" ] || { echo "::error::live git_sha != deployed commit"; exit 1; }
+
+      - name: Disclosure — the store must not be reachable as a static asset
+        # ADR-012: `outputDirectory: "public"` keeps the DB out of the static surface. The
+        # same Vercel default over a classification-gated store (SGPc) would breach a
+        # disclosure boundary, so every instance of the contract asserts this.
+        # NB: do not name the loop variable `path` — it is a special array in zsh (aliased to
+        # PATH), so anyone pasting this into a local shell would silently destroy their PATH.
+        run: |
+          for asset in /data/registry.sqlite /lib/registry-db.ts /DEPLOY.md; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$PROD_URL$asset")
+            echo "  $asset -> $code"
+            [ "$code" = "404" ] || { echo "::error::$asset is publicly reachable ($code)"; exit 1; }
+          done
