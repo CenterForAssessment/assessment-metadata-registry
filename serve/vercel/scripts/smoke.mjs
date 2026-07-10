@@ -32,6 +32,33 @@ async function getJson(pathname) {
 
 // ---------- REST ----------
 async function restTests() {
+  const index = await getJson("/api");
+  check(
+    "REST /api index",
+    index.status === 200 &&
+      !!index.body?.git_sha &&
+      index.body?.provenance_error === undefined &&
+      Array.isArray(index.body?.endpoints) &&
+      index.body.endpoints.length > 0,
+    `git_sha=${index.body?.git_sha?.slice(0, 8)} endpoints=${index.body?.endpoints?.length}`,
+  );
+
+  check(
+    "REST /api index agrees with /api/schema on git_sha",
+    index.body?.git_sha === (await getJson("/api/schema")).body?.git_sha,
+  );
+
+  // The index advertises a catalog. Every path in it must answer. A 404 here means the
+  // catalog is lying — which is worse than having no catalog, because a caller trusts it.
+  for (const ep of index.body?.endpoints ?? []) {
+    const r = await fetch(`${BASE}${ep.path}`);
+    check(
+      `advertised ${ep.method} ${ep.path} is routed`,
+      r.status !== 404,
+      `status=${r.status}`,
+    );
+  }
+
   const schema = await getJson("/api/schema");
   check(
     "REST /api/schema",

@@ -13,13 +13,36 @@ SQLite access is **`node:sqlite`** (Node ≥ 22.5; stable and flag-free on 24, w
 `engines.node` pins). Deliberately not `better-sqlite3`: a native addon has to compile
 in the Vercel build image, and it does not build against current Node at all.
 
+## The `/api` index
+
+`GET /api` is the front door: it returns the endpoint catalog, the `git_sha` of the
+registry build being served, `built_at`, `max_rows`, and the valid `compare_dimensions`.
+There is deliberately **no route at `/`** — the deployment is an API, and Vercel's 404
+there is correct.
+
+Two properties are load-bearing:
+
+- **The index never fails.** Every other surface returns `503 db_not_found` when the
+  bundled DB is missing, which is right for a data endpoint. The front door must stay
+  readable during exactly that outage, so its provenance block degrades to `null` and the
+  underlying error appears as `provenance_error` beside it. A `null` `git_sha` therefore
+  means "could not read the DB", never "no commit" — check for `provenance_error` before
+  interpreting it. It is an index, not a health check.
+- **The catalog cannot drift from the routes.** `lib/endpoints.ts` is the single source of
+  truth. `local-server.ts` refuses to start if a path is advertised but unrouted (or routed
+  but undocumented, `/api/mcp` aside — it is the pre-rewrite alias of `/mcp`), and
+  `scripts/smoke.mjs` fetches every advertised path and fails on a 404. A catalog that
+  lies is worse than no catalog, because callers trust it.
+
 ## Layout
 
 ```
 serve/vercel/
 ├── api/                 one function per REST endpoint + mcp.ts (stateless MCP)
+│   └── index.ts         GET /api — the endpoint catalog + build provenance
 ├── lib/
 │   ├── registry-db.ts   port of serve/mcp/registry_db.py (guard, envelope, MAX_ROWS)
+│   ├── endpoints.ts     the endpoint catalog — single source of truth for /api
 │   ├── tools.ts         the 5 tools, shared by REST + MCP (shapes = tool_schemas.json)
 │   └── mcp.ts           fresh McpServer per request (stateless)
 ├── data/registry.sqlite the bundled DB (gitignored; see below)
@@ -81,8 +104,9 @@ never reaches the build — every endpoint then fails `db_not_found`. Do not del
    ```sh
    node scripts/smoke.mjs https://<project>.vercel.app
    ```
-   22/22 = the Tier 1 milestone ("validate stateless streamable-http MCP on the
-   serverless platform") is met.
+   All green = the Tier 1 milestone ("validate stateless streamable-http MCP on the
+   serverless platform") is met. The check count grows with the endpoint catalog, so it
+   is not asserted here; the script prints `N/N` and exits non-zero on any failure.
 
    The corpus-dependent checks are **self-discovering**: smoke asks `/api/query` which
    `(content_area, year)` cell actually spans ≥ 2 jurisdictions, then compares on that
