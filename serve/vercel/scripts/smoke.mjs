@@ -30,6 +30,33 @@ async function getJson(pathname) {
   return { status: res.status, body };
 }
 
+// ---------- static root ----------
+async function rootTests() {
+  const res = await fetch(`${BASE}/`);
+  const html = res.status === 200 ? await res.text() : "";
+  check(
+    "GET / serves the landing page",
+    res.status === 200 && (res.headers.get("content-type") ?? "").includes("text/html"),
+    `status=${res.status} type=${res.headers.get("content-type")}`,
+  );
+  check("GET / renders from /api", html.includes('fetch("/api"'));
+
+  // The page must NOT hard-code the catalog: it fetches /api and renders whatever it says.
+  // A literal endpoint path in the markup is the first symptom of a list that will rot.
+  const hardCoded = ["/api/schema", "/api/query", "/api/metadata", "/api/compare", "/api/changes"].filter(
+    (p) => html.includes(`>${p}<`) || html.includes(`href="${p}"`),
+  );
+  check(
+    "GET / hard-codes no endpoint list",
+    hardCoded.length === 0,
+    hardCoded.length ? `found ${hardCoded.join(", ")}` : "rendered from /api",
+  );
+
+  // The static surface is exactly one file. The DB must never be reachable there.
+  const db = await fetch(`${BASE}/data/registry.sqlite`);
+  check("GET /data/registry.sqlite is not served", db.status === 404, `status=${db.status}`);
+}
+
 // ---------- REST ----------
 async function restTests() {
   const index = await getJson("/api");
@@ -225,6 +252,7 @@ async function mcpTests() {
 }
 
 try {
+  await rootTests();
   await restTests();
   await mcpTests();
 } catch (e) {

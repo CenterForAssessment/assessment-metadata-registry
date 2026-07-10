@@ -4,6 +4,8 @@
  * Routes exactly what vercel.json routes; handlers are the same modules Vercel deploys.
  */
 import { createServer } from "node:http";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import changes from "./api/changes.js";
 import compare from "./api/compare.js";
 import index from "./api/index.js";
@@ -42,8 +44,30 @@ if (missing.length > 0 || undocumented.length > 0) {
   );
 }
 
+// Vercel serves `public/` (vercel.json outputDirectory) as the static surface, with
+// index.html at `/`. Emulate exactly that one file and nothing else: the harness must not
+// imply the static surface is broader than it is. No path is taken from the request.
+const INDEX_HTML = path.join(import.meta.dirname, "public", "index.html");
+const STATIC_PATHS = new Set(["/", "/index.html"]);
+
 const server = createServer((req, res) => {
   const pathname = new URL(req.url ?? "/", "http://local").pathname;
+
+  if (STATIC_PATHS.has(pathname)) {
+    readFile(INDEX_HTML)
+      .then((body) => {
+        res.statusCode = 200;
+        res.setHeader("content-type", "text/html; charset=utf-8");
+        res.end(body);
+      })
+      .catch(() => {
+        res.statusCode = 404;
+        res.setHeader("content-type", "application/json");
+        res.end(JSON.stringify({ error: { code: "no_index", message: "public/index.html missing" } }));
+      });
+    return;
+  }
+
   const handler = routes[pathname];
   if (!handler) {
     res.statusCode = 404;

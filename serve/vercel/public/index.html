@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Assessment Metadata Registry — Read-only query API</title>
+    <meta
+      name="description"
+      content="Read-only query contract over the assessment-metadata-registry. Every answer is stamped with the commit SHA it was built from."
+    />
+    <!--
+      The endpoint list is NOT written here. It is fetched from /api at load and rendered,
+      so this page cannot drift from the routes the way a hand-maintained list would.
+      lib/endpoints.ts is the single source of truth; this is one more consumer of it.
+
+      Self-contained by necessity: this file is served from `public/`, which exists to keep
+      the project root (lib/*.ts, and the bundled registry.sqlite) off the static surface.
+      Adding assets here adds them to the public surface. Keep it to this one file.
+    -->
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --fg: #1a1a1a;
+        --muted: #5c5c5c;
+        --line: #e2e2e2;
+        --accent: #0b5cad;
+        --code-bg: #f5f6f7;
+        --warn-bg: #fff5e6;
+        --warn-line: #e0a24a;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #14161a;
+          --fg: #e8e8e8;
+          --muted: #9aa0a6;
+          --line: #2c3037;
+          --accent: #6fb3f2;
+          --code-bg: #1c1f24;
+          --warn-bg: #2b2313;
+          --warn-line: #8a6626;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      main { max-width: 52rem; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+      h1 { font-size: 1.5rem; margin: 0 0 0.35rem; letter-spacing: -0.01em; }
+      .tagline { color: var(--muted); margin: 0 0 1.75rem; }
+      code, .mono {
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 0.875em;
+      }
+      .provenance {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 0.85rem 1rem;
+        margin-bottom: 2rem;
+        background: var(--code-bg);
+      }
+      .provenance dl {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.3rem 1rem;
+        margin: 0;
+      }
+      .provenance dt { color: var(--muted); }
+      .provenance dd { margin: 0; }
+      .degraded { background: var(--warn-bg); border-color: var(--warn-line); }
+      h2 { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 2rem 0 0.75rem; }
+      .scroll { overflow-x: auto; }
+      table { border-collapse: collapse; width: 100%; min-width: 34rem; }
+      th, td { text-align: left; padding: 0.5rem 0.75rem 0.5rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+      th { color: var(--muted); font-weight: 500; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+      td.method { color: var(--muted); white-space: nowrap; }
+      td.path a { color: var(--accent); text-decoration: none; }
+      td.path a:hover { text-decoration: underline; }
+      .params { color: var(--muted); font-size: 0.85em; }
+      .req::after { content: "*"; color: var(--accent); }
+      ul.links { list-style: none; padding: 0; margin: 0; }
+      ul.links li { margin-bottom: 0.4rem; }
+      a { color: var(--accent); }
+      footer { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.875rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Assessment Metadata Registry</h1>
+      <p class="tagline">
+        A read-only query contract over the registry's canonical JSON sidecars. Every
+        answer is stamped with the commit SHA it was built from.
+      </p>
+
+      <div id="provenance" class="provenance">
+        <dl>
+          <dt>Serving</dt>
+          <dd id="sha" class="mono">loading…</dd>
+        </dl>
+      </div>
+
+      <h2>Endpoints</h2>
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+          </thead>
+          <tbody id="endpoints">
+            <tr><td colspan="3" class="params">loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="params"><span class="req"></span> required parameter</p>
+
+      <h2>Elsewhere</h2>
+      <ul class="links">
+        <li>
+          <a href="https://centerforassessment.github.io/assessment-metadata-registry/"
+            >Browse the catalog</a
+          >
+          — the human-readable Quarto site: per-record Display / Explore / Raw views.
+        </li>
+        <li>
+          <a href="https://github.com/CenterForAssessment/assessment-metadata-registry"
+            >Source</a
+          >
+          — canonical sidecars, schemas, ADRs, and the <code>amrr</code> R package.
+        </li>
+      </ul>
+
+      <footer>
+        The SQLite database behind this API is a disposable projection of the canonical
+        JSON. It is bundled into the functions and is never downloadable.
+      </footer>
+    </main>
+
+    <script>
+      (async function () {
+        const shaEl = document.getElementById("sha");
+        const provEl = document.getElementById("provenance");
+        const rowsEl = document.getElementById("endpoints");
+
+        function text(el, s) {
+          el.textContent = s;
+        }
+
+        let data;
+        try {
+          const res = await fetch("/api", { headers: { accept: "application/json" } });
+          data = await res.json();
+        } catch (e) {
+          provEl.classList.add("degraded");
+          text(shaEl, "could not reach /api — " + String(e));
+          rowsEl.innerHTML = "";
+          return;
+        }
+
+        // A null git_sha means the registry DB could not be read, NOT "no commit".
+        // /api says so explicitly via provenance_error; surface that rather than
+        // rendering an empty field that reads like an answer.
+        if (data.provenance_error) {
+          provEl.classList.add("degraded");
+          text(
+            shaEl,
+            "unavailable — " +
+              (data.provenance_error.message ?? data.provenance_error.code ?? "unknown error"),
+          );
+        } else {
+          const sha = data.git_sha ?? "";
+          const short = sha.slice(0, 7);
+          const a = document.createElement("a");
+          a.href =
+            "https://github.com/CenterForAssessment/assessment-metadata-registry/commit/" + sha;
+          a.textContent = short;
+          a.className = "mono";
+          shaEl.textContent = "";
+          shaEl.append(a);
+          if (data.built_at) {
+            const built = document.createElement("span");
+            built.className = "params";
+            built.textContent = "  built " + data.built_at;
+            shaEl.append(built);
+          }
+        }
+
+        rowsEl.innerHTML = "";
+        for (const ep of data.endpoints ?? []) {
+          const tr = document.createElement("tr");
+
+          const m = document.createElement("td");
+          m.className = "method mono";
+          m.textContent = ep.method;
+
+          const p = document.createElement("td");
+          p.className = "path mono";
+          // Only GETs are followable in a browser; /mcp needs a POST with an SSE Accept.
+          if (ep.method === "GET") {
+            const link = document.createElement("a");
+            link.href = ep.example || ep.path;
+            link.textContent = ep.path;
+            p.append(link);
+          } else {
+            p.textContent = ep.path;
+          }
+
+          const d = document.createElement("td");
+          d.append(document.createTextNode(ep.summary ?? ""));
+          if (ep.params?.length) {
+            const div = document.createElement("div");
+            div.className = "params";
+            ep.params.forEach((param, i) => {
+              const s = document.createElement("span");
+              s.className = "mono" + (param.required ? " req" : "");
+              s.textContent = param.name;
+              s.title = param.description ?? "";
+              if (i) div.append(document.createTextNode(", "));
+              div.append(s);
+            });
+            d.append(div);
+          }
+
+          tr.append(m, p, d);
+          rowsEl.append(tr);
+        }
+      })();
+    </script>
+  </body>
+</html>
