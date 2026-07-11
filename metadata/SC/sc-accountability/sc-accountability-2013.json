@@ -1,12 +1,13 @@
 {
   "schema_version": "amr.accountability.v2",
-  "status": "draft",
-  "source_confidence": "low",
+  "status": "reviewed",
+  "source_confidence": "medium",
   "provenance": {
     "entered_by": "seed:demo",
     "entered_at": "2026-07-02",
     "last_verified_at": null,
-    "changed_from_prior": null
+    "changed_from_prior": null,
+    "source_citation": "Demonstration State C \u2014 synthetic data generated for the SGPc testSGPc omnibus; no external source."
   },
   "jurisdiction": {
     "id": "SC",

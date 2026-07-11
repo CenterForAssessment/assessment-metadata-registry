@@ -4,6 +4,32 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-11] authoring | demo corpus hardened — the registry's first non-draft records
+
+**Action:** authoring (Tier A, `metadata/{SD,SC}/**` × 24)
+
+The two demonstration jurisdictions (State D `SD`, State C `SC`) were seeded as `draft`
+placeholders by ADR-003. They are now the schema's **first end-to-end exerciser of the
+non-draft path** — the point of demo data is that we can author these facts honestly and
+fast, where real data would need sourcing.
+
+- **All 24 SD/SC sidecars promoted `draft` → `reviewed`** with a synthetic
+  `provenance.source_citation` ("Demonstration State … — synthetic data generated for the
+  SGPc testSGPc omnibus; no external source") and `source_confidence` `low` → `medium`.
+  This is the first time the `status ⟹ provenance.source_citation` conditional is exercised
+  by a *passing* record, not only by a negative control.
+- **The 12 summative records gained `scale_bounds` and `cutscores_source`.** Bounds are
+  derived from each record's own cutscores so the scale-envelope invariant
+  (`loss ≤ min(cut) ≤ max(cut) ≤ hoss`) holds by construction, sit inside the SGPcdata
+  observed ranges, and differ across State C's 2015 scale break (legacy 2013–14 vs new
+  2015–17). `cutscores_source` marks every demo cut `provisional`.
+- The `enrollment` "review during authoring" seed notes were reconciled.
+
+These records back the SGPc `testSGPc()` omnibus; the SGPc-side change to consume them from
+the registry (closing ADR-003's deferred item) lands alongside.
+
+---
+
 ## [2026-07-10] authoring + analysis | WIDA_IN structural authoring; the grade-encoding split filed
 
 **Action:** authoring (Tier A, `metadata/IN/wida-access/*.json` × 9) + analysis (`grade-encoding-split`)

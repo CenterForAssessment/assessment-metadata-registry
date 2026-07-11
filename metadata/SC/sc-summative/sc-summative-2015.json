@@ -1,12 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "low",
+  "status": "reviewed",
+  "source_confidence": "medium",
   "provenance": {
     "entered_by": "seed:demo",
     "entered_at": "2026-07-02",
     "last_verified_at": null,
-    "changed_from_prior": "scale transition"
+    "changed_from_prior": "scale transition",
+    "source_citation": "Demonstration State C \u2014 synthetic data generated for the SGPc testSGPc omnibus; no external source."
   },
   "jurisdiction": {
     "id": "SC",
@@ -52,7 +53,7 @@
           "7",
           "8"
         ],
-        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+        "note": "Demonstration enrollment: grades 3-8 tested annually."
       }
     },
     {
@@ -70,7 +71,7 @@
           "7",
           "8"
         ],
-        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+        "note": "Demonstration enrollment: grades 3-8 tested annually."
       }
     }
   ],
@@ -158,6 +159,90 @@
         680,
         760
       ]
+    }
+  },
+  "scale_bounds": {
+    "ELA": {
+      "3": {
+        "loss": 470,
+        "hoss": 900,
+        "source": "provisional"
+      },
+      "4": {
+        "loss": 470,
+        "hoss": 900,
+        "source": "provisional"
+      },
+      "5": {
+        "loss": 470,
+        "hoss": 900,
+        "source": "provisional"
+      },
+      "6": {
+        "loss": 470,
+        "hoss": 900,
+        "source": "provisional"
+      },
+      "7": {
+        "loss": 470,
+        "hoss": 900,
+        "source": "provisional"
+      },
+      "8": {
+        "loss": 470,
+        "hoss": 900,
+        "source": "provisional"
+      }
+    },
+    "MATHEMATICS": {
+      "3": {
+        "loss": 430,
+        "hoss": 890,
+        "source": "provisional"
+      },
+      "4": {
+        "loss": 430,
+        "hoss": 890,
+        "source": "provisional"
+      },
+      "5": {
+        "loss": 430,
+        "hoss": 890,
+        "source": "provisional"
+      },
+      "6": {
+        "loss": 430,
+        "hoss": 890,
+        "source": "provisional"
+      },
+      "7": {
+        "loss": 430,
+        "hoss": 890,
+        "source": "provisional"
+      },
+      "8": {
+        "loss": 430,
+        "hoss": 890,
+        "source": "provisional"
+      }
+    }
+  },
+  "cutscores_source": {
+    "ELA": {
+      "3": "provisional",
+      "4": "provisional",
+      "5": "provisional",
+      "6": "provisional",
+      "7": "provisional",
+      "8": "provisional"
+    },
+    "MATHEMATICS": {
+      "3": "provisional",
+      "4": "provisional",
+      "5": "provisional",
+      "6": "provisional",
+      "7": "provisional",
+      "8": "provisional"
     }
   }
 }

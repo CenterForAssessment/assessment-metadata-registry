@@ -1,12 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "low",
+  "status": "reviewed",
+  "source_confidence": "medium",
   "provenance": {
     "entered_by": "seed:demo",
     "entered_at": "2026-07-02",
     "last_verified_at": null,
-    "changed_from_prior": null
+    "changed_from_prior": null,
+    "source_citation": "Demonstration State D \u2014 synthetic data generated for the SGPc testSGPc omnibus; no external source."
   },
   "jurisdiction": {
     "id": "SD",
@@ -51,7 +52,7 @@
           "7",
           "8"
         ],
-        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+        "note": "Demonstration enrollment: grades 3-8 tested annually."
       }
     },
     {
@@ -69,7 +70,7 @@
           "7",
           "8"
         ],
-        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+        "note": "Demonstration enrollment: grades 3-8 tested annually."
       }
     }
   ],
@@ -157,6 +158,90 @@
         2540,
         2650
       ]
+    }
+  },
+  "scale_bounds": {
+    "MATHEMATICS": {
+      "3": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "4": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "5": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "6": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "7": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "8": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      }
+    },
+    "READING": {
+      "3": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "4": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "5": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "6": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "7": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      },
+      "8": {
+        "loss": 2000,
+        "hoss": 3100,
+        "source": "provisional"
+      }
+    }
+  },
+  "cutscores_source": {
+    "MATHEMATICS": {
+      "3": "provisional",
+      "4": "provisional",
+      "5": "provisional",
+      "6": "provisional",
+      "7": "provisional",
+      "8": "provisional"
+    },
+    "READING": {
+      "3": "provisional",
+      "4": "provisional",
+      "5": "provisional",
+      "6": "provisional",
+      "7": "provisional",
+      "8": "provisional"
     }
   }
 }
