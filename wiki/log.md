@@ -4,6 +4,29 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-20] schema | optional `notes` for interpretive free text (additive, no version bump)
+
+**Action:** schema (`schemas/amr.assessment.v2.schema.json`, `schemas/amr.accountability.v2.schema.json`)
+
+Added an optional `notes` (string) property for **interpretive context** — how to read a value,
+policy caveats — kept distinct from `provenance`/`source_citation` (which stays *where a value
+came from*). Declared at: assessment root, `content_areas[]`, each `achievement_levels` entry, and
+each `scale_bounds` cell; accountability root and `targets[]`. Purpose-scoped prose fields that
+already exist (`cutscores_provenance`, `comparability.notes`, `content_areas[].enrollment.note`,
+`provenance.changed_from_prior`, `targets[].provenance`, `timelines.notes`, `participation.notes`)
+are unchanged and remain the first choice; `notes` is the catch-all where no scoped field fits.
+
+Because every object is `additionalProperties: false` (ajv strict), `notes` had to be declared
+explicitly — an undeclared note still fails validation. Verified: existing corpus validates
+unchanged (48 files, 0 errors); a `notes` at a declared level passes; a `notes` inside
+`administration` fails ("must NOT have additional properties"). Additive optional field, no
+`schema_version` bump (ADR-009 D5/D6: v2 evolves additively). Motivating case: the Indiana ELP
+exit rule — Overall 5.0 auto-exit with a **provisional 4.3–4.9** ILP-committee pathway that is
+committee-mediated (not a scale-score cut), so it needs a note rather than a target threshold.
+Mirrored on the SGPc side (`sgpc.assessment_metadata.v0.1` schema + a `target_notes` output column).
+
+---
+
 ## [2026-07-11] authoring | demo corpus hardened — the registry's first non-draft records
 
 **Action:** authoring (Tier A, `metadata/{SD,SC}/**` × 24)

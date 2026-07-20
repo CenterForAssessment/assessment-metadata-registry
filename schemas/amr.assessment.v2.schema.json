@@ -164,7 +164,8 @@
               }
             },
             "additionalProperties": false
-          }
+          },
+          "notes": { "type": "string" }
         },
         "additionalProperties": false
       }
@@ -190,7 +191,8 @@
             "type": "array",
             "description": "DEPRECATED (ADR-010): legacy boolean mask aligned positionally to labels[]. Superseded by proficient_from (a single label), which avoids positional coupling and the non-monotonic masks the array form permits. Still accepted during migration; when both are present the validator checks they agree.",
             "items": { "type": ["string", "boolean"] }
-          }
+          },
+          "notes": { "type": "string" }
         },
         "additionalProperties": false
       }
@@ -225,7 +227,8 @@
           "properties": {
             "loss": { "type": "number", "description": "Lowest obtainable scale score." },
             "hoss": { "type": "number", "description": "Highest obtainable scale score." },
-            "source": { "enum": ["official", "derived", "provisional"] }
+            "source": { "enum": ["official", "derived", "provisional"] },
+            "notes": { "type": "string" }
           },
           "additionalProperties": false
         }
@@ -314,6 +317,10 @@
         }
       },
       "additionalProperties": false
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional free-text interpretive note for this administration (how to read the metadata; policy caveats). Distinct from provenance.source_citation and cutscores_provenance (source/citation). A note may also attach per content_area, achievement_levels entry, and scale_bounds cell."
     }
   },
   "additionalProperties": false,
