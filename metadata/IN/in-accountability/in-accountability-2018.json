@@ -1,12 +1,13 @@
 {
   "schema_version": "amr.accountability.v2",
-  "status": "draft",
+  "status": "reviewed",
   "source_confidence": "low",
   "provenance": {
     "entered_by": "migration:sgpc-foundry-accountability",
     "entered_at": "2026-07-02",
     "last_verified_at": null,
-    "changed_from_prior": null
+    "changed_from_prior": null,
+    "source_citation": "Indiana DOE, 'Exit Criteria for English Learners Guidance 2025-2026' (pub. Apr 2025); ESSA State Plan amendment approved summer 2024. Overall-composite auto-exit at 5.0. Per-grade Overall-composite cutscores (OLD WIDA scale, <= 2025) carried in SGP::SGPstateData[['WIDA_IN']]."
   },
   "jurisdiction": {
     "id": "IN",
@@ -30,21 +31,22 @@
       "basis": "scale_score",
       "comparison": ">=",
       "per_grade_scale_score": {
-        "0": 299.4,
-        "1": 320.8,
-        "2": 335,
-        "3": 346.2,
-        "4": 356.4,
-        "5": 364.4,
-        "6": 371.8,
-        "7": 378.8,
-        "8": 384.8,
-        "9": 391.6,
-        "10": 397.6,
-        "11": 403.4,
-        "12": 408.4
+        "0": 325.0,
+        "1": 344.0,
+        "2": 359.0,
+        "3": 371.0,
+        "4": 382.0,
+        "5": 390.0,
+        "6": 399.0,
+        "7": 406.0,
+        "8": 412.0,
+        "9": 418.0,
+        "10": 424.0,
+        "11": 429.0,
+        "12": 434.0
       },
-      "provenance": "IN ELP exit = Overall composite >= WIDA level 4.2 (OLD scale); per-grade scale-score thresholds resolved at build time from the vendored widaACCESS_ss_to_pl OLD lookup (build/wida_access_ss_to_pl_OLD.csv). PRELIMINARY: confirm Indiana's official exit level and the LONG CONTENT_AREA code for the Overall composite (default 'ELP_COMPOSITE') before activating; WIDA resets the scale July 2026 (new-scale exit = new sidecar)."
+      "provenance": "Indiana DOE, 'Exit Criteria for English Learners Guidance 2025-2026' (pub. Apr 2025); ESSA State Plan amendment approved summer 2024. Overall-composite auto-exit at 5.0. Per-grade Overall-composite cutscores (OLD WIDA scale, <= 2025) carried in SGP::SGPstateData[['WIDA_IN']].",
+      "notes": "Absolute auto-exit at Overall 5.0 (per-grade scale-score thresholds here). 4.3-4.9 Overall is a PROVISIONAL pathway: grade 3+ students with a Tier B/C score are eligible for ILP-committee additional-evidence review -- committee-mediated, not a pure scale-score cut, so not encoded as a target threshold. OLD WIDA scale (<= 2025); the July-2026 reset = a new sidecar."
     }
   ]
 }

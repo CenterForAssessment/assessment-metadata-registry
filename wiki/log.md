@@ -4,6 +4,29 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-07-20] authoring | Indiana WIDA ACCESS reviewed with real cutscores + 5.0 exit
+
+**Action:** authoring (Tier A, `metadata/IN/wida-access/**` x9 + `metadata/IN/in-accountability/**` x9)
+
+The Indiana WIDA ACCESS corpus (2017-2025) is promoted `draft -> reviewed` -- the **first
+real (non-demo) reviewed records carrying cutscores**. `ELP_COMPOSITE` gains the Indiana
+7-level scheme (the four base WIDA levels, the 4.3 provisional band, 5, 6) with
+`proficient_from: "WIDA Level 5"`, per-grade Overall-composite `cutscores` (level lower
+bounds, grade keys `K,1-12`), `cutscores_source: official`, and `scale_bounds` at the WIDA
+composite range (loss 100 / hoss 600, source provisional). The accountability `ELP_COMPOSITE`
+exit target is corrected from the preliminary 4.2 to the absolute **Overall 5.0** auto-exit
+(per-grade 325..434), with an interpretive `notes` for the 4.3-4.9 provisional ILP-committee
+pathway.
+
+Source: Indiana DOE, "Exit Criteria for English Learners Guidance 2025-2026" (pub. Apr 2025;
+ESSA State Plan amendment approved summer 2024); Overall-composite cutscores from
+`SGP::SGPstateData[["WIDA_IN"]]` (OLD WIDA scale, <= 2025). `make validate` -> 48 files, 0
+errors (reviewed records exercise the scale-envelope, axis-rule, and non-draft-requires-
+source_citation invariants). The July-2026 WIDA scale reset will be a separate new-scale pass.
+Mirrors the foundry sidecars (SGPc `metadata/wida-access-in-<Y>.json`).
+
+---
+
 ## [2026-07-20] schema | optional `notes` for interpretive free text (additive, no version bump)
 
 **Action:** schema (`schemas/amr.assessment.v2.schema.json`, `schemas/amr.accountability.v2.schema.json`)
