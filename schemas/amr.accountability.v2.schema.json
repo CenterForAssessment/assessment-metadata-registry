@@ -113,7 +113,8 @@
             "type": "number",
             "description": "For basis='level' (deferred): the fractional level target (e.g. 4.2)."
           },
-          "provenance": { "type": "string" }
+          "provenance": { "type": "string" },
+          "notes": { "type": "string" }
         },
         "allOf": [
           {
@@ -179,6 +180,10 @@
         "notes": { "type": "string" }
       },
       "additionalProperties": false
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional free-text interpretive note for this accountability administration. Distinct from provenance.source_citation; a note may also attach per target."
     }
   },
   "additionalProperties": false,
