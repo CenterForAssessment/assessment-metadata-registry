@@ -27,6 +27,9 @@ concurrency:
 
 jobs:
   build-publish:
+    # Pages publishes ONLY from the public CenterForAssessment mirror; the private
+    # dataimago canonical skips this job (canonical -> mirror sync: mirror-to-cfa.yml).
+    if: github.repository_owner == 'CenterForAssessment'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

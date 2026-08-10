@@ -1,0 +1,35 @@
+name: mirror-to-cfa
+
+# Push-mirror the private dataimago canonical to the public CenterForAssessment
+# mirror, which serves the public face (GitHub Pages catalog + install source) at
+# its historical URLs. One-directional: canonical -> mirror, main + tags only.
+#
+# Requires secret MIRROR_PUSH_PAT: a fine-grained PAT (resource owner:
+# CenterForAssessment) with contents read/write on the mirror repo. Runs only on
+# the dataimago canonical — a no-op guard keeps the synced copy of this file
+# inert on the mirror itself.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    if: github.repository_owner == 'dataimago'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push main + tags to the public mirror
+        env:
+          MIRROR_PUSH_PAT: ${{ secrets.MIRROR_PUSH_PAT }}
+        run: |
+          if [ -z "$MIRROR_PUSH_PAT" ]; then
+            echo "::error::MIRROR_PUSH_PAT secret is not set on the canonical repo."
+            exit 1
+          fi
+          git push --force \
+            "https://x-access-token:${MIRROR_PUSH_PAT}@github.com/CenterForAssessment/assessment-metadata-registry.git" \
+            HEAD:main --tags
