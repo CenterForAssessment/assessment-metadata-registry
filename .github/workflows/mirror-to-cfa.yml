@@ -22,6 +22,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # checkout persists the Actions token as an auth header in git config,
+          # which overrides URL-embedded credentials — the mirror push would then
+          # authenticate as github-actions[bot] and be denied by the CfA repo.
+          persist-credentials: false
       - name: Push main + tags to the public mirror
         env:
           MIRROR_PUSH_PAT: ${{ secrets.MIRROR_PUSH_PAT }}
