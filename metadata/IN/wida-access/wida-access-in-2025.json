@@ -1,12 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "medium",
+  "status": "reviewed",
+  "source_confidence": "high",
   "provenance": {
     "entered_by": "ai:amr-harness",
     "entered_at": "2026-07-10",
     "last_verified_at": null,
-    "changed_from_prior": "Structural authoring pass: content_areas expanded from ELP_COMPOSITE alone to the four WIDA language domains plus the three reported composites; enrollment.enrolled_grades_tested populated (K-12); measurement.elp and source_documents added. cutscores, scale_bounds and comparability deliberately NOT authored -- no official source in hand. status remains draft."
+    "changed_from_prior": "Structural authoring pass: content_areas expanded from ELP_COMPOSITE alone to the four WIDA language domains plus the three reported composites; enrollment.enrolled_grades_tested populated (K-12); measurement.elp and source_documents added. cutscores, scale_bounds and comparability deliberately NOT authored -- no official source in hand. status remains draft.",
+    "source_citation": "Indiana DOE, 'Exit Criteria for English Learners Guidance 2025-2026' (pub. Apr 2025); ESSA State Plan amendment approved summer 2024. Overall-composite auto-exit at 5.0. Per-grade Overall-composite cutscores (OLD WIDA scale, <= 2025) carried in SGP::SGPstateData[['WIDA_IN']]."
   },
   "source_documents": [
     {
@@ -269,10 +270,11 @@
         "WIDA Level 2",
         "WIDA Level 3",
         "WIDA Level 4",
+        "WIDA Level 4.3",
         "WIDA Level 5",
         "WIDA Level 6"
       ],
-      "proficient_from": "WIDA Level 4"
+      "proficient_from": "WIDA Level 5"
     },
     "ORAL": {
       "labels": [
@@ -339,5 +341,200 @@
       ],
       "band_scheme": "WIDA proficiency levels 1.0-6.0 reported to tenths; scale scores 100-600"
     }
-  }
+  },
+  "cutscores": {
+    "ELP_COMPOSITE": {
+      "K": [
+        229.0,
+        261.0,
+        293.0,
+        303.0,
+        325.0,
+        350.0
+      ],
+      "1": [
+        242.0,
+        274.0,
+        315.0,
+        324.0,
+        344.0,
+        368.0
+      ],
+      "2": [
+        254.0,
+        289.0,
+        329.0,
+        338.0,
+        359.0,
+        383.0
+      ],
+      "3": [
+        265.0,
+        300.0,
+        340.0,
+        350.0,
+        371.0,
+        396.0
+      ],
+      "4": [
+        279.0,
+        309.0,
+        350.0,
+        360.0,
+        382.0,
+        406.0
+      ],
+      "5": [
+        286.0,
+        317.0,
+        358.0,
+        368.0,
+        390.0,
+        415.0
+      ],
+      "6": [
+        291.0,
+        324.0,
+        365.0,
+        376.0,
+        399.0,
+        423.0
+      ],
+      "7": [
+        298.0,
+        331.0,
+        372.0,
+        383.0,
+        406.0,
+        431.0
+      ],
+      "8": [
+        304.0,
+        337.0,
+        378.0,
+        389.0,
+        412.0,
+        438.0
+      ],
+      "9": [
+        311.0,
+        344.0,
+        385.0,
+        395.0,
+        418.0,
+        446.0
+      ],
+      "10": [
+        318.0,
+        350.0,
+        391.0,
+        401.0,
+        424.0,
+        453.0
+      ],
+      "11": [
+        325.0,
+        356.0,
+        397.0,
+        407.0,
+        429.0,
+        459.0
+      ],
+      "12": [
+        331.0,
+        362.0,
+        402.0,
+        412.0,
+        434.0,
+        466.0
+      ]
+    }
+  },
+  "cutscores_source": {
+    "ELP_COMPOSITE": {
+      "K": "official",
+      "1": "official",
+      "2": "official",
+      "3": "official",
+      "4": "official",
+      "5": "official",
+      "6": "official",
+      "7": "official",
+      "8": "official",
+      "9": "official",
+      "10": "official",
+      "11": "official",
+      "12": "official"
+    }
+  },
+  "scale_bounds": {
+    "ELP_COMPOSITE": {
+      "K": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "1": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "2": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "3": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "4": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "5": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "6": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "7": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "8": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "9": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "10": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "11": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      },
+      "12": {
+        "loss": 100,
+        "hoss": 600,
+        "source": "provisional"
+      }
+    }
+  },
+  "cutscores_provenance": "Overall-composite (ELP_COMPOSITE) per-grade level lower bounds, OLD WIDA scale (<= 2025), from SGP::SGPstateData[['WIDA_IN']]; scale_bounds are the documented WIDA ACCESS composite range (100-600, provisional)."
 }
