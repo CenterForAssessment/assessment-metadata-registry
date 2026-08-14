@@ -66,7 +66,7 @@ md <- get_metadata("IN", "ilearn", 2024)
 
 # 2. Reproducible remote — read canonical sidecars straight from GitHub, pinned by SHA
 #    (no checkout). `ref` (SHA | branch | tag) is resolved to a concrete commit SHA.
-repo <- "github://CenterForAssessment/assessment-metadata-registry"
+repo <- "github://dataimago/assessment-metadata-registry"  # canonical; CenterForAssessment is a CI mirror
 md <- get_metadata("IN", "ilearn", 2024, registry = repo, ref = "b824b20")
 
 # 3. Convenience remote — the published derived layer over HTTP (LATEST build only,

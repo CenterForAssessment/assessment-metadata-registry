@@ -124,7 +124,7 @@ branch, or tag) is resolved to a concrete commit SHA and recorded as the pin, so
 is byte-for-byte reconstructable.
 
 ```r
-repo <- "github://CenterForAssessment/assessment-metadata-registry"
+repo <- "github://dataimago/assessment-metadata-registry"  # canonical; CenterForAssessment is a CI mirror
 md   <- get_metadata("IN", system = "ilearn", year = 2024, registry = repo, ref = "b824b20")
 amrr_registry_ref(md)                       # the resolved 40-hex SHA — the reproducibility pin
 ```
