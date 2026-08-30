@@ -87,7 +87,7 @@ export function describeService(): Result {
     max_rows: MAX_ROWS,
     compare_dimensions: DIMENSION_NAMES,
     endpoints: ENDPOINTS,
-    source: "https://github.com/CenterForAssessment/assessment-metadata-registry",
+    source: "https://github.com/dataimago/assessment-metadata-registry",
   };
 }
 

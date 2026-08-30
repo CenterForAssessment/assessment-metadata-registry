@@ -10,7 +10,8 @@ updated: 2026-07-08
 Master catalog of the registry's knowledge layer. Read `../AGENTS.md` and `../purpose.md`
 first. This wiki follows the **SGPc house style** (the same page-type taxonomy as SGPc's wiki).
 
-**Status:** v2 implemented and migrated (`amrr` 0.2.0), then refined per ADR-010
+**Status:** **48 records** across 3 jurisdictions — **42** `status: reviewed`, **6**
+`status: draft`. v2 implemented and migrated (`amrr` 0.2.0), then refined per ADR-010
 (`amrr` 0.3.0): `proficient_from` (replacing the legacy `proficient[]` mask, corpus
 folded), `verified_by`, the EOC `"eoc"` cut key, and the compact config view
 (`as_config`/`read_config`, `build/config/`, site **Config view** page). `amrr` 0.4.0

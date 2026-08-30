@@ -1,11 +1,11 @@
 # amrr — Assessment Metadata Registry Client
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/CenterForAssessment/assessment-metadata-registry/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/CenterForAssessment/assessment-metadata-registry/actions/workflows/R-CMD-check.yml)
+[![R-CMD-check](https://github.com/CenterForAssessment/assessment-metadata-registry/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/CenterForAssessment/assessment-metadata-registry/actions/workflows/R-CMD-check.yml) <!-- CI mirror -->
 <!-- badges: end -->
 
 `amrr` is the R interface to the [**Assessment Metadata
-Registry**](https://github.com/CenterForAssessment/assessment-metadata-registry) — a
+Registry**](https://github.com/dataimago/assessment-metadata-registry) — a
 version-controlled catalog of U.S. state assessment- and accountability-system metadata
 (identities, vendors, scales, achievement levels, cutscores, comparability caveats, and
 accountability targets). The canonical source of truth is a set of self-contained **annual
@@ -27,7 +27,7 @@ pkgload::load_all("r-pkg/amrr")                       # development
 # install.packages("r-pkg/amrr", repos = NULL, type = "source")   # or R CMD INSTALL r-pkg/amrr
 
 # Or straight from GitHub (the package is in a subdirectory):
-remotes::install_github("CenterForAssessment/assessment-metadata-registry",
+remotes::install_github("dataimago/assessment-metadata-registry",
                         subdir = "r-pkg/amrr")
 ```
 
@@ -134,4 +134,4 @@ regenerate them with `build_registry()`.
 ## License
 
 MIT © Center for Assessment. See `LICENSE`. Part of the
-[assessment-metadata-registry](https://github.com/CenterForAssessment/assessment-metadata-registry).
+[assessment-metadata-registry](https://github.com/dataimago/assessment-metadata-registry).

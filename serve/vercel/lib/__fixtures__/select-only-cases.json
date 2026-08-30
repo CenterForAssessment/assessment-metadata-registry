@@ -2,7 +2,7 @@
   "_comment": [
     "Shared behavioural corpus for the SELECT-only guard.",
     "Two independent implementations execute this file: `store/guard.ts` here, and",
-    "`serve/vercel/lib/registry-db.ts` in CenterForAssessment/assessment-metadata-registry.",
+    "`serve/vercel/lib/registry-db.ts` in dataimago/assessment-metadata-registry.",
     "Codes are engine-neutral; each repo maps them onto its own error type.",
     "Keep the two copies byte-identical, and bump _corpus_version when cases change."
   ],

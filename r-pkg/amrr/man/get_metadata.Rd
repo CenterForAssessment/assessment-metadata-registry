@@ -81,7 +81,7 @@ amrr_targets(md[[1]], "ELP_COMPOSITE")
 
 # Reproducible remote: canonical sidecars straight from GitHub, pinned by SHA:
 md <- get_metadata("IN", system = "ilearn", year = 2024,
-                   registry = "github://CenterForAssessment/assessment-metadata-registry",
+                   registry = "github://dataimago/assessment-metadata-registry",
                    ref = "b824b20")
 amrr_registry_ref(md)   # the resolved 40-hex commit SHA -- the reproducibility pin
 
