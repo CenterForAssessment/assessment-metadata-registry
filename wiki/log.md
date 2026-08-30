@@ -4,6 +4,24 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-08-30] decision | ADR-013 proposed — national and international sample assessments
+
+**Action:** document-a-decision (`wiki/decisions/013-national-international-assessments.md`, `status: proposed`)
+
+Drafted by the SGPc P-A planner (Claude Fable 5) for the maintainer to ratify (SGPc work
+item `wi-20260830-pa-registry-adr-013`). Widens `amr.assessment.v2` **additively, no vN
+bump**: three `jurisdiction.type` values, two `assessment_type` values, an optional top-level
+`design` block (sampling, plausible values, weights + replicate scheme, cycle years,
+longitudinal link), `amrr_design()`, and six validator invariants. Unit of record unchanged;
+NAEP and a TIMSS cycle are described once and their states/countries are SGPc store
+sub-jurisdictions (engine ADR-018). Two draft records are given inline with provisional
+cut scores (NAEP achievement levels; TIMSS international benchmarks) for human verification.
+
+**Not touched:** `schemas/`, `metadata/`, `r-pkg/amrr/` — implementation follows
+ratification (SGPc P-A A1.3/A3.4). Plan: `SGPc-wiki/docs/plans/2026-08-30-pa-cross-sectional.md`.
+
+---
+
 ## [2026-07-20] authoring | Indiana WIDA ACCESS reviewed with real cutscores + 5.0 exit
 
 **Action:** authoring (Tier A, `metadata/IN/wida-access/**` x9 + `metadata/IN/in-accountability/**` x9)
