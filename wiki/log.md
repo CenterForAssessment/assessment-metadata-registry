@@ -4,6 +4,17 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-08-30] decision | ADR-013 accepted — national and international sample assessments
+
+**Action:** decision (ratification). The maintainer accepted ADR-013 on branch
+`pa/adr-013-national-international-assessments` after the SGPc planner review
+(B3: content-area-keyed PV prefixes and the replicate variance rule; B4: the TIMSS-L
+2024 follow-up record shape) was applied. Pages updated: `decisions/013-…` (status),
+`index.md` (ADR table). The schema, `amrr`, and the two draft records are unchanged
+by this entry — they are implemented by SGPc P-A tasks A1.3/A3.4 under this decision.
+Consumer decision recorded on the SGPc side: the pooled international reference
+marginal is weighted by `SENWGT` (equal country weight).
+
 ## [2026-08-30] decision | ADR-013 proposed — national and international sample assessments
 
 **Action:** document-a-decision (`wiki/decisions/013-national-international-assessments.md`, `status: proposed`)

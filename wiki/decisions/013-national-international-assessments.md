@@ -3,7 +3,7 @@ title: "ADR-013: National and international sample assessments (NAEP, TIMSS, TIM
 type: decision
 created: 2026-08-30
 updated: 2026-08-30
-status: proposed
+status: accepted
 deciders: Damian Betebenner
 curated: true
 scope:
@@ -27,7 +27,7 @@ tags: [schema, v2, naep, timss, sampling-design, plausible-values, international
 
 # ADR-013: National and international sample assessments
 
-**Status:** Proposed (drafted 2026-08-30 by the P-A planner; the maintainer ratifies).
+**Status:** Accepted — ratified 2026-08-30 by the maintainer (Damian Betebenner), under the planner review `SGPc-wiki/docs/plans/reviews/2026-08-30-pa-contracts-review.md` (B3/B4 applied). Implementation (schema delta, `amrr_design()`, the six validator invariants, two example records) is SGPc P-A task A1.3 / A3.4; until it lands, `amr.assessment.v2` on `main` is unchanged.
 
 The registry learns to describe an assessment that is *sampled*, not administered
 to every student, and one that is *international*, not a state's. `amr.assessment.v2`
