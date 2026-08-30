@@ -102,15 +102,16 @@ ingest cannot discover:
 "design": {
   "student_sampling": "multistage",                      // census | multistage
   "scoring_model": "scale",                              // scale | profile (default scale)
-  "plausible_values": { "count": 20, "variable_prefix": "MRPCM" },   // variable_prefix: a string, or a map keyed by ENROLLED grade
+  "plausible_values": { "count": 20, "variable_prefix": "MRPCM" },   // variable_prefix: a string, or a map keyed by CONTENT AREA then ENROLLED grade
   "weights": {
     "full_sample_variable": "ORIGWT",
     "replicate": { "method": "JK1",                      // JK1 | JK2 | BRR
-                   "count": 62,                          // replicate (zone) count, required under every method
+                   "zones": 62, "replicates": 62,        // required under every method
+                   "variance_factor": 1,                 // the multiplier on the sum of squared replicate deviations (NAEP 1; TIMSS 2003-2011 1; TIMSS 2015+ 0.5)
                    "variable_prefix": "SRWT" }           // JK1/BRR: the replicate-weight prefix; JK2: zone_variable + rep_variable instead
   },
   "cycle_years": ["2015"],                               // the calendar years the cycle was administered in; must include administration.year
-  "longitudinal_link": { "linked_administration_id": "timss-l-…-2023", "cohort_label": "…" },
+  "longitudinal_link": { "linked_administration_id": "timss-intl-2023", "span_years": 1, "cohort_label": "TIMSS 2023 G4/G8 -> 2024 G5/G9" },
   "notes": "…"                                           // booklet/matrix design and other facts the engine does not consume
 }
 ```
@@ -122,6 +123,13 @@ item-design fact that belongs in `notes`, since NAEP and TIMSS are both multista
 `cycle_years` exists because a TIMSS cycle can be administered across two calendar
 years (southern-hemisphere systems test in the preceding autumn); when it is a single
 year it repeats `administration.year` and the validator requires the two to agree.
+The replicate block carries the *variance rule*, not just a count, because the rule
+changed within one assessment's history: TIMSS 2003–2011 used 75 zones and 75
+replicates with factor 1; TIMSS 2015 onward doubles both halves of each zone in turn
+— 150 replicates, factor 0.5. The engine reads `variance_factor` (SGPc ADR-017 §5);
+the operator verifies each cycle's rule against its user guide in Step 0. The PV prefix
+is keyed by content area then grade because the TIMSS deliveries carry science
+(`ASSSCI`/`BSSSCI`) beside mathematics; the plain string stays valid for NAEP.
 
 `design` is a measurement fact in the ADR-009 sense — it describes the instrument's
 data, not a policy — but it is placed top-level rather than under `measurement`
@@ -137,12 +145,15 @@ the same block without becoming a "sample" assessment.
    `measurement.alternate.scoring_model` is also present the two must agree (the
    invariant exists so a profile-scored instrument cannot silently claim draws on a
    scale).
-4. `design.weights.replicate.count` is required under every method; `JK2` ⇒
+4. `design.weights.replicate.{zones, replicates, variance_factor}` are required under
+   every method, with `replicates ∈ {zones, 2 × zones}` and `variance_factor ∈ {1, 0.5}`
+   matching (`replicates = zones ⇒ 1`; `replicates = 2 × zones ⇒ 0.5`); `JK2` ⇒
    `zone_variable` and `rep_variable` present and `variable_prefix` absent; `JK1` or
    `BRR` ⇒ `variable_prefix` present.
 5. `design.cycle_years`, when present, includes `administration.year`.
-6. `design.longitudinal_link.linked_administration_id`, when present, names an
-   administration in the corpus (an identity-conflict-class error if it does not).
+6. `design.longitudinal_link`, when present, names an administration in the corpus in
+   `linked_administration_id` (an identity-conflict-class error if it does not) and
+   carries `span_years ≥ 1`.
 
 ### D4 — Accessors and the consumption contract
 
@@ -191,7 +202,7 @@ human verifies them against NCES and IEA before promotion (Step 0; program map �
   "design": { "student_sampling": "multistage", "scoring_model": "scale",
               "plausible_values": { "count": 20, "variable_prefix": "MRPCM" },
               "weights": { "full_sample_variable": "ORIGWT",
-                           "replicate": { "method": "JK1", "count": 62, "variable_prefix": "SRWT" } },
+                           "replicate": { "method": "JK1", "zones": 62, "replicates": 62, "variance_factor": 1, "variable_prefix": "SRWT" } },
               "cycle_years": ["2015"],
               "notes": "Matrix (booklet) item sampling. Delivered to SGPc as jurisdiction-level weighted marginal quantile arrays with the national-equivalent percentile; see the intake manifest." },
   "content_areas": [ { "id": "MATHEMATICS", "label": "Mathematics", "vertical_scale": false, "scale_name": "NAEP mathematics scale (0-500)",
@@ -219,25 +230,36 @@ human verifies them against NCES and IEA before promotion (Step 0; program map �
                          "family": "TIMSS", "assessment_type": "international-sample" },
   "administration": { "id": "timss-intl-2019", "year": "2019", "vendor": "IEA / TIMSS & PIRLS International Study Center", "window": "cycle" },
   "design": { "student_sampling": "multistage", "scoring_model": "scale",
-              "plausible_values": { "count": 5, "variable_prefix": { "4": "ASMMAT", "8": "BSMMAT" } },
+              "plausible_values": { "count": 5, "variable_prefix": { "MATHEMATICS": { "4": "ASMMAT", "8": "BSMMAT" }, "SCIENCE": { "4": "ASSSCI", "8": "BSSSCI" } } },
               "weights": { "full_sample_variable": "TOTWGT",
-                           "replicate": { "method": "JK2", "count": 75, "zone_variable": "JKZONE", "rep_variable": "JKREP" } },
+                           "replicate": { "method": "JK2", "zones": 75, "replicates": 150, "variance_factor": 0.5, "zone_variable": "JKZONE", "rep_variable": "JKREP" } },
               "cycle_years": ["2018", "2019"],
               "notes": "Matrix (booklet) item sampling; southern-hemisphere systems tested in late 2018. One sidecar per cycle; participating countries are store sub-jurisdictions from IDCNTRY." },
   "content_areas": [ { "id": "MATHEMATICS", "label": "Mathematics", "vertical_scale": false, "scale_name": "TIMSS mathematics scale (centerpoint 500, SD 100)",
+                       "enrollment": { "intended_enrollment_grade": "fixed", "enrolled_grades_tested": ["4", "8"] } },
+                     { "id": "SCIENCE", "label": "Science", "vertical_scale": false, "scale_name": "TIMSS science scale (centerpoint 500, SD 100)",
                        "enrollment": { "intended_enrollment_grade": "fixed", "enrolled_grades_tested": ["4", "8"] } } ],
   "achievement_levels": { "MATHEMATICS": { "labels": ["Below Low", "Low", "Intermediate", "High", "Advanced"], "proficient_from": "Intermediate",
                           "notes": "proficient_from is a placeholder choice for SGPc's margins layer, not an IEA designation." } },
-  "cutscores": { "MATHEMATICS": { "4": [400, 475, 550, 625], "8": [400, 475, 550, 625] } },
-  "cutscores_source": { "MATHEMATICS": { "4": "provisional", "8": "provisional" } },
+  "cutscores": { "MATHEMATICS": { "4": [400, 475, 550, 625], "8": [400, 475, 550, 625] },
+                 "SCIENCE":     { "4": [400, 475, 550, 625], "8": [400, 475, 550, 625] } },
+  "cutscores_source": { "MATHEMATICS": { "4": "provisional", "8": "provisional" }, "SCIENCE": { "4": "provisional", "8": "provisional" } },
   "cutscores_provenance": "TIMSS international benchmarks (Low 400, Intermediate 475, High 550, Advanced 625); verify the cycle's benchmark definitions before promotion."
 }
 ```
 
-The TIMSS-L record (`INTL/timss-l/…`, or a national jurisdiction if the delivery
-is one country) waits on the intake manifest and A0.2: its `design.longitudinal_link`
-and which wave carries which PVs are exactly the "unknowns for the operator" the
-manifest surfaces. It is not drafted here.
+One TIMSS record per cycle in the delivery — 2003, 2007, 2011, 2015, 2019, 2023 —
+each with its own replicate rule; TIMSS Numeracy 2015 (`TN15_*` in the delivery) is a
+separate `assessment_system` (`timss-numeracy`) if A0.2 puts it in scope.
+
+The TIMSS-L delivery's shape is now known from its manifest: a one-year follow-up of
+TIMSS 2023 (grade 4 → 5, grade 8 → 9, tested 2024). It is two administrations — the
+2023 base, which *is* the TIMSS 2023 record above, and a follow-up record
+`INTL/timss-l/timss-l-intl-2024.json` whose `design` carries
+`"longitudinal_link": { "linked_administration_id": "timss-intl-2023", "span_years": 1, "cohort_label": "TIMSS 2023 G4/G8 -> 2024 G5/G9" }`.
+Its PV names and the weight that applies to the linked sample are still A0.2 unknowns
+(the `Data_R_*.zip` archives were hashed, not opened), so the record is drafted after
+the operator answers them.
 
 ## Alternatives considered
 
