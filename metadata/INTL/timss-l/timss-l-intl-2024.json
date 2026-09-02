@@ -1,0 +1,73 @@
+{
+  "schema_version": "amr.assessment.v2",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "ai:sgpc-harness",
+    "entered_at": "2026-09-02",
+    "source_citation": "IEA, TIMSS 2023 Longitudinal (TIMSS-L) Progress Report (GA64, 2023): the TIMSS 2023 grade 4 and 8 students are the baseline and are assessed again one year later in grades 5 and 9; learning gains are measured on the TIMSS achievement scales. https://www.iea.nl/sites/default/files/2023-10/GA64_TIMSS%20Longitudinal.pdf",
+    "last_verified_at": null,
+    "verified_by": null,
+    "changed_from_prior": "New follow-up sidecar. No separate cut scores authored."
+  },
+  "source_documents": [
+    {
+      "title": "IEA, Using Scale Anchoring to Interpret TIMSS Achievement Results (TIMSS 2023 Technical Report, Chapter 14, 2024) — the scale and International Benchmarks this follow-up inherits",
+      "url": "https://timss2023.org/wp-content/uploads/2024/12/T23_TR_Chap14.pdf"
+    },
+    {
+      "title": "IEA, TIMSS 2023 Longitudinal (TIMSS-L) Progress Report (GA64, 2023): learning gains measured on the TIMSS achievement scales; G4/G8 2023 reassessed as G5/G9 in 2024",
+      "url": "https://www.iea.nl/sites/default/files/2023-10/GA64_TIMSS%20Longitudinal.pdf"
+    }
+  ],
+  "jurisdiction": {
+    "id": "INTL",
+    "name": "International (IEA participating systems)",
+    "type": "international"
+  },
+  "assessment_system": {
+    "id": "timss-l",
+    "name": "TIMSS Longitudinal (2023 cohort follow-up)",
+    "family": "TIMSS",
+    "assessment_type": "international-sample"
+  },
+  "administration": {
+    "id": "timss-l-intl-2024",
+    "year": "2024",
+    "vendor": "IEA / TIMSS & PIRLS International Study Center",
+    "window": "cycle"
+  },
+  "design": {
+    "student_sampling": "multistage",
+    "scoring_model": "scale",
+    "cycle_years": ["2024"],
+    "longitudinal_link": {
+      "linked_administration_id": "timss-intl-2023",
+      "span_years": 1,
+      "cohort_label": "TIMSS 2023 G4/G8 -> 2024 G5/G9"
+    },
+    "notes": "TODO (A0.2): plausible-value count and variable_prefix for the 2024 wave (G5/G9) — do not copy ASMMAT/BSMMAT from the 2023 G4/G8 files. TODO (A0.2): which weight applies to the linked sample (TOTWGT vs a longitudinal-specific weight) and the replicate rule. Those fields are omitted rather than guessed. Matrix (booklet) item sampling assumed from the TIMSS parent; participating countries are store sub-jurisdictions."
+  },
+  "content_areas": [
+    {
+      "id": "MATHEMATICS",
+      "label": "Mathematics",
+      "vertical_scale": false,
+      "scale_name": "TIMSS mathematics scale (centerpoint 500, SD 100) — inherited from TIMSS 2023",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": ["5", "9"],
+        "note": "Follow-up of TIMSS 2023 grade 4 (now 5) and grade 8 (now 9). Scores are on the TIMSS 2023 mathematics scale; there is no separate TIMSS-L standard setting."
+      }
+    }
+  ],
+  "achievement_levels": {
+    "MATHEMATICS": {
+      "labels": ["Below Low", "Low", "Intermediate", "High", "Advanced"],
+      "proficient_from": "Intermediate",
+      "notes": "Labels copied from timss-intl-2023 for the inherited International Benchmarks. IEA did not set separate TIMSS-L cut scores. proficient_from is the same placeholder as the 2023 record, not an IEA designation."
+    }
+  },
+  "cutscores_provenance": "No separate TIMSS-L cut scores. IEA TIMSS-L Progress Report (GA64, 2023): learning gains are measured on the TIMSS achievement scales; the 2023 grade 4/8 cohort is reassessed as grade 5/9 in 2024. MATHEMATICS International Benchmarks therefore inherit from timss-intl-2023 (Low 400 / Intermediate 475 / High 550 / Advanced 625; constant since TIMSS 2003). cutscores / cutscores_source are omitted so a consumer must resolve the linked administration rather than read a duplicated vector here.",
+  "notes": "First-pass scope is MATHEMATICS. Design PV/weight fields left blank pending A0.2. Human promotes to reviewed (A3.4 gate) after those unknowns and the inheritance claim are checked."
+}

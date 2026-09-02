@@ -5,19 +5,19 @@
   "provenance": {
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-02",
-    "source_citation": "NCES, 'Mapping State Proficiency Standards Onto the NAEP Scales: Results From the 2015 NAEP Reading and Mathematics Assessments' (NCES 2018-159), Table A-3. Mathematics grade 4: Basic 214, Proficient 249, Advanced 282; grade 8: Basic 262, Proficient 299, Advanced 333. https://nces.ed.gov/nationsreportcard/subject/publications/studies/pdf/2018159.pdf",
+    "source_citation": "NCES, 'Mapping State Proficiency Standards Onto the NAEP Scales: Results From the 2022 NAEP Reading and Mathematics Assessments' (NCES 2026-014), Table 3. Mathematics grade 4: NAEP Basic 214, NAEP Proficient 249, NAEP Advanced 282; grade 8: 262 / 299 / 333. Cuts 'maintained with no changes since their establishment in the early 1990s.' https://nces.ed.gov/nationsreportcard/subject/publications/studies/pdf/2026014.pdf",
     "last_verified_at": null,
     "verified_by": null,
-    "changed_from_prior": "A3.4 citation pass: planner-recalled cuts confirmed against NCES 2018-159 Table A-3; cutscores_source provisional -> official; status remains draft."
+    "changed_from_prior": "New sidecar for the 2019 administration (SGPc delivery is grade 8 mathematics). Same NAEP mathematics cuts as naep-us-2015."
   },
   "source_documents": [
     {
-      "title": "NCES, Mapping State Proficiency Standards Onto the NAEP Scales: Results From the 2015 NAEP Reading and Mathematics Assessments (NCES 2018-159), Table A-3 (2018)",
-      "url": "https://nces.ed.gov/nationsreportcard/subject/publications/studies/pdf/2018159.pdf"
+      "title": "NCES, Mapping State Proficiency Standards Onto the NAEP Scales: Results From the 2022 NAEP Reading and Mathematics Assessments (NCES 2026-014), Table 3 (cuts unchanged since early 1990s)",
+      "url": "https://nces.ed.gov/nationsreportcard/subject/publications/studies/pdf/2026014.pdf"
     },
     {
-      "title": "NCES, Mapping State Proficiency Standards Onto the NAEP Scales: Results From the 2022 NAEP Reading and Mathematics Assessments (NCES 2026-014), Table 3 — same cuts; 'maintained with no changes since their establishment in the early 1990s'",
-      "url": "https://nces.ed.gov/nationsreportcard/subject/publications/studies/pdf/2026014.pdf"
+      "title": "NCES, Mapping State Proficiency Standards Onto the NAEP Scales: Results From the 2015 NAEP Reading and Mathematics Assessments (NCES 2018-159), Table A-3 — identical mathematics cuts",
+      "url": "https://nces.ed.gov/nationsreportcard/subject/publications/studies/pdf/2018159.pdf"
     },
     {
       "title": "NCES, NAEP Mathematics Achievement Levels (cut-point page)",
@@ -36,8 +36,8 @@
     "assessment_type": "national-sample"
   },
   "administration": {
-    "id": "naep-us-2015",
-    "year": "2015",
+    "id": "naep-us-2019",
+    "year": "2019",
     "vendor": "National Center for Education Statistics",
     "window": "annual"
   },
@@ -58,8 +58,8 @@
         "variable_prefix": "SRWT"
       }
     },
-    "cycle_years": ["2015"],
-    "notes": "Matrix (booklet) item sampling. Delivered to SGPc as jurisdiction-level weighted marginal quantile arrays with the national-equivalent percentile; see the intake manifest."
+    "cycle_years": ["2019"],
+    "notes": "Matrix (booklet) item sampling. The SGPc delivery for this year is grade 8 mathematics (jurisdiction-level weighted marginal quantile arrays with the national-equivalent percentile). Design fields match the 2015 NAEP mathematics composite (MRPCM / ORIGWT / JK1 62)."
   },
   "content_areas": [
     {
@@ -70,7 +70,7 @@
       "enrollment": {
         "intended_enrollment_grade": "fixed",
         "enrolled_grades_tested": ["4", "8"],
-        "note": "NAEP 2015 also assessed grade 12; not in the SGPc delivery. NAEP mathematics is not vertically equated across grades."
+        "note": "NAEP 2019 also assessed grade 12; not in the SGPc delivery. The SGPc 2019 file is grade 8. NAEP mathematics is not vertically equated across grades."
       }
     }
   ],
@@ -109,6 +109,6 @@
       }
     }
   },
-  "cutscores_provenance": "MATHEMATICS only (maintainer first-pass). Grade 4: Basic 214 / Proficient 249 / Advanced 282. Grade 8: Basic 262 / Proficient 299 / Advanced 333. Source: NCES 2018-159 Table A-3 (2015 administration). The same three cuts are restated for 2022 in NCES 2026-014 Table 3, which notes they have been unchanged since the early-1990s achievement-level setting. Human promotes to reviewed (A3.4 gate).",
+  "cutscores_provenance": "MATHEMATICS only (maintainer first-pass). Same cuts as naep-us-2015: grade 4 Basic 214 / Proficient 249 / Advanced 282; grade 8 262 / 299 / 333. NCES 2026-014 Table 3 states the NAEP mathematics/reading cut scores have been unchanged since the early-1990s achievement-level setting. Human promotes to reviewed (A3.4 gate).",
   "notes": "First-pass scope is MATHEMATICS. Grade-12 NAEP mathematics uses a different 0-300 scale and is not authored here."
 }

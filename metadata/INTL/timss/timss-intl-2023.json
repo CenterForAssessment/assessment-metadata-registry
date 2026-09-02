@@ -5,23 +5,23 @@
   "provenance": {
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-02",
-    "source_citation": "IEA / TIMSS & PIRLS International Study Center, 'Using Scale Anchoring to Interpret the TIMSS 2019 Achievement Scales', Methods and Procedures: TIMSS 2019 Technical Report, Chapter 15 (2020). International Benchmarks: Advanced 625, High 550, Intermediate 475, Low 400. https://timssandpirls.bc.edu/timss2019/methods/pdf/T19_MP_Ch15-scale-anchoring.pdf",
+    "source_citation": "IEA / TIMSS & PIRLS International Study Center, 'Using Scale Anchoring to Interpret TIMSS Achievement Results', TIMSS 2023 Technical Report, Chapter 14 (2024). International Benchmarks: Advanced 625, High 550, Intermediate 475, Low 400; cut points originally selected in TIMSS 2003 and constant since (Gonzalez et al., 2004). https://timss2023.org/wp-content/uploads/2024/12/T23_TR_Chap14.pdf",
     "last_verified_at": null,
     "verified_by": null,
-    "changed_from_prior": "A3.4 citation pass: MATHEMATICS benchmarks cited to TIMSS 2019 Methods Ch. 15; SCIENCE cuts dropped (first-pass MATHEMATICS only); cutscores_source provisional -> official; status remains draft."
+    "changed_from_prior": "New sidecar for the 2023 cycle (scale owner for TIMSS-L 2024). MATHEMATICS International Benchmarks identical to 2019."
   },
   "source_documents": [
     {
-      "title": "IEA, Using Scale Anchoring to Interpret the TIMSS 2019 Achievement Scales (Methods and Procedures: TIMSS 2019 Technical Report, Chapter 15, 2020)",
-      "url": "https://timssandpirls.bc.edu/timss2019/methods/pdf/T19_MP_Ch15-scale-anchoring.pdf"
-    },
-    {
-      "title": "IEA, Using Scale Anchoring to Interpret TIMSS Achievement Results (TIMSS 2023 Technical Report, Chapter 14, 2024) — cut points originally selected in TIMSS 2003 and constant since (Gonzalez et al., 2004)",
+      "title": "IEA, Using Scale Anchoring to Interpret TIMSS Achievement Results (TIMSS 2023 Technical Report, Chapter 14, 2024)",
       "url": "https://timss2023.org/wp-content/uploads/2024/12/T23_TR_Chap14.pdf"
     },
     {
-      "title": "TIMSS 2019 International Results — International Benchmarks (grade 8 mathematics)",
-      "url": "https://timss2019.org/reports/timss-2019-international-benchmarks-m8/index.html"
+      "title": "IEA, TIMSS 2023 User Guide for the International Database (2024) — ASMMAT01-05 / TOTWGT / jackknife replicates",
+      "url": "https://timss2023.org/wp-content/uploads/data/T23_UG-International-Database.pdf"
+    },
+    {
+      "title": "NCES, TIMSS 2023 Methodology and Technical Notes — five PVs, JRR with 150 replicates",
+      "url": "https://nces.ed.gov/timss/technotes-2023.asp"
     }
   ],
   "jurisdiction": {
@@ -36,8 +36,8 @@
     "assessment_type": "international-sample"
   },
   "administration": {
-    "id": "timss-intl-2019",
-    "year": "2019",
+    "id": "timss-intl-2023",
+    "year": "2023",
     "vendor": "IEA / TIMSS & PIRLS International Study Center",
     "window": "cycle"
   },
@@ -62,8 +62,8 @@
         "rep_variable": "JKREP"
       }
     },
-    "cycle_years": ["2018", "2019"],
-    "notes": "Matrix (booklet) item sampling; southern-hemisphere systems tested in late 2018. One sidecar per cycle; participating countries are store sub-jurisdictions from IDCNTRY."
+    "cycle_years": ["2023"],
+    "notes": "Matrix (booklet) item sampling. TIMSS 2023 data collection was in calendar 2023 for both hemispheres (northern typically March-June; southern typically August-November; IEA TIMSS 2023 International Results). One sidecar per cycle; participating countries are store sub-jurisdictions from IDCNTRY. This administration is the TIMSS-L 2024 linked base (see timss-l-intl-2024)."
   },
   "content_areas": [
     {
@@ -84,7 +84,7 @@
       "enrollment": {
         "intended_enrollment_grade": "fixed",
         "enrolled_grades_tested": ["4", "8"],
-        "note": "SCIENCE is part of the TIMSS 2019 cycle but is out of first-pass cutscore scope (MATHEMATICS only). The same four International Benchmark points apply; they are not authored on this record."
+        "note": "SCIENCE is part of the TIMSS 2023 cycle but is out of first-pass cutscore scope (MATHEMATICS only). The same four International Benchmark points apply; they are not authored on this record."
       }
     }
   ],
@@ -107,5 +107,5 @@
       "8": "official"
     }
   },
-  "cutscores_provenance": "MATHEMATICS only (maintainer first-pass). Grade 4 and grade 8 share the TIMSS International Benchmarks: Low 400, Intermediate 475, High 550, Advanced 625 (TIMSS 2019 Methods Ch. 15). TIMSS 2023 Technical Report Ch. 14 states these cut points were originally selected in TIMSS 2003 and have remained constant across cycles (Gonzalez et al., 2004); descriptions of what students can do at each point are updated each cycle. SCIENCE benchmarks are the same four points but are not filed this pass. Human promotes to reviewed (A3.4 gate)."
+  "cutscores_provenance": "MATHEMATICS only (maintainer first-pass). Grade 4 and grade 8 share the TIMSS International Benchmarks: Low 400, Intermediate 475, High 550, Advanced 625. TIMSS 2023 Technical Report Ch. 14: cut points originally selected in TIMSS 2003 and constant across cycles (Gonzalez et al., 2004); descriptions updated each cycle. Same vectors as timss-intl-2019. Human promotes to reviewed (A3.4 gate)."
 }
