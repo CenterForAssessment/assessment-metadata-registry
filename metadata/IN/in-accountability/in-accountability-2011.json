@@ -1,13 +1,13 @@
 {
   "schema_version": "amr.accountability.v2",
-  "status": "reviewed",
+  "status": "draft",
   "source_confidence": "low",
   "provenance": {
-    "entered_by": "migration:sgpc-foundry-accountability",
-    "entered_at": "2026-07-02",
+    "entered_by": "ai:sgpc-planner",
+    "entered_at": "2026-09-02",
     "last_verified_at": null,
     "changed_from_prior": null,
-    "source_citation": "Indiana DOE, 'Exit Criteria for English Learners Guidance 2025-2026' (pub. Apr 2025); ESSA State Plan amendment approved summer 2024. Overall-composite auto-exit at 5.0. Per-grade Overall-composite cutscores (OLD WIDA scale, <= 2025) carried in SGP::SGPstateData[['WIDA_IN']]."
+    "source_citation": "Summative proficient cut. ISTEP / ISTEP+ reported three achievement levels (Did Not Pass / Pass / Pass +); the maintainer confirms (2026-09-02) that the Level 1 / Level 2 boundary -- the Pass cut -- was the proficient cut and the accountability target for that era. basis=proficiency_boundary derives it from the assessment record's cutscores and its achievement_levels proficient_from ('Pass'), introducing no new numbers; the target inherits that record's cutscores provenance."
   },
   "jurisdiction": {
     "id": "IN",
@@ -19,37 +19,12 @@
     "name": "Indiana Accountability System"
   },
   "administration": {
-    "id": "in-accountability-2018",
-    "year": "2018"
+    "id": "in-accountability-2011",
+    "year": "2011"
   },
   "targets": [
     {
-      "assessment_system_id": "wida-access",
-      "content_area": "ELP_COMPOSITE",
-      "label": "ELP Exit Target",
-      "semantics": "exit",
-      "basis": "scale_score",
-      "comparison": ">=",
-      "per_grade_scale_score": {
-        "0": 325.0,
-        "1": 344.0,
-        "2": 359.0,
-        "3": 371.0,
-        "4": 382.0,
-        "5": 390.0,
-        "6": 399.0,
-        "7": 406.0,
-        "8": 412.0,
-        "9": 418.0,
-        "10": 424.0,
-        "11": 429.0,
-        "12": 434.0
-      },
-      "provenance": "Indiana DOE, 'Exit Criteria for English Learners Guidance 2025-2026' (pub. Apr 2025); ESSA State Plan amendment approved summer 2024. Overall-composite auto-exit at 5.0. Per-grade Overall-composite cutscores (OLD WIDA scale, <= 2025) carried in SGP::SGPstateData[['WIDA_IN']].",
-      "notes": "Absolute auto-exit at Overall 5.0 (per-grade scale-score thresholds here). 4.3-4.9 Overall is a PROVISIONAL pathway: grade 3+ students with a Tier B/C score are eligible for ILP-committee additional-evidence review -- committee-mediated, not a pure scale-score cut, so not encoded as a target threshold. OLD WIDA scale (<= 2025); the July-2026 reset = a new sidecar."
-    },
-    {
-      "assessment_system_id": "istep-plus",
+      "assessment_system_id": "istep",
       "content_area": "ELA",
       "label": "Proficient Cut",
       "semantics": "proficiency",
@@ -58,7 +33,7 @@
       "provenance": "Summative proficient cut. ISTEP / ISTEP+ reported three achievement levels (Did Not Pass / Pass / Pass +); the maintainer confirms (2026-09-02) that the Level 1 / Level 2 boundary -- the Pass cut -- was the proficient cut and the accountability target for that era. basis=proficiency_boundary derives it from the assessment record's cutscores and its achievement_levels proficient_from ('Pass'), introducing no new numbers; the target inherits that record's cutscores provenance."
     },
     {
-      "assessment_system_id": "istep-plus",
+      "assessment_system_id": "istep",
       "content_area": "MATHEMATICS",
       "label": "Proficient Cut",
       "semantics": "proficiency",

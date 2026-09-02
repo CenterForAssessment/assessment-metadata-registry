@@ -47,6 +47,24 @@
       },
       "provenance": "Indiana DOE, 'Exit Criteria for English Learners Guidance 2025-2026' (pub. Apr 2025); ESSA State Plan amendment approved summer 2024. Overall-composite auto-exit at 5.0. Per-grade Overall-composite cutscores (OLD WIDA scale, <= 2025) carried in SGP::SGPstateData[['WIDA_IN']].",
       "notes": "Absolute auto-exit at Overall 5.0 (per-grade scale-score thresholds here). 4.3-4.9 Overall is a PROVISIONAL pathway: grade 3+ students with a Tier B/C score are eligible for ILP-committee additional-evidence review -- committee-mediated, not a pure scale-score cut, so not encoded as a target threshold. OLD WIDA scale (<= 2025); the July-2026 reset = a new sidecar."
+    },
+    {
+      "assessment_system_id": "istep-plus",
+      "content_area": "ELA",
+      "label": "Proficient Cut",
+      "semantics": "proficiency",
+      "basis": "proficiency_boundary",
+      "comparison": ">=",
+      "provenance": "Summative proficient cut. ISTEP / ISTEP+ reported three achievement levels (Did Not Pass / Pass / Pass +); the maintainer confirms (2026-09-02) that the Level 1 / Level 2 boundary -- the Pass cut -- was the proficient cut and the accountability target for that era. basis=proficiency_boundary derives it from the assessment record's cutscores and its achievement_levels proficient_from ('Pass'), introducing no new numbers; the target inherits that record's cutscores provenance."
+    },
+    {
+      "assessment_system_id": "istep-plus",
+      "content_area": "MATHEMATICS",
+      "label": "Proficient Cut",
+      "semantics": "proficiency",
+      "basis": "proficiency_boundary",
+      "comparison": ">=",
+      "provenance": "Summative proficient cut. ISTEP / ISTEP+ reported three achievement levels (Did Not Pass / Pass / Pass +); the maintainer confirms (2026-09-02) that the Level 1 / Level 2 boundary -- the Pass cut -- was the proficient cut and the accountability target for that era. basis=proficiency_boundary derives it from the assessment record's cutscores and its achievement_levels proficient_from ('Pass'), introducing no new numbers; the target inherits that record's cutscores provenance."
     }
   ]
 }

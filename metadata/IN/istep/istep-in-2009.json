@@ -181,5 +181,83 @@
       "8": "provisional"
     }
   },
+  "scale_bounds": {
+    "ELA": {
+      "3": {
+        "loss": 120,
+        "hoss": 800,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "4": {
+        "loss": 140,
+        "hoss": 850,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "5": {
+        "loss": 160,
+        "hoss": 847,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "6": {
+        "loss": 180,
+        "hoss": 850,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "7": {
+        "loss": 210,
+        "hoss": 910,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "8": {
+        "loss": 230,
+        "hoss": 940,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      }
+    },
+    "MATHEMATICS": {
+      "3": {
+        "loss": 140,
+        "hoss": 735,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "4": {
+        "loss": 185,
+        "hoss": 750,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "5": {
+        "loss": 240,
+        "hoss": 775,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "6": {
+        "loss": 270,
+        "hoss": 790,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "7": {
+        "loss": 305,
+        "hoss": 810,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      },
+      "8": {
+        "loss": 325,
+        "hoss": 830,
+        "source": "official",
+        "notes": "Observed LOSS/HOSS endpoints of SCALE_SCORE in the Indiana operational LONG for YEAR <= 2018, confirmed by the maintainer 2026-09-02 as the ISTEP / ISTEP+ lowest and highest obtainable scale scores. Consistent with SGP::SGPstateData[['IN']][['Achievement']][['Knots_Boundaries']] loss.hoss_10 = c(100, 400) for the grade-10 scale, which is shared across eras. See wiki/sources/sgpstatedata-operational-provenance.md. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
+      }
+    }
+  },
   "notes": "ISTEP grades 3–8, three achievement levels. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Cuts are draft: transcribed from the commented SGPstateData block; confirm against an IDOE ISTEP cut-score memo before review."
 }
