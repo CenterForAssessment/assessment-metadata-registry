@@ -1,13 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "medium",
+  "status": "verified",
+  "source_confidence": "high",
   "provenance": {
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-02",
     "source_citation": "IEA / TIMSS & PIRLS International Study Center, 'Using Scale Anchoring to Interpret the TIMSS 2019 Achievement Scales', Methods and Procedures: TIMSS 2019 Technical Report, Chapter 15 (2020). International Benchmarks: Advanced 625, High 550, Intermediate 475, Low 400. https://timssandpirls.bc.edu/timss2019/methods/pdf/T19_MP_Ch15-scale-anchoring.pdf",
-    "last_verified_at": null,
-    "verified_by": null,
+    "last_verified_at": "2026-09-02",
+    "verified_by": "Damian Betebenner",
     "changed_from_prior": "A3.4 citation pass: MATHEMATICS benchmarks cited to TIMSS 2019 Methods Ch. 15; SCIENCE cuts dropped (first-pass MATHEMATICS only); cutscores_source provisional -> official; status remains draft."
   },
   "source_documents": [

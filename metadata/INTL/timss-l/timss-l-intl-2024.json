@@ -1,13 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "low",
+  "status": "reviewed",
+  "source_confidence": "medium",
   "provenance": {
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-02",
     "source_citation": "IEA, TIMSS 2023 Longitudinal (TIMSS-L) Progress Report (GA64, 2023): the TIMSS 2023 grade 4 and 8 students are the baseline and are assessed again one year later in grades 5 and 9; learning gains are measured on the TIMSS achievement scales. https://www.iea.nl/sites/default/files/2023-10/GA64_TIMSS%20Longitudinal.pdf",
-    "last_verified_at": null,
-    "verified_by": null,
+    "last_verified_at": "2026-09-02",
+    "verified_by": "Damian Betebenner",
     "changed_from_prior": "New follow-up sidecar. No separate cut scores authored."
   },
   "source_documents": [
@@ -40,13 +40,30 @@
   "design": {
     "student_sampling": "multistage",
     "scoring_model": "scale",
+    "plausible_values": {
+      "count": 5,
+      "variable_prefix": {
+        "MATHEMATICS": {"5": "ASMMAT2", "9": "BSMMAT2"}
+      }
+    },
+    "weights": {
+      "full_sample_variable": "TOTWGT",
+      "replicate": {
+        "method": "JK2",
+        "zones": 75,
+        "replicates": 150,
+        "variance_factor": 0.5,
+        "zone_variable": "JKZONE",
+        "rep_variable": "JKREP"
+      }
+    },
     "cycle_years": ["2024"],
     "longitudinal_link": {
       "linked_administration_id": "timss-intl-2023",
       "span_years": 1,
       "cohort_label": "TIMSS 2023 G4/G8 -> 2024 G5/G9"
     },
-    "notes": "TODO (A0.2): plausible-value count and variable_prefix for the 2024 wave (G5/G9) — do not copy ASMMAT/BSMMAT from the 2023 G4/G8 files. TODO (A0.2): which weight applies to the linked sample (TOTWGT vs a longitudinal-specific weight) and the replicate rule. Those fields are omitted rather than guessed. Matrix (booklet) item sampling assumed from the TIMSS parent; participating countries are store sub-jurisdictions."
+    "notes": "Matrix (booklet) item sampling assumed from the TIMSS parent; participating countries are store sub-jurisdictions. Both A0.2 TODOs are closed by the maintainer sign-off of 2026-09-02. The seventh character of a PV name is the wave (1 = 2023, 2 = 2024) and the eighth is the imputation index, so the 2024 wave is ASMMAT21-ASMMAT25 (G5) and BSMMAT21-BSMMAT25 (G9) - deliberately not the 2023 G4/G8 ASMMAT/BSMMAT. Linked-sample weight is TOTWGT; there is no longitudinal-specific weight. Verified against Fishbein, Taneva & Kowolik (2026), TIMSS 2023 Longitudinal User Guide, Ch. 2 pp. 51-52 (Exhibit 2.5 and the naming rules) and pp. 64-66 (Exhibit 2.10)."
   },
   "content_areas": [
     {
@@ -69,5 +86,5 @@
     }
   },
   "cutscores_provenance": "No separate TIMSS-L cut scores. IEA TIMSS-L Progress Report (GA64, 2023): learning gains are measured on the TIMSS achievement scales; the 2023 grade 4/8 cohort is reassessed as grade 5/9 in 2024. MATHEMATICS International Benchmarks therefore inherit from timss-intl-2023 (Low 400 / Intermediate 475 / High 550 / Advanced 625; constant since TIMSS 2003). cutscores / cutscores_source are omitted so a consumer must resolve the linked administration rather than read a duplicated vector here.",
-  "notes": "First-pass scope is MATHEMATICS. Design PV/weight fields left blank pending A0.2. Human promotes to reviewed (A3.4 gate) after those unknowns and the inheritance claim are checked."
+  "notes": "First-pass scope is MATHEMATICS. Carries no cut scores of its own: it inherits the TIMSS international benchmarks from timss-intl-2023. Reviewed rather than verified for that reason - there is no cut-score claim here to confirm against a citation. The design fields held open pending A0.2 are now filled from the maintainer signed answers (Q9, Q10)."
 }

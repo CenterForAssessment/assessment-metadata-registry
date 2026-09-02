@@ -1,13 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "medium",
+  "status": "verified",
+  "source_confidence": "high",
   "provenance": {
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-02",
     "source_citation": "NCES, 'Mapping State Proficiency Standards Onto the NAEP Scales: Results From the 2022 NAEP Reading and Mathematics Assessments' (NCES 2026-014), Table 3. Mathematics grade 4: NAEP Basic 214, NAEP Proficient 249, NAEP Advanced 282; grade 8: 262 / 299 / 333. Cuts 'maintained with no changes since their establishment in the early 1990s.' https://nces.ed.gov/nationsreportcard/subject/publications/studies/pdf/2026014.pdf",
-    "last_verified_at": null,
-    "verified_by": null,
+    "last_verified_at": "2026-09-02",
+    "verified_by": "Damian Betebenner",
     "changed_from_prior": "New sidecar for the 2019 administration (SGPc delivery is grade 8 mathematics). Same NAEP mathematics cuts as naep-us-2015."
   },
   "source_documents": [
