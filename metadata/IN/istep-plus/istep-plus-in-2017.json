@@ -1,13 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "medium",
+  "status": "verified",
+  "source_confidence": "high",
   "provenance": {
     "source_citation": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), ELA.2015 / MATHEMATICS.2015 blocks. Indiana State Board of Education set the 2015 ISTEP+ pass line on 2015-10-28 (IndyStar; Chalkbeat). Independent IDOE numeric PDF not located this session.",
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-01",
-    "last_verified_at": null,
-    "verified_by": null,
+    "last_verified_at": "2026-09-02",
+    "verified_by": "Damian Betebenner",
     "changed_from_prior": "Same ISTEP+ 2015 cuts; grade 10 added."
   },
   "source_documents": [

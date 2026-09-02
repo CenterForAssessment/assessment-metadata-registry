@@ -1,13 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "medium",
+  "status": "verified",
+  "source_confidence": "high",
   "provenance": {
     "source_citation": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25, PDF updated 2019-08-26: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. This record uses the official At Proficiency and Above Proficiency cuts only (ELA.2019 / MATHEMATICS.2019 in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01)): the 2019 LONG collapses Below Proficiency and Approaching Proficiency into 'Below/Approaching Proficiency' (SGPstateData note 2019-09-17). Grade 10 uses ISTEP+ Grade 10 hundreds-scale cuts (ELA 244/292, Math 271/339); intake endpoints [100, 400].",
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-01",
-    "last_verified_at": null,
-    "verified_by": null,
+    "last_verified_at": "2026-09-02",
+    "verified_by": "Damian Betebenner",
     "changed_from_prior": "New assessment system (ILEARN) replacing ISTEP+. Scale transition. 2019 operational labels are the 3-level collapse of the official 4-level IDOE scheme."
   },
   "source_documents": [
