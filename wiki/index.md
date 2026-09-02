@@ -53,6 +53,7 @@ WIDA_IN is the v2 dogfood corpus.
 | [[011-remote-sha-pinning]] | **accepted** | Reproducible remote consumption (`amrr` 0.5.0): `get_metadata(registry = "github://owner/repo", ref = <SHA>)` reads canonical Tier A sidecars raw-by-SHA from GitHub (git-trees + raw content, byte-immutable), no checkout — resolves the deferred remote-pinning open item; derived-URL mode remains for convenience/latest only |
 | [[012-query-api-mcp-backend]] | **accepted** (rev 3) | Read-only **query contract** + MCP backend (Tier C, `serve/`): host-agnostic contract (immutable `registry.sqlite`, SELECT-only guard, SHA-stamped envelope, dual REST+MCP with 5 read-only tools); Datasette as the local/CI authoring–exploration engine; **serverless-first** deployment tiers. **Tier 1 delivered 2026-07-09** — live at `assessment-metadata-registry.vercel.app` (+ `/mcp`), 22/22 smoke green on-platform, stateless streamable-http MCP proven; `node:sqlite` (no native addon); VPS+Caddy Datasette retained as opt-in Tier 2. Convenience/latest + SHA-stamped, **not** the reproducibility pin; registry = instance #1 of the dataimago data-store pattern (`dataimago.store.v1`), SGPc-ai output store = instance #2. Deploy loop closed by `deploy-vercel.yml`, which asserts `live git_sha == GITHUB_SHA` and a 404 on the store path |
 | [[013-national-international-assessments]] | **accepted** (2026-08-30) | National and international sample assessments (NAEP, TIMSS, TIMSS-L): additive v2 widening — `jurisdiction.type` += `nation`/`international`/`benchmarking-entity`, `assessment_type` += `national-sample`/`international-sample`, optional top-level `design` block (sampling, plausible values, weights + replicate scheme, cycle years, longitudinal link), `amrr_design()`, six validator invariants; NAEP / a TIMSS cycle described **once**, sub-jurisdictions carried by SGPc's store (engine ADR-018), never the registry. Two draft records inline (`US/naep/naep-us-2015`, `INTL/timss/timss-intl-2019`), provisional cuts, human verifies |
+| [[014-source-precedence-and-designated-envelopes]] | **accepted** (2026-09-02) | Precedence between two authoritative sources, and the act of designating a scale envelope. D1: a **retrievable, cited agency document outranks `SGPstateData`**, which reverts to a corroborating witness; `SGPstateData` is the source of record only where the documentation is gone. D2: D1 is a rule of order, **not a claim of truth** — cut-score PDFs are boilerplate carried forward, and a vertical scale's tails are unreliable about the floor. D3: the Indiana ISTEP / ISTEP+ / ILEARN loss/hoss values are **designated of record** for historical copula analysis; 126 `scale_bounds` cells `derived` -> `official`, notes retained. Does not promote any record (all stay `draft`), does not assert true extrema, does not edit `SGPstateData` |
 
 ---
 
@@ -76,7 +77,7 @@ WIDA_IN is the v2 dogfood corpus.
 
 | Page | Summary |
 |------|---------|
-| [[sgpstatedata-operational-provenance]] | SGPstateData is an authoritative citation of record for state cut scores (maintainer attestation 2026-09-02); a missing agency URL is a documentation gap, not a provenance defect |
+| [[sgpstatedata-operational-provenance]] | SGPstateData is an authoritative citation of record for state cut scores (maintainer attestation 2026-09-02); a missing agency URL is a documentation gap, not a provenance defect. **Yields to a retrievable cited agency document** per ADR-014 |
 | [[colleague-assessment-spec-r]] | Colleague's unified `assessment_spec.R`: typed general/alternate/ELP list schema, verification workflow, separated demographics |
 
 ---
@@ -85,5 +86,6 @@ WIDA_IN is the v2 dogfood corpus.
 
 | Page | Summary |
 |------|---------|
+| [[indiana-ilearn-scale-bound-conflict]] | Two ILEARN cells (ELA g6 HOSS, MATHEMATICS g3 LOSS) disagree between the cited IDOE PDF and SGPstateData `loss.hoss`, identically across 2019-2025. Rank-based growth is unaffected; the margins layer is not. Filed, not fixed — **resolved 2026-09-02 for the cited PDF** (ADR-014); the divergence persists upstream in SGPstateData |
 | [[schema-crosswalk]] | Field-level mapping of `amr.*`, SGPc sidecar, and `assessment_spec.R` onto the five-domain taxonomy — conflicts, gaps, reclassifications |
 | [[grade-encoding-split]] | `^(PK\|K\|[0-9]{1,2})$` admits both `"K"` and `"0"` for kindergarten; assessment records use one, accountability records and SGPc the other. Validates cleanly, and becomes a silent `NULL` the moment WIDA cut scores are authored. Filed, not fixed |

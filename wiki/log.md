@@ -4,6 +4,31 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-09-02] decision | ADR-014 — source precedence, and the Indiana envelope of record
+
+**Action:** decision + governance edit (Tier A). The two-cell ILEARN conflict filed the
+same day is **resolved for the cited IDOE PDF**: ELA g6 HOSS stays 5870, MATHEMATICS g3
+LOSS stays 6080, both records unchanged. ADR-014 generalizes it — a retrievable, cited
+agency document outranks `SGPstateData`, which reverts to a corroborating witness;
+`SGPstateData` remains the source of record only where the documentation is gone
+([[sgpstatedata-operational-provenance]] gains a "Where it yields" section). The rule is
+explicitly one of **order, not truth**: cut-score PDFs are boilerplate carried forward
+year to year, and a vertical scale's tails are unreliable about the floor, so a LOSS
+disagreement is as plausibly a scaling artifact as a bad source.
+
+Separately, the maintainer **designated the Indiana ISTEP / ISTEP+ / ILEARN loss/hoss
+values the envelope of record** for historical copula analysis: 126 `scale_bounds`
+cells across 11 records move `source: derived` -> `official` (72 ISTEP, 52 ISTEP+, 2
+ILEARN-2019 grade-10 carryover), each keeping the note recording how the number was
+obtained. `source` is ADR-008 §5 per-value *confidence*, not a provenance type.
+
+**Not changed:** every affected record stays `status: draft` — designating a value's
+confidence is not promoting the record that holds it, and the B1.1 promotion gate stands.
+`SGPstateData` is untouched, so a plain `SGP` run still uses 5865 / 6104 while an SGPc run
+reading the registry uses 5870 / 6080; that divergence is now named rather than latent.
+
+**Validation:** `validate_registry(".")` — 71 files, 0 errors.
+
 ## [2026-08-30] authoring | ADR-013 implementation — design block, amrr_design(), NAEP/TIMSS drafts
 
 **Action:** schema + tooling + authoring (Tier A drafts). Implements accepted ADR-013

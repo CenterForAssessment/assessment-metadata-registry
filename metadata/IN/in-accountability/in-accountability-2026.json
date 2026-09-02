@@ -1,0 +1,45 @@
+{
+  "schema_version": "amr.accountability.v2",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "ai:sgpc-planner",
+    "entered_at": "2026-09-02",
+    "last_verified_at": null,
+    "changed_from_prior": null,
+    "source_citation": "Summative proficient cut; derived from cutscores + the achievement_levels proficient mask (basis=proficiency_boundary -- the scale score entering the first proficient level). No new numbers: the target inherits the sidecar cutscores provenance."
+  },
+  "jurisdiction": {
+    "id": "IN",
+    "name": "Indiana",
+    "type": "state"
+  },
+  "accountability_system": {
+    "id": "in-accountability",
+    "name": "Indiana Accountability System"
+  },
+  "administration": {
+    "id": "in-accountability-2026",
+    "year": "2026"
+  },
+  "targets": [
+    {
+      "assessment_system_id": "ilearn",
+      "content_area": "ELA",
+      "label": "Proficient Cut",
+      "semantics": "proficiency",
+      "basis": "proficiency_boundary",
+      "comparison": ">=",
+      "provenance": "Summative proficient cut; derived from cutscores + the achievement_levels proficient mask (basis=proficiency_boundary -- the scale score entering the first proficient level). No new numbers: the target inherits the sidecar cutscores provenance."
+    },
+    {
+      "assessment_system_id": "ilearn",
+      "content_area": "MATHEMATICS",
+      "label": "Proficient Cut",
+      "semantics": "proficiency",
+      "basis": "proficiency_boundary",
+      "comparison": ">=",
+      "provenance": "Summative proficient cut; derived from cutscores + the achievement_levels proficient mask (basis=proficiency_boundary -- the scale score entering the first proficient level). No new numbers: the target inherits the sidecar cutscores provenance."
+    }
+  ]
+}
