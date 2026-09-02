@@ -1,0 +1,82 @@
+{
+  "schema_version": "amr.assessment.v2",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "ai:sgpc-pa-planner",
+    "entered_at": "2026-08-30",
+    "source_citation": "https://nces.ed.gov/nationsreportcard/mathematics/achieve.aspx",
+    "last_verified_at": null,
+    "verified_by": null,
+    "changed_from_prior": null
+  },
+  "jurisdiction": {
+    "id": "US",
+    "name": "United States",
+    "type": "nation"
+  },
+  "assessment_system": {
+    "id": "naep",
+    "name": "National Assessment of Educational Progress",
+    "family": "NAEP",
+    "assessment_type": "national-sample"
+  },
+  "administration": {
+    "id": "naep-us-2015",
+    "year": "2015",
+    "vendor": "National Center for Education Statistics",
+    "window": "annual"
+  },
+  "design": {
+    "student_sampling": "multistage",
+    "scoring_model": "scale",
+    "plausible_values": {
+      "count": 20,
+      "variable_prefix": "MRPCM"
+    },
+    "weights": {
+      "full_sample_variable": "ORIGWT",
+      "replicate": {
+        "method": "JK1",
+        "zones": 62,
+        "replicates": 62,
+        "variance_factor": 1,
+        "variable_prefix": "SRWT"
+      }
+    },
+    "cycle_years": ["2015"],
+    "notes": "Matrix (booklet) item sampling. Delivered to SGPc as jurisdiction-level weighted marginal quantile arrays with the national-equivalent percentile; see the intake manifest."
+  },
+  "content_areas": [
+    {
+      "id": "MATHEMATICS",
+      "label": "Mathematics",
+      "vertical_scale": false,
+      "scale_name": "NAEP mathematics scale (0-500)",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": ["4", "8"],
+        "note": "NAEP 2015 also assessed grade 12; not in the SGPc delivery."
+      }
+    }
+  ],
+  "achievement_levels": {
+    "MATHEMATICS": {
+      "labels": ["Below Basic", "Basic", "Proficient", "Advanced"],
+      "proficient_from": "Proficient"
+    }
+  },
+  "cutscores": {
+    "MATHEMATICS": {
+      "4": [214, 249, 282],
+      "8": [262, 299, 333]
+    }
+  },
+  "cutscores_source": {
+    "MATHEMATICS": {
+      "4": "provisional",
+      "8": "provisional"
+    }
+  },
+  "cutscores_provenance": "PROVISIONAL -- NAEP mathematics achievement-level cut scores as recalled by the planner; verify against NCES before promotion."
+}

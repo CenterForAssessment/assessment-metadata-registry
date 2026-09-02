@@ -71,7 +71,10 @@
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "name": { "type": "string", "minLength": 1 },
-        "type": { "enum": ["state", "territory", "consortium", "district", "other"] },
+        "type": {
+          "enum": ["state", "territory", "consortium", "district", "nation", "international", "benchmarking-entity", "other"],
+          "description": "state/territory/consortium/district are sub-national census frames. nation is a national frame (e.g. the United States for NAEP, id US). international is a cross-national frame (e.g. IEA for a TIMSS cycle, id INTL). benchmarking-entity is a sub-national participant that carries its own administration (ADR-013 D1). other remains the residual."
+        },
         "nces_id": { "type": "string" },
         "fips": { "type": "string" }
       },
@@ -85,8 +88,8 @@
         "name": { "type": "string", "minLength": 1 },
         "family": { "type": "string", "minLength": 1 },
         "assessment_type": {
-          "enum": ["summative", "alternate", "elp", "science", "end-of-course"],
-          "description": "Canonical discriminator (ADR-008 SS5). Legacy v1 strings (state-summative, english-language-proficiency, general) are normalized by migrate_registry(). elp permits measurement.elp; alternate permits measurement.alternate."
+          "enum": ["summative", "alternate", "elp", "science", "end-of-course", "national-sample", "international-sample"],
+          "description": "Canonical discriminator (ADR-008 SS5). Legacy v1 strings (state-summative, english-language-proficiency, general) are normalized by migrate_registry(). elp permits measurement.elp; alternate permits measurement.alternate. national-sample and international-sample (ADR-013) gate consumption: there is no student-level score column — a score is a set of plausible values and a marginal is weighted — so a consumer reads design before touching a value. The type says that the assessment is sampled; design says how."
         }
       },
       "additionalProperties": false
@@ -314,6 +317,137 @@
         "performance_levels": {
           "type": "object",
           "additionalProperties": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "design": {
+      "type": "object",
+      "description": "Optional sampling-design semantics the engine reads and an ingest cannot discover (ADR-013 D2). Orthogonal to assessment_type: a state census file may carry a trivial design, and a future state assessment reported with plausible values would use this block without becoming a sample assessment. student_sampling names whether the marginal is a census or a weighted sample; matrix (booklet) item sampling is an item-design fact that belongs in notes.",
+      "properties": {
+        "student_sampling": {
+          "enum": ["census", "multistage"],
+          "description": "Whether the reported marginal is a census or a weighted sample. Does not encode booklet/matrix item sampling."
+        },
+        "scoring_model": {
+          "enum": ["scale", "profile"],
+          "default": "scale",
+          "description": "How a student score is produced. Default scale. design.plausible_values.count >= 1 requires scale (validator D3.3)."
+        },
+        "plausible_values": {
+          "type": "object",
+          "description": "Plausible-value draws on the reported scale. variable_prefix is a string (one prefix for the administration, e.g. NAEP MRPCM) or a map keyed by content area then enrolled grade (e.g. TIMSS ASMMAT/BSMMAT, ASSSCI/BSSSCI).",
+          "required": ["count", "variable_prefix"],
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Number of plausible-value draws per student."
+            },
+            "variable_prefix": {
+              "description": "A string prefix, or a map of content-area id -> enrolled-grade -> prefix.",
+              "oneOf": [
+                { "type": "string", "minLength": 1 },
+                {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": {
+                    "type": "object",
+                    "minProperties": 1,
+                    "additionalProperties": { "type": "string", "minLength": 1 }
+                  }
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "weights": {
+          "type": "object",
+          "description": "Full-sample weight variable and the replicate-weight variance rule.",
+          "required": ["full_sample_variable"],
+          "properties": {
+            "full_sample_variable": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the full-sample weight column (e.g. ORIGWT, TOTWGT)."
+            },
+            "replicate": {
+              "type": "object",
+              "description": "Replicate-weight variance rule. zones, replicates, and variance_factor are required under every method. replicates is zones or 2*zones, with variance_factor 1 or 0.5 matching (validator D3.4). JK1/BRR use variable_prefix; JK2 uses zone_variable + rep_variable.",
+              "required": ["method", "zones", "replicates", "variance_factor"],
+              "properties": {
+                "method": {
+                  "enum": ["JK1", "JK2", "BRR"],
+                  "description": "Jackknife 1, jackknife 2, or balanced repeated replication."
+                },
+                "zones": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Number of variance zones (or strata)."
+                },
+                "replicates": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Number of replicate weights. Equal to zones (factor 1) or 2*zones (factor 0.5)."
+                },
+                "variance_factor": {
+                  "type": "number",
+                  "description": "Multiplier on the sum of squared replicate deviations (NAEP 1; TIMSS 2003-2011 1; TIMSS 2015+ 0.5). Validator restricts to {1, 0.5} matching replicates vs zones."
+                },
+                "variable_prefix": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "JK1/BRR: replicate-weight column prefix (e.g. SRWT). Forbidden under JK2."
+                },
+                "zone_variable": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "JK2: zone-membership column (e.g. JKZONE)."
+                },
+                "rep_variable": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "JK2: half-sample indicator column (e.g. JKREP)."
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "cycle_years": {
+          "type": "array",
+          "description": "Calendar years the cycle was administered in. A TIMSS cycle can span two years (southern-hemisphere systems test in the preceding autumn). Must include administration.year (validator D3.5). A single-year cycle repeats administration.year.",
+          "minItems": 1,
+          "items": { "type": "string", "pattern": "^[0-9]{4}$" }
+        },
+        "longitudinal_link": {
+          "type": "object",
+          "description": "When this administration is a follow-up wave, the linked base administration in the corpus (validator D3.6: linked_administration_id must be an administration.id already present; span_years >= 1).",
+          "required": ["linked_administration_id", "span_years"],
+          "properties": {
+            "linked_administration_id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "administration.id of the linked (usually prior) wave."
+            },
+            "span_years": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Years between the linked administration and this one."
+            },
+            "cohort_label": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Human-readable cohort description (e.g. 'TIMSS 2023 G4/G8 -> 2024 G5/G9')."
+            }
+          },
+          "additionalProperties": false
+        },
+        "notes": {
+          "type": "string",
+          "description": "Booklet/matrix design and other facts the engine does not consume."
         }
       },
       "additionalProperties": false
