@@ -4,6 +4,21 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-08-30] authoring | ADR-013 implementation — design block, amrr_design(), NAEP/TIMSS drafts
+
+**Action:** schema + tooling + authoring (Tier A drafts). Implements accepted ADR-013
+(P-A task A1.3) on `amr.assessment.v2` **additively, no vN bump**:
+`jurisdiction.type` += `nation` / `international` / `benchmarking-entity`;
+`assessment_type` += `national-sample` / `international-sample`; optional top-level
+`design` block (student_sampling, scoring_model, plausible_values with string-or-map
+prefix, weights.replicate variance rule, cycle_years, longitudinal_link).
+`amrr_design()` returns the block or `NULL`. Six D3 invariants in `validate.R`.
+Draft records `metadata/US/naep/naep-us-2015.json` and
+`metadata/INTL/timss/timss-intl-2019.json` (`status: draft`, `source_confidence: low`,
+`entered_by: ai:sgpc-pa-planner`); copies under `schemas/examples/`. Consumption
+contract names `amrr_design()`. Promotion is a human commit (A3.4); this entry does
+not change `status`.
+
 ## [2026-09-01] authoring | Indiana ISTEP / ISTEP+ / ILEARN draft cutscores (P-B B1.1)
 
 **Action:** authoring (Tier A, `metadata/IN/istep/**` ×6, `metadata/IN/istep-plus/**` ×4,
