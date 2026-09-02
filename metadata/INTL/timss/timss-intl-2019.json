@@ -1,0 +1,104 @@
+{
+  "schema_version": "amr.assessment.v2",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "entered_by": "ai:sgpc-pa-planner",
+    "entered_at": "2026-08-30",
+    "source_citation": "https://timss2019.org/international-results/",
+    "last_verified_at": null,
+    "verified_by": null,
+    "changed_from_prior": null
+  },
+  "jurisdiction": {
+    "id": "INTL",
+    "name": "International (IEA participating systems)",
+    "type": "international"
+  },
+  "assessment_system": {
+    "id": "timss",
+    "name": "Trends in International Mathematics and Science Study",
+    "family": "TIMSS",
+    "assessment_type": "international-sample"
+  },
+  "administration": {
+    "id": "timss-intl-2019",
+    "year": "2019",
+    "vendor": "IEA / TIMSS & PIRLS International Study Center",
+    "window": "cycle"
+  },
+  "design": {
+    "student_sampling": "multistage",
+    "scoring_model": "scale",
+    "plausible_values": {
+      "count": 5,
+      "variable_prefix": {
+        "MATHEMATICS": { "4": "ASMMAT", "8": "BSMMAT" },
+        "SCIENCE": { "4": "ASSSCI", "8": "BSSSCI" }
+      }
+    },
+    "weights": {
+      "full_sample_variable": "TOTWGT",
+      "replicate": {
+        "method": "JK2",
+        "zones": 75,
+        "replicates": 150,
+        "variance_factor": 0.5,
+        "zone_variable": "JKZONE",
+        "rep_variable": "JKREP"
+      }
+    },
+    "cycle_years": ["2018", "2019"],
+    "notes": "Matrix (booklet) item sampling; southern-hemisphere systems tested in late 2018. One sidecar per cycle; participating countries are store sub-jurisdictions from IDCNTRY."
+  },
+  "content_areas": [
+    {
+      "id": "MATHEMATICS",
+      "label": "Mathematics",
+      "vertical_scale": false,
+      "scale_name": "TIMSS mathematics scale (centerpoint 500, SD 100)",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": ["4", "8"]
+      }
+    },
+    {
+      "id": "SCIENCE",
+      "label": "Science",
+      "vertical_scale": false,
+      "scale_name": "TIMSS science scale (centerpoint 500, SD 100)",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": ["4", "8"]
+      }
+    }
+  ],
+  "achievement_levels": {
+    "MATHEMATICS": {
+      "labels": ["Below Low", "Low", "Intermediate", "High", "Advanced"],
+      "proficient_from": "Intermediate",
+      "notes": "proficient_from is a placeholder choice for SGPc's margins layer, not an IEA designation."
+    }
+  },
+  "cutscores": {
+    "MATHEMATICS": {
+      "4": [400, 475, 550, 625],
+      "8": [400, 475, 550, 625]
+    },
+    "SCIENCE": {
+      "4": [400, 475, 550, 625],
+      "8": [400, 475, 550, 625]
+    }
+  },
+  "cutscores_source": {
+    "MATHEMATICS": {
+      "4": "provisional",
+      "8": "provisional"
+    },
+    "SCIENCE": {
+      "4": "provisional",
+      "8": "provisional"
+    }
+  },
+  "cutscores_provenance": "TIMSS international benchmarks (Low 400, Intermediate 475, High 550, Advanced 625); verify the cycle's benchmark definitions before promotion."
+}

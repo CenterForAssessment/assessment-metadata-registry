@@ -4,6 +4,66 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-08-30] authoring | ADR-013 implementation — design block, amrr_design(), NAEP/TIMSS drafts
+
+**Action:** schema + tooling + authoring (Tier A drafts). Implements accepted ADR-013
+(P-A task A1.3) on `amr.assessment.v2` **additively, no vN bump**:
+`jurisdiction.type` += `nation` / `international` / `benchmarking-entity`;
+`assessment_type` += `national-sample` / `international-sample`; optional top-level
+`design` block (student_sampling, scoring_model, plausible_values with string-or-map
+prefix, weights.replicate variance rule, cycle_years, longitudinal_link).
+`amrr_design()` returns the block or `NULL`. Six D3 invariants in `validate.R`.
+Draft records `metadata/US/naep/naep-us-2015.json` and
+`metadata/INTL/timss/timss-intl-2019.json` (`status: draft`, `source_confidence: low`,
+`entered_by: ai:sgpc-pa-planner`); copies under `schemas/examples/`. Consumption
+contract names `amrr_design()`. Promotion is a human commit (A3.4); this entry does
+not change `status`.
+
+## [2026-09-01] authoring | Indiana ISTEP / ISTEP+ / ILEARN draft cutscores (P-B B1.1)
+
+**Action:** authoring (Tier A, `metadata/IN/istep/**` ×6, `metadata/IN/istep-plus/**` ×4,
+`metadata/IN/ilearn/**` ×8 including 2020 `administered: false` and new 2026)
+
+Draft records only (`status: draft`). Parsed from the maintainer's
+`SGPstateData[["IN"]][["Achievement"]][["Cutscores"]]` paste plus the IDOE ILEARN
+Cut Scores PDF (SBOE 2019-07-25). 2019 ILEARN is the three-level collapse
+(Below/Approaching / At / Above) matching the LONG; 2021–2025 are the official
+four-level IDOE cuts (numbers match the PDF exactly); 2026 is new standards
+equated onto the 2019 scale (`source_confidence: low`). ISTEP 2009–2014 cuts are
+`low` (commented SGPstateData block; no IDOE PDF this session). ISTEP+ 2015–2018
+are `medium` (SGPstateData ELA.2015 / MATHEMATICS.2015; SBOE set the 2015 line
+2015-10-28). `comparability.scale_transition: true` on ISTEP+ 2015 and ILEARN
+2019. `make validate` → 60 files, 0 errors. Human promotes to `reviewed`.
+
+## [2026-08-30] decision | ADR-013 accepted — national and international sample assessments
+
+**Action:** decision (ratification). The maintainer accepted ADR-013 on branch
+`pa/adr-013-national-international-assessments` after the SGPc planner review
+(B3: content-area-keyed PV prefixes and the replicate variance rule; B4: the TIMSS-L
+2024 follow-up record shape) was applied. Pages updated: `decisions/013-…` (status),
+`index.md` (ADR table). The schema, `amrr`, and the two draft records are unchanged
+by this entry — they are implemented by SGPc P-A tasks A1.3/A3.4 under this decision.
+Consumer decision recorded on the SGPc side: the pooled international reference
+marginal is weighted by `SENWGT` (equal country weight).
+
+## [2026-08-30] decision | ADR-013 proposed — national and international sample assessments
+
+**Action:** document-a-decision (`wiki/decisions/013-national-international-assessments.md`, `status: proposed`)
+
+Drafted by the SGPc P-A planner (Claude Fable 5) for the maintainer to ratify (SGPc work
+item `wi-20260830-pa-registry-adr-013`). Widens `amr.assessment.v2` **additively, no vN
+bump**: three `jurisdiction.type` values, two `assessment_type` values, an optional top-level
+`design` block (sampling, plausible values, weights + replicate scheme, cycle years,
+longitudinal link), `amrr_design()`, and six validator invariants. Unit of record unchanged;
+NAEP and a TIMSS cycle are described once and their states/countries are SGPc store
+sub-jurisdictions (engine ADR-018). Two draft records are given inline with provisional
+cut scores (NAEP achievement levels; TIMSS international benchmarks) for human verification.
+
+**Not touched:** `schemas/`, `metadata/`, `r-pkg/amrr/` — implementation follows
+ratification (SGPc P-A A1.3/A3.4). Plan: `SGPc-wiki/docs/plans/2026-08-30-pa-cross-sectional.md`.
+
+---
+
 ## [2026-07-20] authoring | Indiana WIDA ACCESS reviewed with real cutscores + 5.0 exit
 
 **Action:** authoring (Tier A, `metadata/IN/wida-access/**` x9 + `metadata/IN/in-accountability/**` x9)

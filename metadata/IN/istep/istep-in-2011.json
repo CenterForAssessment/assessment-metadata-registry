@@ -1,0 +1,185 @@
+{
+  "schema_version": "amr.assessment.v2",
+  "status": "draft",
+  "source_confidence": "low",
+  "provenance": {
+    "source_citation": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), historical commented ELA= / MATHEMATICS= blocks (2 cuts, Did Not Pass / Pass / Pass +). Independent IDOE PDF not located this session.",
+    "entered_by": "ai:sgpc-harness",
+    "entered_at": "2026-09-01",
+    "last_verified_at": null,
+    "verified_by": null,
+    "changed_from_prior": "Same ISTEP cuts and three-level scheme as the prior year."
+  },
+  "source_documents": [
+    {
+      "title": "SGP::SGPstateData Indiana Achievement$Cutscores (historical commented ISTEP block)",
+      "url": null
+    }
+  ],
+  "jurisdiction": {
+    "id": "IN",
+    "name": "Indiana",
+    "type": "state"
+  },
+  "assessment_system": {
+    "id": "istep",
+    "name": "Indiana Statewide Testing for Educational Progress",
+    "family": "ISTEP",
+    "assessment_type": "summative"
+  },
+  "administration": {
+    "id": "istep-in-2011",
+    "year": "2011",
+    "vendor": "Indiana Department of Education",
+    "window": "annual",
+    "csem_ref": null
+  },
+  "assessment_program": {
+    "assessment_name": "Indiana Statewide Testing for Educational Progress",
+    "abbreviation": "ISTEP",
+    "organization": {
+      "name": "Indiana Department of Education",
+      "abbreviation": "IDOE",
+      "url": "https://www.in.gov/doe/"
+    }
+  },
+  "cutscores_provenance": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), historical commented ELA= / MATHEMATICS= blocks (2 cuts, Did Not Pass / Pass / Pass +). Independent IDOE PDF not located this session. MAINTAINER ATTESTATION (Damian Betebenner, 2026-09-02): SGPstateData is AUTHORITATIVE for these cut scores. Its Indiana values were derived from IDOE documents and used operationally in production SGP analyses; much of that source documentation is no longer retrievable on the public web. A missing URL is therefore a documentation gap, not a provenance defect. See wiki/sources/sgpstatedata-operational-provenance.md.",
+  "comparability": {
+    "comparable_to_prior_year": true,
+    "scale_transition": false,
+    "prior_scale_name": "ISTEP ELA/Mathematics scale",
+    "administered": true,
+    "notes": "Continuous ISTEP administration; no scale break inside 2009–2014."
+  },
+  "content_areas": [
+    {
+      "id": "ELA",
+      "label": "English/Language Arts",
+      "vertical_scale": false,
+      "scale_name": "ISTEP ELA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
+      }
+    },
+    {
+      "id": "MATHEMATICS",
+      "label": "Mathematics",
+      "vertical_scale": false,
+      "scale_name": "ISTEP Mathematics scale",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
+      }
+    }
+  ],
+  "achievement_levels": {
+    "ELA": {
+      "labels": [
+        "Did Not Pass",
+        "Pass",
+        "Pass +"
+      ],
+      "proficient_from": "Pass",
+      "notes": "Three-level ISTEP scheme observed in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2009–2014."
+    },
+    "MATHEMATICS": {
+      "labels": [
+        "Did Not Pass",
+        "Pass",
+        "Pass +"
+      ],
+      "proficient_from": "Pass",
+      "notes": "Three-level ISTEP scheme observed in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2009–2014."
+    }
+  },
+  "cutscores": {
+    "ELA": {
+      "3": [
+        417,
+        521
+      ],
+      "4": [
+        437,
+        535
+      ],
+      "5": [
+        468,
+        548
+      ],
+      "6": [
+        478,
+        579
+      ],
+      "7": [
+        501,
+        584
+      ],
+      "8": [
+        508,
+        627
+      ]
+    },
+    "MATHEMATICS": {
+      "3": [
+        413,
+        513
+      ],
+      "4": [
+        445,
+        541
+      ],
+      "5": [
+        463,
+        556
+      ],
+      "6": [
+        487,
+        590
+      ],
+      "7": [
+        511,
+        603
+      ],
+      "8": [
+        537,
+        641
+      ]
+    }
+  },
+  "cutscores_source": {
+    "ELA": {
+      "3": "provisional",
+      "4": "provisional",
+      "5": "provisional",
+      "6": "provisional",
+      "7": "provisional",
+      "8": "provisional"
+    },
+    "MATHEMATICS": {
+      "3": "provisional",
+      "4": "provisional",
+      "5": "provisional",
+      "6": "provisional",
+      "7": "provisional",
+      "8": "provisional"
+    }
+  },
+  "notes": "ISTEP grades 3–8, three achievement levels. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Cuts are draft: transcribed from the commented SGPstateData block; confirm against an IDOE ISTEP cut-score memo before review."
+}

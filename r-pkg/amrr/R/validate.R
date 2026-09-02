@@ -36,6 +36,15 @@
   idx
 }
 
+.build_administration_ids <- function(records) {
+  ids <- character(0)
+  for (rec in records) if (is_assessment_record(rec)) {
+    id <- rec$administration$id
+    if (!is.null(id) && nzchar(id)) ids <- c(ids, id)
+  }
+  unique(ids)
+}
+
 .common_invariants <- function(sp, rec, system_key) {
   errs <- character(0)
   admin <- rec$administration %||% list()
@@ -62,7 +71,7 @@
   errs
 }
 
-.assessment_invariants <- function(sp, rec) {
+.assessment_invariants <- function(sp, rec, administration_ids = character(0)) {
   errs <- .common_invariants(sp, rec, "assessment_system")
   levels <- rec$achievement_levels %||% list()
   cutscores <- rec$cutscores %||% list()
@@ -103,6 +112,129 @@
     }
   }
   if (is_v2_record(rec)) errs <- c(errs, .v2_assessment_invariants(rec))
+  errs <- c(errs, .design_invariants(rec, administration_ids))
+  errs
+}
+
+# ADR-013 D3: type pairing for sample assessments, and the design-block
+# invariants a schema cannot express (PV => scale; replicate variance rule;
+# cycle_years includes administration.year; longitudinal_link names a corpus
+# administration). Harmless no-op when the new types / design block are absent.
+.design_invariants <- function(rec, administration_ids = character(0)) {
+  errs <- character(0)
+  atype <- rec$assessment_system$assessment_type
+  jtype <- rec$jurisdiction$type
+  if (identical(atype, "international-sample") &&
+      !jtype %in% c("international", "benchmarking-entity")) {
+    errs <- c(errs, sprintf(
+      "assessment_type 'international-sample' requires jurisdiction.type in {international, benchmarking-entity} (got '%s')",
+      jtype %||% "NULL"))
+  }
+  if (identical(atype, "national-sample") && !identical(jtype, "nation")) {
+    errs <- c(errs, sprintf(
+      "assessment_type 'national-sample' requires jurisdiction.type = 'nation' (got '%s')",
+      jtype %||% "NULL"))
+  }
+
+  design <- rec[["design"]]
+  if (is.null(design)) return(errs)
+
+  pv <- design[["plausible_values"]]
+  pv_count <- as.numeric((pv %||% list())[["count"]] %||% NA)
+  sm <- design[["scoring_model"]]
+  if (!is.na(pv_count) && pv_count >= 1) {
+    if (!is.null(sm) && !identical(sm, "scale")) {
+      errs <- c(errs, sprintf(
+        "design.plausible_values.count >= 1 requires design.scoring_model = 'scale' (got '%s')",
+        sm))
+    }
+    alt_sm <- ((rec[["measurement"]] %||% list())[["alternate"]] %||% list())[["scoring_model"]]
+    effective_sm <- sm %||% "scale"
+    if (!is.null(alt_sm) && !identical(effective_sm, alt_sm)) {
+      errs <- c(errs, sprintf(
+        "design.scoring_model '%s' disagrees with measurement.alternate.scoring_model '%s'",
+        effective_sm, alt_sm))
+    }
+  }
+
+  rep <- ((design[["weights"]] %||% list())[["replicate"]] %||% NULL)
+  if (!is.null(rep)) {
+    method <- rep[["method"]]
+    zones <- rep[["zones"]]
+    replicates <- rep[["replicates"]]
+    vf <- rep[["variance_factor"]]
+    if (is.null(zones)) {
+      errs <- c(errs, "design.weights.replicate.zones is required")
+    }
+    if (is.null(replicates)) {
+      errs <- c(errs, "design.weights.replicate.replicates is required")
+    }
+    if (is.null(vf)) {
+      errs <- c(errs, "design.weights.replicate.variance_factor is required")
+    }
+    if (!is.null(zones) && !is.null(replicates) && !is.null(vf)) {
+      z <- as.numeric(zones)
+      r <- as.numeric(replicates)
+      v <- as.numeric(vf)
+      if (!isTRUE(r == z) && !isTRUE(r == 2 * z)) {
+        errs <- c(errs, sprintf(
+          "design.weights.replicate.replicates must equal zones or 2 * zones (got replicates=%s, zones=%s)",
+          replicates, zones))
+      } else if (isTRUE(r == z) && !isTRUE(v == 1)) {
+        errs <- c(errs, sprintf(
+          "design.weights.replicate.variance_factor must be 1 when replicates = zones (got %s)",
+          vf))
+      } else if (isTRUE(r == 2 * z) && !isTRUE(v == 0.5)) {
+        errs <- c(errs, sprintf(
+          "design.weights.replicate.variance_factor must be 0.5 when replicates = 2 * zones (got %s)",
+          vf))
+      }
+    }
+    if (identical(method, "JK2")) {
+      if (is.null(rep[["zone_variable"]]) || is.null(rep[["rep_variable"]]) ||
+          !is.null(rep[["variable_prefix"]])) {
+        errs <- c(errs, paste(
+          "design.weights.replicate method 'JK2' requires zone_variable and",
+          "rep_variable and forbids variable_prefix"))
+      }
+    } else if (identical(method, "JK1") || identical(method, "BRR")) {
+      prefix <- rep[["variable_prefix"]]
+      if (is.null(prefix) || !nzchar(prefix)) {
+        errs <- c(errs, sprintf(
+          "design.weights.replicate method '%s' requires variable_prefix",
+          method))
+      }
+    }
+  }
+
+  cycle_years <- design[["cycle_years"]]
+  if (!is.null(cycle_years)) {
+    admin_year <- as.character((rec$administration %||% list())$year %||% "")
+    years <- as.character(unlist(cycle_years))
+    if (!nzchar(admin_year) || !(admin_year %in% years)) {
+      errs <- c(errs, sprintf(
+        "design.cycle_years must include administration.year '%s'",
+        if (nzchar(admin_year)) admin_year else "NULL"))
+    }
+  }
+
+  link <- design[["longitudinal_link"]]
+  if (!is.null(link)) {
+    lid <- link[["linked_administration_id"]]
+    if (is.null(lid) || !nzchar(lid)) {
+      errs <- c(errs, "design.longitudinal_link.linked_administration_id is required")
+    } else if (!lid %in% administration_ids) {
+      errs <- c(errs, sprintf(
+        "design.longitudinal_link.linked_administration_id '%s' is not an administration.id in the corpus (identity conflict)",
+        lid))
+    }
+    span <- as.numeric(link[["span_years"]] %||% NA)
+    if (is.na(span) || span < 1) {
+      errs <- c(errs, sprintf(
+        "design.longitudinal_link.span_years must be >= 1 (got %s)",
+        link[["span_years"]] %||% "NULL"))
+    }
+  }
   errs
 }
 
@@ -209,8 +341,13 @@
 #' non-draft records. v1 and v2 records are routed to their respective schemas
 #' (dual-version window, ADR-009); v2 records additionally get the enrollment
 #' axis rule (cutscore/scale-bound grade keys must be enrolled grades) and the
-#' scale-envelope invariant (`loss <= min(cuts) <= max(cuts) <= hoss`). Once any
-#' v2 record exists, remaining v1 records raise a migration warning.
+#' scale-envelope invariant (`loss <= min(cuts) <= max(cuts) <= hoss`). Sample
+#' assessments (ADR-013) add six design invariants: `international-sample` /
+#' `national-sample` type pairing, plausible values require
+#' `design.scoring_model = "scale"`, the replicate variance rule, `cycle_years`
+#' includes `administration.year`, and `longitudinal_link` names an
+#' `administration.id` in the corpus (identity conflict if it does not). Once
+#' any v2 record exists, remaining v1 records raise a migration warning.
 #'
 #' @param registry Path to a registry checkout (the directory containing
 #'   `metadata/` and `schemas/`). Defaults to `option("amrr.registry")` then the
@@ -244,6 +381,7 @@ validate_registry <- function(registry = NULL, schema_dir = NULL,
   records <- read_all_records(root)
   if (!length(records)) stop("No sidecars under ", file.path(root, "metadata"), call. = FALSE)
   assessment_index <- .build_assessment_index(records)
+  administration_ids <- .build_administration_ids(records)
 
   results <- list()
   total_errors <- 0L
@@ -257,7 +395,7 @@ validate_registry <- function(registry = NULL, schema_dir = NULL,
         sprintf("schema_version %s but amr.assessment.v2.schema.json not found in %s",
                 sQuote(sv), schema_dir)
       } else {
-        c(.schema_errors(sval, raw), .assessment_invariants(sp, rec))
+        c(.schema_errors(sval, raw), .assessment_invariants(sp, rec, administration_ids))
       }
     } else if (is_accountability_record(rec)) {
       sval <- if (is_v2_record(rec)) acct_v2 else acct_v1

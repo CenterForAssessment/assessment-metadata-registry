@@ -1,3 +1,8 @@
+# amrr 0.6.0 (2026-08-30)
+
+* New `amrr_design()`: returns the optional top-level `design` block (student sampling, scoring model, plausible values, replicate weights, cycle years, longitudinal link) or `NULL` when absent (ADR-013). Same present-or-absent shape as `amrr_elp()` / `amrr_alternate()`.
+* `validate_registry()` enforces six ADR-013 design invariants: `international-sample` / `national-sample` type pairing, plausible values require `design.scoring_model = "scale"` (and agreement with `measurement.alternate.scoring_model` when both are present), the replicate variance rule (`zones` / `replicates` / `variance_factor`; JK1/BRR vs JK2 column naming), `cycle_years` includes `administration.year`, and `longitudinal_link.linked_administration_id` names an `administration.id` in the corpus (identity conflict if it does not).
+
 # amrr 0.5.0 (2026-07-06)
 
 * **Reproducible remote mode.** `get_metadata()` now accepts a GitHub repo as the

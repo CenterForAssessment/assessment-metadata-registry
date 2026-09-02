@@ -153,6 +153,22 @@ amrr_alternate <- function(x) {
   (as_record(x)[["measurement"]] %||% list())[["alternate"]]
 }
 
+#' Sampling-design block for a record (ADR-013)
+#'
+#' Returns the optional top-level `design` block: student sampling, scoring
+#' model, plausible values, replicate weights, cycle years, and longitudinal
+#' link. `NULL` when absent — the same present-or-absent shape as
+#' [amrr_elp()] / [amrr_alternate()]. Does not invent a census default; a
+#' record without `design` is a record whose sampling semantics were not
+#' authored.
+#'
+#' @param x A metadata record or a length-1 [get_metadata()] result.
+#' @return The `design` list, or `NULL` if absent.
+#' @export
+amrr_design <- function(x) {
+  as_record(x)[["design"]]
+}
+
 #' Source documents for a record (v2)
 #'
 #' The evidence list beyond the primary `provenance.source_citation`.

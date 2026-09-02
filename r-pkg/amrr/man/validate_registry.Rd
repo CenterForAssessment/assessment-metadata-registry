@@ -36,8 +36,13 @@ monotonic cutscores, accountability cross-links, and a \code{source_citation} on
 non-draft records. v1 and v2 records are routed to their respective schemas
 (dual-version window, ADR-009); v2 records additionally get the enrollment
 axis rule (cutscore/scale-bound grade keys must be enrolled grades) and the
-scale-envelope invariant (\verb{loss <= min(cuts) <= max(cuts) <= hoss}). Once any
-v2 record exists, remaining v1 records raise a migration warning.
+scale-envelope invariant (\verb{loss <= min(cuts) <= max(cuts) <= hoss}). Sample
+assessments (ADR-013) add six design invariants: \code{international-sample} /
+\code{national-sample} type pairing, plausible values require
+\code{design.scoring_model = "scale"}, the replicate variance rule, \code{cycle_years}
+includes \code{administration.year}, and \code{longitudinal_link} names an
+\code{administration.id} in the corpus (identity conflict if it does not). Once
+any v2 record exists, remaining v1 records raise a migration warning.
 }
 \examples{
 \dontrun{

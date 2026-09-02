@@ -2,7 +2,7 @@
 title: "Connection: SGPc ↔ Registry Consumption Contract"
 type: connection
 created: 2026-07-02
-updated: 2026-07-02
+updated: 2026-08-30
 status: active
 curated: true
 sources:
@@ -12,6 +12,7 @@ sources:
   - SGPc-rpkg/SGPc/R/metadata.R
   - wiki/decisions/000-registry-architecture.md
   - wiki/decisions/002-accountability-system-record.md
+  - wiki/decisions/013-national-international-assessments.md
 tags: [sgpc, consumption, resolver, contract, reproducibility]
 ---
 
@@ -28,11 +29,20 @@ md <- amrr::get_metadata("IN", system = "wida-access", year = 2024,
 amrr::amrr_registry_ref(md)     # commit SHA to stamp into the SGPc run
 amrr::amrr_cutscores(md[[1]], "ELP_COMPOSITE")
 amrr::amrr_targets(md[[1]], "ELP_COMPOSITE")   # exit target, re-merged from accountability
+amrr::amrr_design(md[[1]])                     # sampling / PV / replicate block, or NULL
 ```
 
 `get_metadata()` returns assessment records with accountability targets **re-merged**
 under `achievement_targets` (ADR-002), so SGPc sees the shape it already expects even
 though targets are authored separately.
+
+`amrr_design(x)` returns the optional top-level `design` block (student sampling,
+scoring model, plausible values, replicate weights, cycle years, longitudinal
+link) or `NULL` when the record has none. SGPc's resolver reads it to fill
+`snapshot.design_json` at ingest (engine ADR-018) and to choose the within-PV
+variance method at run time (engine ADR-017 §5). The accessor does not invent a
+census default: absence means the sampling semantics were not authored. See
+[[013-national-international-assessments]].
 
 ## The three SGPc-side changes (additive)
 
