@@ -17,8 +17,8 @@ assessment record for consumers that expect them together (see
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/CenterForAssessment/assessment-metadata-registry}
-  \item Report bugs at \url{https://github.com/CenterForAssessment/assessment-metadata-registry/issues}
+  \item \url{https://github.com/dataimago/assessment-metadata-registry}
+  \item Report bugs at \url{https://github.com/dataimago/assessment-metadata-registry/issues}
 }
 
 }

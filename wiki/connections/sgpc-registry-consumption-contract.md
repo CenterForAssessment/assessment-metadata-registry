@@ -65,9 +65,17 @@ to reproduce, resolve the registry at that SHA and re-read. Because R consumptio
 committed Tier A sidecars, the SHA fully determines the bytes — no live service on the
 critical path. This works from either a **local/submoduled checkout** (`registry = <path>`,
 pinned by checking out the SHA) or, since `amrr` 0.5.0, a **reproducible remote**
-(`registry = "github://CenterForAssessment/assessment-metadata-registry"`, `ref = <SHA>`),
+(`registry = "github://dataimago/assessment-metadata-registry"`, `ref = <SHA>`),
 which fetches the canonical sidecars straight from GitHub at that SHA — no checkout needed
 (ADR-011).
+
+> **Canonical remote (corrected 2026-08-14).** After the 2026-08-10 org
+> transfer the canonical remote is **`dataimago/assessment-metadata-registry`**
+> (per SGPc ADR-007); `CenterForAssessment/assessment-metadata-registry` is a
+> **CI-maintained mirror**, retained for continuity. Pin reproducible runs
+> against the `dataimago` remote — this page previously named the mirror,
+> which the 2026-08-14 SGPc weave flagged: a spec resolved against a mirror
+> that drifts is silently a different analysis.
 
 ## Invariants SGPc can rely on
 

@@ -124,7 +124,7 @@ branch, or tag) is resolved to a concrete commit SHA and recorded as the pin, so
 is byte-for-byte reconstructable.
 
 ```r
-repo <- "github://CenterForAssessment/assessment-metadata-registry"
+repo <- "github://dataimago/assessment-metadata-registry"  # canonical; CenterForAssessment is a CI mirror
 md   <- get_metadata("IN", system = "ilearn", year = 2024, registry = repo, ref = "b824b20")
 amrr_registry_ref(md)                       # the resolved 40-hex SHA — the reproducibility pin
 ```
@@ -159,8 +159,9 @@ page of the catalog.
 - **Tier A (canonical):** `amr.assessment.v2` + `amr.accountability.v2` schemas (the v1
   schemas remain accepted during the migration window). **48 records across 3
   jurisdictions** — Indiana (ILEARN, WIDA-ACCESS, and its accountability system) plus
-  demonstration jurisdictions SC and SD, all migrated to v2. Records are `status: draft`
-  (scaffold values) pending review. v2 adds the enrollment-grade model (`fixed`/`variable`
+  demonstration jurisdictions SC and SD, all migrated to v2. **42 of 48 records** are
+  `status: reviewed`; **6** remain `status: draft`. v2 adds the enrollment-grade model
+  (`fixed`/`variable`
   + `enrolled_grades_tested`), enrolled-grade-keyed `scale_bounds`, `proficient_from`
   benchmarks, an end-of-course `"eoc"` cut key, and type-discriminated measurement
   extensions (ADR-009 / ADR-010).

@@ -12,7 +12,7 @@ projection of the canonical JSON sidecars produced by `amrr::build_registry()`. 
   mounts the DB `:ro`.
 - Responses are **SHA-stamped** (`git_sha` from `registry_meta`) but this is the **latest
   build, not the reproducibility pin** — pin with
-  `amrr::get_metadata(registry = "github://CenterForAssessment/assessment-metadata-registry", ref = <SHA>)`
+  `amrr::get_metadata(registry = "github://dataimago/assessment-metadata-registry", ref = <SHA>)`
   (ADR-011) or a checkout at a SHA.
 
 ## Layout

@@ -14,12 +14,12 @@ description_html: |
   <strong>disposable</strong>.</p>
   <p><strong>Convenience / latest — not the reproducibility pin.</strong> For byte-for-byte
   reproducible reads, pin to a commit with
-  <code>amrr::get_metadata(registry = "github://CenterForAssessment/assessment-metadata-registry", ref = &lt;SHA&gt;)</code>
+  <code>amrr::get_metadata(registry = "github://dataimago/assessment-metadata-registry", ref = &lt;SHA&gt;)</code>
   (ADR-011) or check out that SHA. This instance serves the latest build only.</p>
 license: "CC BY 4.0"
 license_url: "https://creativecommons.org/licenses/by/4.0/"
 source: "assessment-metadata-registry (canonical JSON sidecars under metadata/)"
-source_url: "https://github.com/CenterForAssessment/assessment-metadata-registry"
+source_url: "https://github.com/dataimago/assessment-metadata-registry"
 databases:
   registry:
     description_html: |
