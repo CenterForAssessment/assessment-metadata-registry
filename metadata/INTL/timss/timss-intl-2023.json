@@ -1,13 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "medium",
+  "status": "verified",
+  "source_confidence": "high",
   "provenance": {
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-02",
     "source_citation": "IEA / TIMSS & PIRLS International Study Center, 'Using Scale Anchoring to Interpret TIMSS Achievement Results', TIMSS 2023 Technical Report, Chapter 14 (2024). International Benchmarks: Advanced 625, High 550, Intermediate 475, Low 400; cut points originally selected in TIMSS 2003 and constant since (Gonzalez et al., 2004). https://timss2023.org/wp-content/uploads/2024/12/T23_TR_Chap14.pdf",
-    "last_verified_at": null,
-    "verified_by": null,
+    "last_verified_at": "2026-09-02",
+    "verified_by": "Damian Betebenner",
     "changed_from_prior": "New sidecar for the 2023 cycle (scale owner for TIMSS-L 2024). MATHEMATICS International Benchmarks identical to 2019."
   },
   "source_documents": [

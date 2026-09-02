@@ -1,13 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "medium",
+  "status": "verified",
+  "source_confidence": "high",
   "provenance": {
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-02",
     "source_citation": "NCES, 'Mapping State Proficiency Standards Onto the NAEP Scales: Results From the 2015 NAEP Reading and Mathematics Assessments' (NCES 2018-159), Table A-3. Mathematics grade 4: Basic 214, Proficient 249, Advanced 282; grade 8: Basic 262, Proficient 299, Advanced 333. https://nces.ed.gov/nationsreportcard/subject/publications/studies/pdf/2018159.pdf",
-    "last_verified_at": null,
-    "verified_by": null,
+    "last_verified_at": "2026-09-02",
+    "verified_by": "Damian Betebenner",
     "changed_from_prior": "A3.4 citation pass: planner-recalled cuts confirmed against NCES 2018-159 Table A-3; cutscores_source provisional -> official; status remains draft."
   },
   "source_documents": [
