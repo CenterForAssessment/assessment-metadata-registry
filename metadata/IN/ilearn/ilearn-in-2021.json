@@ -1,13 +1,13 @@
 {
   "schema_version": "amr.assessment.v2",
-  "status": "draft",
-  "source_confidence": "medium",
+  "status": "verified",
+  "source_confidence": "high",
   "provenance": {
     "source_citation": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. Identical to the active ELA= / MATHEMATICS= 3-cut vectors in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01).",
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-01",
-    "last_verified_at": null,
-    "verified_by": null,
+    "last_verified_at": "2026-09-02",
+    "verified_by": "Damian Betebenner",
     "changed_from_prior": "Return after the 2020 COVID gap; four-level ILEARN scheme (the 2019 3-level collapse is not reused)."
   },
   "source_documents": [
