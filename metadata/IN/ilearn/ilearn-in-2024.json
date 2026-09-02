@@ -1,13 +1,25 @@
 {
   "schema_version": "amr.assessment.v2",
   "status": "draft",
-  "source_confidence": "low",
+  "source_confidence": "medium",
   "provenance": {
-    "entered_by": "migration:sgpc-foundry",
-    "entered_at": "2026-07-02",
+    "source_citation": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. Identical to the active ELA= / MATHEMATICS= 3-cut vectors in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01).",
+    "entered_by": "ai:sgpc-harness",
+    "entered_at": "2026-09-01",
     "last_verified_at": null,
-    "changed_from_prior": null
+    "verified_by": null,
+    "changed_from_prior": "Same official 2019 ILEARN 4-level cuts as the prior year."
   },
+  "source_documents": [
+    {
+      "title": "IDOE ILEARN Cut Scores (Grades 3-8 and Biology)",
+      "url": "https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf"
+    },
+    {
+      "title": "SGP::SGPstateData Indiana Achievement$Cutscores (active ELA= / MATHEMATICS= 3-cut lists)",
+      "url": null
+    }
+  ],
   "jurisdiction": {
     "id": "IN",
     "name": "Indiana",
@@ -22,7 +34,7 @@
   "administration": {
     "id": "ilearn-in-2024",
     "year": "2024",
-    "vendor": "Indiana Department of Education",
+    "vendor": "Cambium Assessment",
     "window": "annual",
     "csem_ref": null
   },
@@ -35,7 +47,14 @@
       "url": "https://www.in.gov/doe/"
     }
   },
-  "cutscores_provenance": "PLACEHOLDER -- non-authoritative scaffold values. Replace cutscores with the official IDOE ILEARN performance-level cut scores (per subject x grade) before any client-facing run.",
+  "cutscores_provenance": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. Identical to the active ELA= / MATHEMATICS= 3-cut vectors in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01).",
+  "comparability": {
+    "comparable_to_prior_year": true,
+    "scale_transition": false,
+    "prior_scale_name": "ILEARN ELA/Mathematics scale",
+    "administered": true,
+    "notes": "Continuous ILEARN administration on the 2019 scale."
+  },
   "content_areas": [
     {
       "id": "ELA",
@@ -52,7 +71,7 @@
           "7",
           "8"
         ],
-        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
       }
     },
     {
@@ -70,7 +89,7 @@
           "7",
           "8"
         ],
-        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
       }
     }
   ],
@@ -97,67 +116,164 @@
   "cutscores": {
     "ELA": {
       "3": [
-        462,
-        497,
-        525
+        5416,
+        5460,
+        5515
       ],
       "4": [
-        470,
-        505,
-        533
+        5444,
+        5493,
+        5547
       ],
       "5": [
-        478,
-        513,
-        541
+        5472,
+        5524,
+        5595
       ],
       "6": [
-        486,
-        521,
-        549
+        5492,
+        5544,
+        5604
       ],
       "7": [
-        494,
-        529,
-        557
+        5507,
+        5568,
+        5629
       ],
       "8": [
-        502,
-        537,
-        565
+        5511,
+        5577,
+        5638
       ]
     },
     "MATHEMATICS": {
       "3": [
-        462,
-        497,
-        525
+        6382,
+        6425,
+        6488
       ],
       "4": [
-        470,
-        505,
-        533
+        6429,
+        6474,
+        6541
       ],
       "5": [
-        478,
-        513,
-        541
+        6453,
+        6510,
+        6566
       ],
       "6": [
-        486,
-        521,
-        549
+        6488,
+        6545,
+        6605
       ],
       "7": [
-        494,
-        529,
-        557
+        6493,
+        6562,
+        6625
       ],
       "8": [
-        502,
-        537,
-        565
+        6509,
+        6590,
+        6651
       ]
     }
-  }
+  },
+  "cutscores_source": {
+    "ELA": {
+      "3": "official",
+      "4": "official",
+      "5": "official",
+      "6": "official",
+      "7": "official",
+      "8": "official"
+    },
+    "MATHEMATICS": {
+      "3": "official",
+      "4": "official",
+      "5": "official",
+      "6": "official",
+      "7": "official",
+      "8": "official"
+    }
+  },
+  "scale_bounds": {
+    "ELA": {
+      "3": {
+        "loss": 5060,
+        "hoss": 5760,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "4": {
+        "loss": 5090,
+        "hoss": 5810,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "5": {
+        "loss": 5110,
+        "hoss": 5850,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "6": {
+        "loss": 5130,
+        "hoss": 5870,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "7": {
+        "loss": 5130,
+        "hoss": 5890,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "8": {
+        "loss": 5150,
+        "hoss": 5920,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      }
+    },
+    "MATHEMATICS": {
+      "3": {
+        "loss": 6080,
+        "hoss": 6730,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "4": {
+        "loss": 6100,
+        "hoss": 6800,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "5": {
+        "loss": 6110,
+        "hoss": 6850,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "6": {
+        "loss": 6110,
+        "hoss": 6870,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "7": {
+        "loss": 6120,
+        "hoss": 6920,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "8": {
+        "loss": 6120,
+        "hoss": 6950,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      }
+    }
+  },
+  "notes": "Four ILEARN levels (Below / Approaching / At / Above Proficiency) as reported in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2021\u20132025. Cuts and LOSS/HOSS match the 2019 IDOE PDF. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
 }

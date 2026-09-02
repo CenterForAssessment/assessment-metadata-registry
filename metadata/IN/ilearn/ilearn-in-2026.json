@@ -1,23 +1,27 @@
 {
   "schema_version": "amr.assessment.v2",
   "status": "draft",
-  "source_confidence": "medium",
+  "source_confidence": "low",
   "provenance": {
-    "source_citation": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. Identical to the active ELA= / MATHEMATICS= 3-cut vectors in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01).",
+    "source_citation": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), ELA.2026 / MATHEMATICS.2026: 2026 (new) standards expressed on the 2019 ILEARN scale via equipercentile equating (SGP_Sandbox/Indiana_2026_ILEARN_Scale_Change). Official new-scale cuts (ELA.2026.NEW_SCALE / MATHEMATICS.2026.NEW_SCALE) are commented and are for analyses reported on the new scale (>=2027), not this transition year. IDOE announced SBOE review of new cut scores on 2026-08-11 (weekly announcement); a public numeric PDF for the equated old-scale cuts was not located this session.",
     "entered_by": "ai:sgpc-harness",
     "entered_at": "2026-09-01",
     "last_verified_at": null,
     "verified_by": null,
-    "changed_from_prior": "Same official 2019 ILEARN 4-level cuts as the prior year."
+    "changed_from_prior": "New 2026 academic standards expressed on the 2019 ILEARN scale via equipercentile equating. Score scale is unchanged; cuts moved."
   },
   "source_documents": [
     {
-      "title": "IDOE ILEARN Cut Scores (Grades 3-8 and Biology)",
-      "url": "https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf"
+      "title": "SGP::SGPstateData Indiana Achievement$Cutscores (ELA.2026 / MATHEMATICS.2026)",
+      "url": null
     },
     {
-      "title": "SGP::SGPstateData Indiana Achievement$Cutscores (active ELA= / MATHEMATICS= 3-cut lists)",
-      "url": null
+      "title": "IDOE Knowledge Hub weekly announcement (2026-06-12) \u2014 SBOE cut-score review 2026-08-11",
+      "url": "https://idoe.atlassian.net/wiki/spaces/IKHTV/pages/2793897985/06+12+2026+Weekly+Announcement"
+    },
+    {
+      "title": "IDOE ILEARN Cut Scores 2019 (prior scale LOSS/HOSS)",
+      "url": "https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf"
     }
   ],
   "jurisdiction": {
@@ -32,8 +36,8 @@
     "assessment_type": "summative"
   },
   "administration": {
-    "id": "ilearn-in-2022",
-    "year": "2022",
+    "id": "ilearn-in-2026",
+    "year": "2026",
     "vendor": "Cambium Assessment",
     "window": "annual",
     "csem_ref": null
@@ -47,20 +51,20 @@
       "url": "https://www.in.gov/doe/"
     }
   },
-  "cutscores_provenance": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. Identical to the active ELA= / MATHEMATICS= 3-cut vectors in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01).",
+  "cutscores_provenance": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), ELA.2026 / MATHEMATICS.2026: 2026 (new) standards expressed on the 2019 ILEARN scale via equipercentile equating (SGP_Sandbox/Indiana_2026_ILEARN_Scale_Change). Official new-scale cuts (ELA.2026.NEW_SCALE / MATHEMATICS.2026.NEW_SCALE) are commented and are for analyses reported on the new scale (>=2027), not this transition year. IDOE announced SBOE review of new cut scores on 2026-08-11 (weekly announcement); a public numeric PDF for the equated old-scale cuts was not located this session.",
   "comparability": {
     "comparable_to_prior_year": true,
     "scale_transition": false,
     "prior_scale_name": "ILEARN ELA/Mathematics scale",
     "administered": true,
-    "notes": "Continuous ILEARN administration on the 2019 scale."
+    "notes": "Score scale is still the 2019 ILEARN scale. Cuts are new-standard locations on that scale. Not a 2018\u21922019-style program/scale break."
   },
   "content_areas": [
     {
       "id": "ELA",
       "label": "English/Language Arts",
       "vertical_scale": false,
-      "scale_name": "ILEARN ELA scale",
+      "scale_name": "ILEARN ELA scale (2019; 2026 standards equated onto it)",
       "enrollment": {
         "intended_enrollment_grade": "fixed",
         "enrolled_grades_tested": [
@@ -78,7 +82,7 @@
       "id": "MATHEMATICS",
       "label": "Mathematics",
       "vertical_scale": false,
-      "scale_name": "ILEARN Mathematics scale",
+      "scale_name": "ILEARN Mathematics scale (2019; 2026 standards equated onto it)",
       "enrollment": {
         "intended_enrollment_grade": "fixed",
         "enrolled_grades_tested": [
@@ -116,85 +120,85 @@
   "cutscores": {
     "ELA": {
       "3": [
-        5416,
+        5356,
         5460,
-        5515
-      ],
-      "4": [
-        5444,
-        5493,
         5547
       ],
-      "5": [
-        5472,
-        5524,
+      "4": [
+        5395,
+        5491,
         5595
       ],
+      "5": [
+        5419,
+        5521,
+        5623
+      ],
       "6": [
-        5492,
-        5544,
-        5604
+        5443,
+        5543,
+        5640
       ],
       "7": [
-        5507,
-        5568,
-        5629
+        5458,
+        5559,
+        5657
       ],
       "8": [
-        5511,
-        5577,
-        5638
+        5473,
+        5574,
+        5671
       ]
     },
     "MATHEMATICS": {
       "3": [
-        6382,
-        6425,
-        6488
+        6356,
+        6426,
+        6534
       ],
       "4": [
-        6429,
-        6474,
-        6541
+        6412,
+        6469,
+        6579
       ],
       "5": [
-        6453,
-        6510,
-        6566
+        6443,
+        6509,
+        6603
       ],
       "6": [
-        6488,
-        6545,
-        6605
+        6471,
+        6544,
+        6640
       ],
       "7": [
-        6493,
+        6469,
         6562,
-        6625
+        6657
       ],
       "8": [
-        6509,
-        6590,
-        6651
+        6476,
+        6591,
+        6694
       ]
     }
   },
   "cutscores_source": {
     "ELA": {
-      "3": "official",
-      "4": "official",
-      "5": "official",
-      "6": "official",
-      "7": "official",
-      "8": "official"
+      "3": "derived",
+      "4": "derived",
+      "5": "derived",
+      "6": "derived",
+      "7": "derived",
+      "8": "derived"
     },
     "MATHEMATICS": {
-      "3": "official",
-      "4": "official",
-      "5": "official",
-      "6": "official",
-      "7": "official",
-      "8": "official"
+      "3": "derived",
+      "4": "derived",
+      "5": "derived",
+      "6": "derived",
+      "7": "derived",
+      "8": "derived"
     }
   },
   "scale_bounds": {
@@ -275,5 +279,5 @@
       }
     }
   },
-  "notes": "Four ILEARN levels (Below / Approaching / At / Above Proficiency) as reported in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2021\u20132025. Cuts and LOSS/HOSS match the 2019 IDOE PDF. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
+  "notes": "2026 transition: scores in the Indiana LONG remain on the 2019 ILEARN scale (5000s/6100s); cuts are the new standards mapped onto that scale. Four-level labels match 2021\u20132025. Grade 10 cuts in SGPstateData (244/292, 271/339) are ISTEP+ Grade 10 leftovers and are not applied. Official new-scale cuts are not used here. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
 }

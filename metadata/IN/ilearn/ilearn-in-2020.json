@@ -1,0 +1,92 @@
+{
+  "schema_version": "amr.assessment.v2",
+  "status": "draft",
+  "source_confidence": "high",
+  "provenance": {
+    "source_citation": "ILEARN was not administered in 2020 (COVID-19).",
+    "entered_by": "ai:sgpc-harness",
+    "entered_at": "2026-09-01",
+    "last_verified_at": null,
+    "verified_by": null,
+    "changed_from_prior": "Administration gap; no 2020 ILEARN scores."
+  },
+  "source_documents": [
+    {
+      "title": "IDOE ILEARN Cut Scores (Grades 3-8 and Biology) \u2014 2019 scale unused in 2020",
+      "url": "https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf"
+    }
+  ],
+  "jurisdiction": {
+    "id": "IN",
+    "name": "Indiana",
+    "type": "state"
+  },
+  "assessment_system": {
+    "id": "ilearn",
+    "name": "Indiana Learning Evaluation Assessment Readiness Network",
+    "family": "ILEARN",
+    "assessment_type": "summative"
+  },
+  "administration": {
+    "id": "ilearn-in-2020",
+    "year": "2020",
+    "vendor": "AIR / Cambium Assessment",
+    "window": "annual",
+    "csem_ref": null
+  },
+  "assessment_program": {
+    "assessment_name": "Indiana Learning Evaluation Assessment Readiness Network",
+    "abbreviation": "ILEARN",
+    "organization": {
+      "name": "Indiana Department of Education",
+      "abbreviation": "IDOE",
+      "url": "https://www.in.gov/doe/"
+    }
+  },
+  "comparability": {
+    "comparable_to_prior_year": false,
+    "scale_transition": false,
+    "prior_scale_name": "ILEARN ELA/Mathematics scale",
+    "administered": false,
+    "notes": "COVID-19 administration gap. No scores; no cutscores authored."
+  },
+  "content_areas": [
+    {
+      "id": "ELA",
+      "label": "English/Language Arts",
+      "vertical_scale": false,
+      "scale_name": "ILEARN ELA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Not administered in 2020."
+      }
+    },
+    {
+      "id": "MATHEMATICS",
+      "label": "Mathematics",
+      "vertical_scale": false,
+      "scale_name": "ILEARN Mathematics scale",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8"
+        ],
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Not administered in 2020."
+      }
+    }
+  ],
+  "notes": "Placeholder administration record so the 2019\u21922021 gap is queryable. No cutscores."
+}

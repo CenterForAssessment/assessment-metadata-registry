@@ -1,0 +1,201 @@
+{
+  "schema_version": "amr.assessment.v2",
+  "status": "draft",
+  "source_confidence": "medium",
+  "provenance": {
+    "source_citation": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), ELA.2015 / MATHEMATICS.2015 blocks. Indiana State Board of Education set the 2015 ISTEP+ pass line on 2015-10-28 (IndyStar; Chalkbeat). Independent IDOE numeric PDF not located this session.",
+    "entered_by": "ai:sgpc-harness",
+    "entered_at": "2026-09-01",
+    "last_verified_at": null,
+    "verified_by": null,
+    "changed_from_prior": "Same ISTEP+ cuts and three-level scheme as the prior year."
+  },
+  "source_documents": [
+    {
+      "title": "SGP::SGPstateData Indiana Achievement$Cutscores (ELA.2015 / MATHEMATICS.2015)",
+      "url": null
+    },
+    {
+      "title": "State Board of Ed sets pass/fail line for ISTEP (IndyStar, 2015-10-28)",
+      "url": "https://www.indystar.com/story/news/education/2015/10/28/state-board-ed-sets-passfail-line/74747118/"
+    }
+  ],
+  "jurisdiction": {
+    "id": "IN",
+    "name": "Indiana",
+    "type": "state"
+  },
+  "assessment_system": {
+    "id": "istep-plus",
+    "name": "Indiana Statewide Testing for Educational Progress-Plus",
+    "family": "ISTEP+",
+    "assessment_type": "summative"
+  },
+  "administration": {
+    "id": "istep-plus-in-2018",
+    "year": "2018",
+    "vendor": "Indiana Department of Education",
+    "window": "annual",
+    "csem_ref": null
+  },
+  "assessment_program": {
+    "assessment_name": "Indiana Statewide Testing for Educational Progress-Plus",
+    "abbreviation": "ISTEP+",
+    "organization": {
+      "name": "Indiana Department of Education",
+      "abbreviation": "IDOE",
+      "url": "https://www.in.gov/doe/"
+    }
+  },
+  "cutscores_provenance": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), ELA.2015 / MATHEMATICS.2015 blocks. Indiana State Board of Education set the 2015 ISTEP+ pass line on 2015-10-28 (IndyStar; Chalkbeat). Independent IDOE numeric PDF not located this session.",
+  "comparability": {
+    "comparable_to_prior_year": true,
+    "scale_transition": false,
+    "prior_scale_name": "ISTEP+ ELA/Mathematics scale",
+    "administered": true,
+    "notes": "Continuous ISTEP+ administration on the 2015 scale."
+  },
+  "content_areas": [
+    {
+      "id": "ELA",
+      "label": "English/Language Arts",
+      "vertical_scale": false,
+      "scale_name": "ISTEP+ ELA scale",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "10"
+        ],
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Grade 10 uses a separate ISTEP+ Grade 10 scale."
+      }
+    },
+    {
+      "id": "MATHEMATICS",
+      "label": "Mathematics",
+      "vertical_scale": false,
+      "scale_name": "ISTEP+ Mathematics scale",
+      "enrollment": {
+        "intended_enrollment_grade": "fixed",
+        "enrolled_grades_tested": [
+          "3",
+          "4",
+          "5",
+          "6",
+          "7",
+          "8",
+          "10"
+        ],
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Grade 10 uses a separate ISTEP+ Grade 10 scale."
+      }
+    }
+  ],
+  "achievement_levels": {
+    "ELA": {
+      "labels": [
+        "Did Not Pass",
+        "Pass",
+        "Pass +"
+      ],
+      "proficient_from": "Pass",
+      "notes": "Three-level ISTEP+ scheme observed in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2015\u20132018."
+    },
+    "MATHEMATICS": {
+      "labels": [
+        "Did Not Pass",
+        "Pass",
+        "Pass +"
+      ],
+      "proficient_from": "Pass",
+      "notes": "Three-level ISTEP+ scheme observed in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2015\u20132018."
+    }
+  },
+  "cutscores": {
+    "ELA": {
+      "3": [
+        428,
+        500
+      ],
+      "4": [
+        456,
+        529
+      ],
+      "5": [
+        486,
+        546
+      ],
+      "6": [
+        502,
+        572
+      ],
+      "7": [
+        516,
+        592
+      ],
+      "8": [
+        537,
+        617
+      ],
+      "10": [
+        244,
+        292
+      ]
+    },
+    "MATHEMATICS": {
+      "3": [
+        425,
+        480
+      ],
+      "4": [
+        458,
+        508
+      ],
+      "5": [
+        480,
+        536
+      ],
+      "6": [
+        510,
+        560
+      ],
+      "7": [
+        533,
+        578
+      ],
+      "8": [
+        554,
+        595
+      ],
+      "10": [
+        271,
+        339
+      ]
+    }
+  },
+  "cutscores_source": {
+    "ELA": {
+      "3": "provisional",
+      "4": "provisional",
+      "5": "provisional",
+      "6": "provisional",
+      "7": "provisional",
+      "8": "provisional",
+      "10": "provisional"
+    },
+    "MATHEMATICS": {
+      "3": "provisional",
+      "4": "provisional",
+      "5": "provisional",
+      "6": "provisional",
+      "7": "provisional",
+      "8": "provisional",
+      "10": "provisional"
+    }
+  },
+  "notes": "ISTEP+ three-level scheme (Did Not Pass / Pass / Pass +) after the 2015 college-and-career-ready standards reset. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Grade 10 ISTEP+ ELA/Mathematics appear in 2017\u20132018; those cuts are on a separate hundreds-scale (not the 3\u20138 scale)."
+}
