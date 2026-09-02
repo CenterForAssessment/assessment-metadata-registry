@@ -76,6 +76,7 @@ WIDA_IN is the v2 dogfood corpus.
 
 | Page | Summary |
 |------|---------|
+| [[sgpstatedata-operational-provenance]] | SGPstateData is an authoritative citation of record for state cut scores (maintainer attestation 2026-09-02); a missing agency URL is a documentation gap, not a provenance defect |
 | [[colleague-assessment-spec-r]] | Colleague's unified `assessment_spec.R`: typed general/alternate/ELP list schema, verification workflow, separated demographics |
 
 ---

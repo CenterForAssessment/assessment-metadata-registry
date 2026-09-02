@@ -19,6 +19,22 @@ Draft records `metadata/US/naep/naep-us-2015.json` and
 contract names `amrr_design()`. Promotion is a human commit (A3.4); this entry does
 not change `status`.
 
+## [2026-09-01] authoring | Indiana ISTEP / ISTEP+ / ILEARN draft cutscores (P-B B1.1)
+
+**Action:** authoring (Tier A, `metadata/IN/istep/**` ×6, `metadata/IN/istep-plus/**` ×4,
+`metadata/IN/ilearn/**` ×8 including 2020 `administered: false` and new 2026)
+
+Draft records only (`status: draft`). Parsed from the maintainer's
+`SGPstateData[["IN"]][["Achievement"]][["Cutscores"]]` paste plus the IDOE ILEARN
+Cut Scores PDF (SBOE 2019-07-25). 2019 ILEARN is the three-level collapse
+(Below/Approaching / At / Above) matching the LONG; 2021–2025 are the official
+four-level IDOE cuts (numbers match the PDF exactly); 2026 is new standards
+equated onto the 2019 scale (`source_confidence: low`). ISTEP 2009–2014 cuts are
+`low` (commented SGPstateData block; no IDOE PDF this session). ISTEP+ 2015–2018
+are `medium` (SGPstateData ELA.2015 / MATHEMATICS.2015; SBOE set the 2015 line
+2015-10-28). `comparability.scale_transition: true` on ISTEP+ 2015 and ILEARN
+2019. `make validate` → 60 files, 0 errors. Human promotes to `reviewed`.
+
 ## [2026-08-30] decision | ADR-013 accepted — national and international sample assessments
 
 **Action:** decision (ratification). The maintainer accepted ADR-013 on branch

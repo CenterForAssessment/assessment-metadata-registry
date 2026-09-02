@@ -36,7 +36,7 @@ Display / Explore-JSON / Raw views, a spec viewer, and a changelog). The machine
 **Quick start:**
 
 ```bash
-# Validate the canonical sidecars locally (expects 48 files, 0 errors)
+# Validate the canonical sidecars locally (expects 60 files, 0 errors)
 make validate            # or: Rscript -e 'amrr::validate_registry(".")'
 ```
 ```r

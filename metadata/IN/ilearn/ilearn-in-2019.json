@@ -1,13 +1,29 @@
 {
   "schema_version": "amr.assessment.v2",
   "status": "draft",
-  "source_confidence": "low",
+  "source_confidence": "medium",
   "provenance": {
-    "entered_by": "migration:sgpc-foundry",
-    "entered_at": "2026-07-02",
+    "source_citation": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25, PDF updated 2019-08-26: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. This record uses the official At Proficiency and Above Proficiency cuts only (ELA.2019 / MATHEMATICS.2019 in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01)): the 2019 LONG collapses Below Proficiency and Approaching Proficiency into 'Below/Approaching Proficiency' (SGPstateData note 2019-09-17). Grade 10 uses ISTEP+ Grade 10 hundreds-scale cuts (ELA 244/292, Math 271/339); intake endpoints [100, 400].",
+    "entered_by": "ai:sgpc-harness",
+    "entered_at": "2026-09-01",
     "last_verified_at": null,
-    "changed_from_prior": null
+    "verified_by": null,
+    "changed_from_prior": "New assessment system (ILEARN) replacing ISTEP+. Scale transition. 2019 operational labels are the 3-level collapse of the official 4-level IDOE scheme."
   },
+  "source_documents": [
+    {
+      "title": "IDOE ILEARN Cut Scores (Grades 3-8 and Biology)",
+      "url": "https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf"
+    },
+    {
+      "title": "IDOE Spring 2019 ILEARN results release (2019-08-27)",
+      "url": "https://content.govdelivery.com/attachments/INDOE/2019/08/27/file_attachments/1274135/2019%20ILEARN%20PR%20%28Embargoed%29%202_Final.pdf"
+    },
+    {
+      "title": "SGP::SGPstateData Indiana Achievement$Cutscores (ELA.2019 / MATHEMATICS.2019)",
+      "url": null
+    }
+  ],
   "jurisdiction": {
     "id": "IN",
     "name": "Indiana",
@@ -22,7 +38,7 @@
   "administration": {
     "id": "ilearn-in-2019",
     "year": "2019",
-    "vendor": "Indiana Department of Education",
+    "vendor": "AIR / Cambium Assessment",
     "window": "annual",
     "csem_ref": null
   },
@@ -35,7 +51,14 @@
       "url": "https://www.in.gov/doe/"
     }
   },
-  "cutscores_provenance": "PLACEHOLDER -- non-authoritative scaffold values. Replace cutscores with the official IDOE ILEARN performance-level cut scores (per subject x grade) before any client-facing run.",
+  "cutscores_provenance": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25, PDF updated 2019-08-26: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. This record uses the official At Proficiency and Above Proficiency cuts only (ELA.2019 / MATHEMATICS.2019 in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01)): the 2019 LONG collapses Below Proficiency and Approaching Proficiency into 'Below/Approaching Proficiency' (SGPstateData note 2019-09-17). Grade 10 uses ISTEP+ Grade 10 hundreds-scale cuts (ELA 244/292, Math 271/339); intake endpoints [100, 400]. MAINTAINER ATTESTATION (Damian Betebenner, 2026-09-02): SGPstateData is AUTHORITATIVE for these cut scores. Its Indiana values were derived from IDOE documents and used operationally in production SGP analyses; much of that source documentation is no longer retrievable on the public web. A missing URL is therefore a documentation gap, not a provenance defect. See wiki/sources/sgpstatedata-operational-provenance.md.",
+  "comparability": {
+    "comparable_to_prior_year": false,
+    "scale_transition": true,
+    "prior_scale_name": "ISTEP+ ELA/Mathematics scale",
+    "administered": true,
+    "notes": "Program change ISTEP+ → ILEARN. Rank-based copula growth remains valid across the scale break (Sklar); mark the 2018→2019 cohorts as a scale_transition on the drift panel (engine ADR-019)."
+  },
   "content_areas": [
     {
       "id": "ELA",
@@ -50,9 +73,10 @@
           "5",
           "6",
           "7",
-          "8"
+          "8",
+          "10"
         ],
-        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Grade 10 is the ISTEP+ Grade 10 scale (hundreds), not the ILEARN 3–8 scale."
       }
     },
     {
@@ -68,96 +92,204 @@
           "5",
           "6",
           "7",
-          "8"
+          "8",
+          "10"
         ],
-        "note": "Seeded by migrate_registry() from cutscore grade keys; review during authoring."
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Grade 10 is the ISTEP+ Grade 10 scale (hundreds), not the ILEARN 3–8 scale."
       }
     }
   ],
   "achievement_levels": {
     "ELA": {
       "labels": [
-        "Below Proficiency",
-        "Approaching Proficiency",
+        "Below/Approaching Proficiency",
         "At Proficiency",
         "Above Proficiency"
       ],
-      "proficient_from": "At Proficiency"
+      "proficient_from": "At Proficiency",
+      "notes": "2019 LONG reports three levels (Below/Approaching, At, Above). Official IDOE 4-level Approaching cuts (ELA 5416 / Math 6382 in grade 3, and grade analogues) are in the IDOE PDF but are not the reporting scheme in this file."
     },
     "MATHEMATICS": {
       "labels": [
-        "Below Proficiency",
-        "Approaching Proficiency",
+        "Below/Approaching Proficiency",
         "At Proficiency",
         "Above Proficiency"
       ],
-      "proficient_from": "At Proficiency"
+      "proficient_from": "At Proficiency",
+      "notes": "2019 LONG reports three levels (Below/Approaching, At, Above). Official IDOE 4-level Approaching cuts (ELA 5416 / Math 6382 in grade 3, and grade analogues) are in the IDOE PDF but are not the reporting scheme in this file."
     }
   },
   "cutscores": {
     "ELA": {
       "3": [
-        462,
-        497,
-        525
+        5460,
+        5515
       ],
       "4": [
-        470,
-        505,
-        533
+        5493,
+        5547
       ],
       "5": [
-        478,
-        513,
-        541
+        5524,
+        5595
       ],
       "6": [
-        486,
-        521,
-        549
+        5544,
+        5604
       ],
       "7": [
-        494,
-        529,
-        557
+        5568,
+        5629
       ],
       "8": [
-        502,
-        537,
-        565
+        5577,
+        5638
+      ],
+      "10": [
+        244,
+        292
       ]
     },
     "MATHEMATICS": {
       "3": [
-        462,
-        497,
-        525
+        6425,
+        6488
       ],
       "4": [
-        470,
-        505,
-        533
+        6474,
+        6541
       ],
       "5": [
-        478,
-        513,
-        541
+        6510,
+        6566
       ],
       "6": [
-        486,
-        521,
-        549
+        6545,
+        6605
       ],
       "7": [
-        494,
-        529,
-        557
+        6562,
+        6625
       ],
       "8": [
-        502,
-        537,
-        565
+        6590,
+        6651
+      ],
+      "10": [
+        271,
+        339
       ]
     }
-  }
+  },
+  "cutscores_source": {
+    "ELA": {
+      "3": "official",
+      "4": "official",
+      "5": "official",
+      "6": "official",
+      "7": "official",
+      "8": "official",
+      "10": "provisional"
+    },
+    "MATHEMATICS": {
+      "3": "official",
+      "4": "official",
+      "5": "official",
+      "6": "official",
+      "7": "official",
+      "8": "official",
+      "10": "provisional"
+    }
+  },
+  "scale_bounds": {
+    "ELA": {
+      "3": {
+        "loss": 5060,
+        "hoss": 5760,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "4": {
+        "loss": 5090,
+        "hoss": 5810,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "5": {
+        "loss": 5110,
+        "hoss": 5850,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "6": {
+        "loss": 5130,
+        "hoss": 5870,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "7": {
+        "loss": 5130,
+        "hoss": 5890,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "8": {
+        "loss": 5150,
+        "hoss": 5920,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "10": {
+        "loss": 100,
+        "hoss": 400,
+        "source": "derived",
+        "notes": "ISTEP+ Grade 10 scale; intake 2019 grade-10 endpoints [100, 400]."
+      }
+    },
+    "MATHEMATICS": {
+      "3": {
+        "loss": 6080,
+        "hoss": 6730,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "4": {
+        "loss": 6100,
+        "hoss": 6800,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "5": {
+        "loss": 6110,
+        "hoss": 6850,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "6": {
+        "loss": 6110,
+        "hoss": 6870,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "7": {
+        "loss": 6120,
+        "hoss": 6920,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "8": {
+        "loss": 6120,
+        "hoss": 6950,
+        "source": "official",
+        "notes": "LOSS/HOSS from IDOE ILEARN Cut Scores PDF (updated 2019-08-26)."
+      },
+      "10": {
+        "loss": 100,
+        "hoss": 400,
+        "source": "derived",
+        "notes": "ISTEP+ Grade 10 scale; intake 2019 grade-10 endpoints [100, 400]."
+      }
+    }
+  },
+  "notes": "2019 is the first ILEARN administration (program change from ISTEP+). Official IDOE standard setting produced four levels; the Indiana LONG and SGPstateData operational SGP-target work report three. At and Above cuts for grades 3–8 match the IDOE PDF exactly. Grade 10 ELA/Mathematics in this LONG are on the ISTEP+ Grade 10 scale (100–400); those two-cut vectors come from SGPstateData GRADE_10. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Maintainer treats ILEARN as a Smarter Balanced-based CCR assessment (AIR/Cambium). Confirm against the ILEARN technical report before promotion — IDOE materials describe ILEARN as an Indiana Academic Standards CCR assessment, not an SBAC member form."
 }
