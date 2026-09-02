@@ -7,6 +7,7 @@ status: active
 curated: true
 sources:
   - SGP::SGPstateData (DBetebenner/SGPstateData)
+  - wiki/decisions/014-source-precedence-and-designated-envelopes.md
   - metadata/IN/istep/*.json, metadata/IN/istep-plus/*.json, metadata/IN/ilearn/*.json
 tags: [provenance, cutscores, sgpstatedata, governance, indiana]
 ---
@@ -40,6 +41,17 @@ citation of record. It does not license an agent to fill a gap from memory, from
 secondary summary, or from another package; and it does not convert a `draft` record into
 a `reviewed` one. Promotion remains the human act it was (ADR-000; ADR-006 planned).
 
+## Where it yields (added 2026-09-02)
+
+Authoritative is not the same as first in line. Where a record cites a state-agency
+document that can still be read, that document outranks `SGPstateData`, which becomes a
+corroborating witness for those values rather than their source; `SGPstateData` is the
+source of record where the agency documentation is no longer retrievable, which is the
+case this page was written for. [[014-source-precedence-and-designated-envelopes]] states
+the ordering and the reason it is a rule of order rather than a claim about which number
+is true. The Indiana ILEARN envelope is the worked case: two cells decided against
+`SGPstateData` on that rule, with the disagreement kept on the record.
+
 ## How to cite it in a record
 
 Name the exact accessor, the delivery, and the date, then state the attestation:
@@ -64,6 +76,7 @@ rediscovered.
 
 ## Related pages
 
+- [[014-source-precedence-and-designated-envelopes]] — where this attestation yields to a retrievable document
 - [[000-registry-architecture]] — provenance on every authored number
 - [[013-national-international-assessments]] — the sibling case where primary sources *were* retrievable (NCES, IEA)
 - [[sgpc-registry-consumption-contract]] — what SGPc reads from these records

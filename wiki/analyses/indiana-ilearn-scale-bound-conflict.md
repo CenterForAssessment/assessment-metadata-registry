@@ -3,7 +3,7 @@ title: "Two sources disagree on two ILEARN scale bounds"
 type: analysis
 created: 2026-09-02
 updated: 2026-09-02
-status: open
+status: resolved
 curated: true
 scope:
   - assessment-metadata-registry
@@ -12,12 +12,17 @@ sources:
   - metadata/IN/ilearn/ilearn-in-{2019,2021,2022,2023,2024,2025}.json
   - SGP::SGPstateData[["IN"]][["Achievement"]][["Knots_Boundaries"]] (maintainer paste 2026-09-02)
   - wiki/sources/sgpstatedata-operational-provenance.md
-tags: [indiana, ilearn, scale-bounds, conflict, filed-not-fixed]
+  - wiki/decisions/014-source-precedence-and-designated-envelopes.md
+tags: [indiana, ilearn, scale-bounds, conflict, filed-not-fixed, resolved]
 ---
 
 Two cells of the ILEARN scale envelope disagree between the IDOE cut-score PDF the records
 cite and `SGPstateData`'s operational `loss.hoss`. Both sources are ones this registry
-treats as authoritative, so the disagreement is filed rather than reconciled.
+treats as authoritative, so the disagreement was filed rather than reconciled — and then
+decided, on 2026-09-02, in favour of the cited document. The argument below is kept whole:
+it is the reason the resolution is a judgement rather than a coin toss, and the reason
+[[014-source-precedence-and-designated-envelopes]] states the rule as one of order and not
+of truth. **Resolved — see the closing section.**
 
 ## The disagreement
 
@@ -62,18 +67,41 @@ crosswalk of engine ADR-014 — and by any report that describes the scale's ran
 24-point LOSS error at mathematics grade 3 would misstate the floor of the reported scale
 in every Indiana ILEARN year.
 
-## Resolution path
+## Resolution
 
-The maintainer decides, one of three ways: read the cited IDOE PDF and let it stand;
-correct `SGPstateData` upstream and re-derive these records from it; or record that the
-two serve different purposes (published scale range vs analysis bound) and keep both, with
-the record's `notes` naming which is which. Until then the records keep their cited PDF
-values, unchanged, and this page is the reason the mismatch is not a silent one.
+**Decided 2026-09-02 by the maintainer:** the cited PDF stands. Both records keep 5870
+and 6080 unchanged, and the whole Indiana envelope — these cells, the other twenty-four
+ILEARN cells per year, and the ISTEP-era bounds read off the operational LONG — is
+designated the envelope of record for historical copula analysis. The 126 Indiana
+`scale_bounds` cells that carried `source: "derived"` now carry `source: "official"`,
+each keeping the note that records how the number was obtained.
 
-Filed, not fixed — the house rule for a contradiction between two sources of record.
+The reasoning is worth preserving, because it is not "the published number wins." A
+cut-score PDF is largely boilerplate carried forward year to year, so a decade of them can
+propagate one error while looking like independent confirmation; and a vertical scale's
+tails are unreliable about where the bottom is, which makes a 24-point LOSS disagreement
+as plausibly an artifact of how the scale was extended below the item pool as a bad
+source. Neither source is trusted here. What the decision buys is a deterministic,
+auditable answer for a use — rank-based growth over a historical panel — in which no
+percentile moves either way.
+
+Two consequences are named rather than assumed. The records stay `status: draft`;
+designating a value's confidence is not promoting the record that holds it. And
+`SGPstateData` is left untouched, so a plain `SGP` run still uses 5865 and 6104 while an
+SGPc run reading the registry uses 5870 and 6080 — a known divergence now, and a separate
+decision if it is ever to be closed upstream.
+
+The general rule this case produced lives in
+[[014-source-precedence-and-designated-envelopes]]: where a cited agency document is still
+retrievable it outranks `SGPstateData`, which reverts to a corroborating witness;
+`SGPstateData` is the source of record only where the documentation is gone.
+
+Filed, not fixed — then decided, and the file kept. A contradiction is closed by recording
+which way it went and why, never by deleting the evidence that it existed.
 
 ## Related pages
 
 - [[sgpstatedata-operational-provenance]] — the attestation this case sits at the edge of
 - [[grade-encoding-split]] — the registry's other filed-not-fixed finding
+- [[014-source-precedence-and-designated-envelopes]] — the precedence rule this case produced
 - [[009-v2-implementation]] — `scale_bounds` keying and the loss ≤ cuts ≤ hoss invariant
