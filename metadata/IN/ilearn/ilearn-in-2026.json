@@ -16,7 +16,7 @@
       "url": null
     },
     {
-      "title": "IDOE Knowledge Hub weekly announcement (2026-06-12) \u2014 SBOE cut-score review 2026-08-11",
+      "title": "IDOE Knowledge Hub weekly announcement (2026-06-12) — SBOE cut-score review 2026-08-11",
       "url": "https://idoe.atlassian.net/wiki/spaces/IKHTV/pages/2793897985/06+12+2026+Weekly+Announcement"
     },
     {
@@ -51,13 +51,13 @@
       "url": "https://www.in.gov/doe/"
     }
   },
-  "cutscores_provenance": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), ELA.2026 / MATHEMATICS.2026: 2026 (new) standards expressed on the 2019 ILEARN scale via equipercentile equating (SGP_Sandbox/Indiana_2026_ILEARN_Scale_Change). Official new-scale cuts (ELA.2026.NEW_SCALE / MATHEMATICS.2026.NEW_SCALE) are commented and are for analyses reported on the new scale (>=2027), not this transition year. IDOE announced SBOE review of new cut scores on 2026-08-11 (weekly announcement); a public numeric PDF for the equated old-scale cuts was not located this session.",
+  "cutscores_provenance": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), ELA.2026 / MATHEMATICS.2026: 2026 (new) standards expressed on the 2019 ILEARN scale via equipercentile equating (SGP_Sandbox/Indiana_2026_ILEARN_Scale_Change). Official new-scale cuts (ELA.2026.NEW_SCALE / MATHEMATICS.2026.NEW_SCALE) are commented and are for analyses reported on the new scale (>=2027), not this transition year. IDOE announced SBOE review of new cut scores on 2026-08-11 (weekly announcement); a public numeric PDF for the equated old-scale cuts was not located this session. MAINTAINER ATTESTATION (Damian Betebenner, 2026-09-02): SGPstateData is AUTHORITATIVE for these cut scores. Its Indiana values were derived from IDOE documents and used operationally in production SGP analyses; much of that source documentation is no longer retrievable on the public web. A missing URL is therefore a documentation gap, not a provenance defect. See wiki/sources/sgpstatedata-operational-provenance.md.",
   "comparability": {
     "comparable_to_prior_year": true,
     "scale_transition": false,
     "prior_scale_name": "ILEARN ELA/Mathematics scale",
     "administered": true,
-    "notes": "Score scale is still the 2019 ILEARN scale. Cuts are new-standard locations on that scale. Not a 2018\u21922019-style program/scale break."
+    "notes": "Score scale is still the 2019 ILEARN scale. Cuts are new-standard locations on that scale. Not a 2018→2019-style program/scale break."
   },
   "content_areas": [
     {
@@ -279,5 +279,5 @@
       }
     }
   },
-  "notes": "2026 transition: scores in the Indiana LONG remain on the 2019 ILEARN scale (5000s/6100s); cuts are the new standards mapped onto that scale. Four-level labels match 2021\u20132025. Grade 10 cuts in SGPstateData (244/292, 271/339) are ISTEP+ Grade 10 leftovers and are not applied. Official new-scale cuts are not used here. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
+  "notes": "2026 transition: scores in the Indiana LONG remain on the 2019 ILEARN scale (5000s/6100s); cuts are the new standards mapped onto that scale. Four-level labels match 2021–2025. Grade 10 cuts in SGPstateData (244/292, 271/339) are ISTEP+ Grade 10 leftovers and are not applied. Official new-scale cuts are not used here. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
 }

@@ -51,13 +51,13 @@
       "url": "https://www.in.gov/doe/"
     }
   },
-  "cutscores_provenance": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25, PDF updated 2019-08-26: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. This record uses the official At Proficiency and Above Proficiency cuts only (ELA.2019 / MATHEMATICS.2019 in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01)): the 2019 LONG collapses Below Proficiency and Approaching Proficiency into 'Below/Approaching Proficiency' (SGPstateData note 2019-09-17). Grade 10 uses ISTEP+ Grade 10 hundreds-scale cuts (ELA 244/292, Math 271/339); intake endpoints [100, 400].",
+  "cutscores_provenance": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25, PDF updated 2019-08-26: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. This record uses the official At Proficiency and Above Proficiency cuts only (ELA.2019 / MATHEMATICS.2019 in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01)): the 2019 LONG collapses Below Proficiency and Approaching Proficiency into 'Below/Approaching Proficiency' (SGPstateData note 2019-09-17). Grade 10 uses ISTEP+ Grade 10 hundreds-scale cuts (ELA 244/292, Math 271/339); intake endpoints [100, 400]. MAINTAINER ATTESTATION (Damian Betebenner, 2026-09-02): SGPstateData is AUTHORITATIVE for these cut scores. Its Indiana values were derived from IDOE documents and used operationally in production SGP analyses; much of that source documentation is no longer retrievable on the public web. A missing URL is therefore a documentation gap, not a provenance defect. See wiki/sources/sgpstatedata-operational-provenance.md.",
   "comparability": {
     "comparable_to_prior_year": false,
     "scale_transition": true,
     "prior_scale_name": "ISTEP+ ELA/Mathematics scale",
     "administered": true,
-    "notes": "Program change ISTEP+ \u2192 ILEARN. Rank-based copula growth remains valid across the scale break (Sklar); mark the 2018\u21922019 cohorts as a scale_transition on the drift panel (engine ADR-019)."
+    "notes": "Program change ISTEP+ → ILEARN. Rank-based copula growth remains valid across the scale break (Sklar); mark the 2018→2019 cohorts as a scale_transition on the drift panel (engine ADR-019)."
   },
   "content_areas": [
     {
@@ -76,7 +76,7 @@
           "8",
           "10"
         ],
-        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Grade 10 is the ISTEP+ Grade 10 scale (hundreds), not the ILEARN 3\u20138 scale."
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Grade 10 is the ISTEP+ Grade 10 scale (hundreds), not the ILEARN 3–8 scale."
       }
     },
     {
@@ -95,7 +95,7 @@
           "8",
           "10"
         ],
-        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Grade 10 is the ISTEP+ Grade 10 scale (hundreds), not the ILEARN 3\u20138 scale."
+        "note": "ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Grade 10 is the ISTEP+ Grade 10 scale (hundreds), not the ILEARN 3–8 scale."
       }
     }
   ],
@@ -291,5 +291,5 @@
       }
     }
   },
-  "notes": "2019 is the first ILEARN administration (program change from ISTEP+). Official IDOE standard setting produced four levels; the Indiana LONG and SGPstateData operational SGP-target work report three. At and Above cuts for grades 3\u20138 match the IDOE PDF exactly. Grade 10 ELA/Mathematics in this LONG are on the ISTEP+ Grade 10 scale (100\u2013400); those two-cut vectors come from SGPstateData GRADE_10. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Maintainer treats ILEARN as a Smarter Balanced-based CCR assessment (AIR/Cambium). Confirm against the ILEARN technical report before promotion \u2014 IDOE materials describe ILEARN as an Indiana Academic Standards CCR assessment, not an SBAC member form."
+  "notes": "2019 is the first ILEARN administration (program change from ISTEP+). Official IDOE standard setting produced four levels; the Indiana LONG and SGPstateData operational SGP-target work report three. At and Above cuts for grades 3–8 match the IDOE PDF exactly. Grade 10 ELA/Mathematics in this LONG are on the ISTEP+ Grade 10 scale (100–400); those two-cut vectors come from SGPstateData GRADE_10. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Maintainer treats ILEARN as a Smarter Balanced-based CCR assessment (AIR/Cambium). Confirm against the ILEARN technical report before promotion — IDOE materials describe ILEARN as an Indiana Academic Standards CCR assessment, not an SBAC member form."
 }

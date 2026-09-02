@@ -43,13 +43,13 @@
       "url": "https://www.in.gov/doe/"
     }
   },
-  "cutscores_provenance": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), historical commented ELA= / MATHEMATICS= blocks (2 cuts, Did Not Pass / Pass / Pass +). Independent IDOE PDF not located this session.",
+  "cutscores_provenance": "SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01), historical commented ELA= / MATHEMATICS= blocks (2 cuts, Did Not Pass / Pass / Pass +). Independent IDOE PDF not located this session. MAINTAINER ATTESTATION (Damian Betebenner, 2026-09-02): SGPstateData is AUTHORITATIVE for these cut scores. Its Indiana values were derived from IDOE documents and used operationally in production SGP analyses; much of that source documentation is no longer retrievable on the public web. A missing URL is therefore a documentation gap, not a provenance defect. See wiki/sources/sgpstatedata-operational-provenance.md.",
   "comparability": {
     "comparable_to_prior_year": false,
     "scale_transition": false,
     "prior_scale_name": null,
     "administered": true,
-    "notes": "Continuous ISTEP administration; no scale break inside 2009\u20132014."
+    "notes": "Continuous ISTEP administration; no scale break inside 2009–2014."
   },
   "content_areas": [
     {
@@ -97,7 +97,7 @@
         "Pass +"
       ],
       "proficient_from": "Pass",
-      "notes": "Three-level ISTEP scheme observed in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2009\u20132014."
+      "notes": "Three-level ISTEP scheme observed in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2009–2014."
     },
     "MATHEMATICS": {
       "labels": [
@@ -106,7 +106,7 @@
         "Pass +"
       ],
       "proficient_from": "Pass",
-      "notes": "Three-level ISTEP scheme observed in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2009\u20132014."
+      "notes": "Three-level ISTEP scheme observed in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2009–2014."
     }
   },
   "cutscores": {
@@ -181,5 +181,5 @@
       "8": "provisional"
     }
   },
-  "notes": "ISTEP grades 3\u20138, three achievement levels. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Cuts are draft: transcribed from the commented SGPstateData block; confirm against an IDOE ISTEP cut-score memo before review."
+  "notes": "ISTEP grades 3–8, three achievement levels. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply. Cuts are draft: transcribed from the commented SGPstateData block; confirm against an IDOE ISTEP cut-score memo before review."
 }

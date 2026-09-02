@@ -47,7 +47,7 @@
       "url": "https://www.in.gov/doe/"
     }
   },
-  "cutscores_provenance": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. Identical to the active ELA= / MATHEMATICS= 3-cut vectors in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01).",
+  "cutscores_provenance": "IDOE, 'ILEARN Cut Scores (Grades 3-8 and Biology)', SBOE approved 2019-07-25: https://www.in.gov/doe/files/ILEARN-Cut-Scores.pdf. Identical to the active ELA= / MATHEMATICS= 3-cut vectors in SGP::SGPstateData[['IN']][['Achievement']][['Cutscores']] (DBetebenner/SGPstateData; maintainer paste 2026-09-01). MAINTAINER ATTESTATION (Damian Betebenner, 2026-09-02): SGPstateData is AUTHORITATIVE for these cut scores. Its Indiana values were derived from IDOE documents and used operationally in production SGP analyses; much of that source documentation is no longer retrievable on the public web. A missing URL is therefore a documentation gap, not a provenance defect. See wiki/sources/sgpstatedata-operational-provenance.md.",
   "comparability": {
     "comparable_to_prior_year": false,
     "scale_transition": false,
@@ -275,5 +275,5 @@
       }
     }
   },
-  "notes": "Four ILEARN levels (Below / Approaching / At / Above Proficiency) as reported in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2021\u20132025. Cuts and LOSS/HOSS match the 2019 IDOE PDF. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
+  "notes": "Four ILEARN levels (Below / Approaching / At / Above Proficiency) as reported in Indiana_Data_LONG$ACHIEVEMENT_LEVEL for 2021–2025. Cuts and LOSS/HOSS match the 2019 IDOE PDF. ISTEP / ISTEP+ / ILEARN tested grades start at 3. The filed-not-fixed grade-encoding-split analysis (K vs 0) does not apply."
 }
