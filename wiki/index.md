@@ -85,5 +85,6 @@ WIDA_IN is the v2 dogfood corpus.
 
 | Page | Summary |
 |------|---------|
+| [[indiana-ilearn-scale-bound-conflict]] | Two ILEARN cells (ELA g6 HOSS, MATHEMATICS g3 LOSS) disagree between the cited IDOE PDF and SGPstateData `loss.hoss`, identically across 2019-2025. Rank-based growth is unaffected; the margins layer is not. Filed, not fixed |
 | [[schema-crosswalk]] | Field-level mapping of `amr.*`, SGPc sidecar, and `assessment_spec.R` onto the five-domain taxonomy — conflicts, gaps, reclassifications |
 | [[grade-encoding-split]] | `^(PK\|K\|[0-9]{1,2})$` admits both `"K"` and `"0"` for kindergarten; assessment records use one, accountability records and SGPc the other. Validates cleanly, and becomes a silent `NULL` the moment WIDA cut scores are authored. Filed, not fixed |
