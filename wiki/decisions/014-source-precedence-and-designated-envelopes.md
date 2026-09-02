@@ -25,7 +25,7 @@ tags: [governance, provenance, precedence, scale-bounds, indiana, sgpstatedata]
 two-cell ILEARN conflict filed as [[indiana-ilearn-scale-bound-conflict]]: *"Where these
 discrepancies occur, it would probably be best to just go with the PDF record if it
 exists. … Given what we want to use these for (historical copula analyses), I'm inclined
-to designate as official the knots and boundaries we have just established."*
+to designate as official the loss/hoss values we have just established."*
 
 The registry now has two sources it treats as authoritative for the same numbers — the
 state agency's published cut-score document, and `SGPstateData`, whose operational
@@ -65,8 +65,8 @@ at a LOSS is as likely an artifact of how the scale was extended below the item 
 is a bad transcription. D1 buys a deterministic, auditable answer. It does not buy the
 right answer, and a record that follows it should not be read as asserting one.
 
-**D3 — The Indiana ISTEP / ISTEP+ / ILEARN envelope is designated of record.** The knots
-and boundaries established across 2009–2026 — ILEARN's from the cited IDOE cut-score PDF,
+**D3 — The Indiana ISTEP / ISTEP+ / ILEARN envelope is designated of record.** The
+loss/hoss values established across 2009–2026 — ILEARN's from the cited IDOE cut-score PDF,
 the ISTEP-era's from the observed endpoints of the operational LONG, confirmed by the
 maintainer — are the values Indiana historical copula analyses use. All 126 Indiana
 state-summative `scale_bounds` cells that carried `source: "derived"` are set to

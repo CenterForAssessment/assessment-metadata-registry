@@ -16,8 +16,8 @@ explicitly one of **order, not truth**: cut-score PDFs are boilerplate carried f
 year to year, and a vertical scale's tails are unreliable about the floor, so a LOSS
 disagreement is as plausibly a scaling artifact as a bad source.
 
-Separately, the maintainer **designated the Indiana ISTEP / ISTEP+ / ILEARN knots and
-boundaries the envelope of record** for historical copula analysis: 126 `scale_bounds`
+Separately, the maintainer **designated the Indiana ISTEP / ISTEP+ / ILEARN loss/hoss
+values the envelope of record** for historical copula analysis: 126 `scale_bounds`
 cells across 11 records move `source: derived` -> `official` (72 ISTEP, 52 ISTEP+, 2
 ILEARN-2019 grade-10 carryover), each keeping the note recording how the number was
 obtained. `source` is ADR-008 §5 per-value *confidence*, not a provenance type.

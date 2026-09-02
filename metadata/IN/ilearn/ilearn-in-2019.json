@@ -243,7 +243,7 @@
         "loss": 100,
         "hoss": 400,
         "source": "official",
-        "notes": "ISTEP+ Grade 10 scale; intake 2019 grade-10 endpoints [100, 400]. Designated official by the maintainer 2026-09-02: these are the knots and boundaries of record for Indiana historical copula analysis (ADR-014)."
+        "notes": "ISTEP+ Grade 10 scale; intake 2019 grade-10 endpoints [100, 400]. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
       }
     },
     "MATHEMATICS": {
@@ -287,7 +287,7 @@
         "loss": 100,
         "hoss": 400,
         "source": "official",
-        "notes": "ISTEP+ Grade 10 scale; intake 2019 grade-10 endpoints [100, 400]. Designated official by the maintainer 2026-09-02: these are the knots and boundaries of record for Indiana historical copula analysis (ADR-014)."
+        "notes": "ISTEP+ Grade 10 scale; intake 2019 grade-10 endpoints [100, 400]. Designated official by the maintainer 2026-09-02: these are the loss/hoss values of record for Indiana historical copula analysis (ADR-014)."
       }
     }
   },
