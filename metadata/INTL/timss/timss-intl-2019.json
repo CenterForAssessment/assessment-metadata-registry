@@ -91,8 +91,8 @@
   "achievement_levels": {
     "MATHEMATICS": {
       "labels": ["Below Low", "Low", "Intermediate", "High", "Advanced"],
-      "proficient_from": "Intermediate",
-      "notes": "IEA names four International Benchmarks (Low / Intermediate / High / Advanced); the floor below 400 is not an IEA label and is recorded here as Below Low so cut count = n_labels - 1. proficient_from is a placeholder choice for SGPc's margins layer, not an IEA designation."
+      "proficient_from": "High",
+      "notes": "IEA names four International Benchmarks (Low / Intermediate / High / Advanced); the floor below 400 is not an IEA label and is recorded here as Below Low so cut count = n_labels - 1. proficient_from is not an IEA designation: it is set to High (>= 550) by maintainer decision (2026-09-02) for consistency with the proficiency threshold of other four-level achievement systems in the US."
     }
   },
   "cutscores": {
