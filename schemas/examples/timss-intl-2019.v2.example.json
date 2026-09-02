@@ -1,15 +1,29 @@
 {
   "schema_version": "amr.assessment.v2",
   "status": "draft",
-  "source_confidence": "low",
+  "source_confidence": "medium",
   "provenance": {
-    "entered_by": "ai:sgpc-pa-planner",
-    "entered_at": "2026-08-30",
-    "source_citation": "https://timss2019.org/international-results/",
+    "entered_by": "ai:sgpc-harness",
+    "entered_at": "2026-09-02",
+    "source_citation": "IEA / TIMSS & PIRLS International Study Center, 'Using Scale Anchoring to Interpret the TIMSS 2019 Achievement Scales', Methods and Procedures: TIMSS 2019 Technical Report, Chapter 15 (2020). International Benchmarks: Advanced 625, High 550, Intermediate 475, Low 400. https://timssandpirls.bc.edu/timss2019/methods/pdf/T19_MP_Ch15-scale-anchoring.pdf",
     "last_verified_at": null,
     "verified_by": null,
-    "changed_from_prior": null
+    "changed_from_prior": "A3.4 citation pass: MATHEMATICS benchmarks cited to TIMSS 2019 Methods Ch. 15; SCIENCE cuts dropped (first-pass MATHEMATICS only); cutscores_source provisional -> official; status remains draft."
   },
+  "source_documents": [
+    {
+      "title": "IEA, Using Scale Anchoring to Interpret the TIMSS 2019 Achievement Scales (Methods and Procedures: TIMSS 2019 Technical Report, Chapter 15, 2020)",
+      "url": "https://timssandpirls.bc.edu/timss2019/methods/pdf/T19_MP_Ch15-scale-anchoring.pdf"
+    },
+    {
+      "title": "IEA, Using Scale Anchoring to Interpret TIMSS Achievement Results (TIMSS 2023 Technical Report, Chapter 14, 2024) — cut points originally selected in TIMSS 2003 and constant since (Gonzalez et al., 2004)",
+      "url": "https://timss2023.org/wp-content/uploads/2024/12/T23_TR_Chap14.pdf"
+    },
+    {
+      "title": "TIMSS 2019 International Results — International Benchmarks (grade 8 mathematics)",
+      "url": "https://timss2019.org/reports/timss-2019-international-benchmarks-m8/index.html"
+    }
+  ],
   "jurisdiction": {
     "id": "INTL",
     "name": "International (IEA participating systems)",
@@ -69,7 +83,8 @@
       "scale_name": "TIMSS science scale (centerpoint 500, SD 100)",
       "enrollment": {
         "intended_enrollment_grade": "fixed",
-        "enrolled_grades_tested": ["4", "8"]
+        "enrolled_grades_tested": ["4", "8"],
+        "note": "SCIENCE is part of the TIMSS 2019 cycle but is out of first-pass cutscore scope (MATHEMATICS only). The same four International Benchmark points apply; they are not authored on this record."
       }
     }
   ],
@@ -77,28 +92,20 @@
     "MATHEMATICS": {
       "labels": ["Below Low", "Low", "Intermediate", "High", "Advanced"],
       "proficient_from": "Intermediate",
-      "notes": "proficient_from is a placeholder choice for SGPc's margins layer, not an IEA designation."
+      "notes": "IEA names four International Benchmarks (Low / Intermediate / High / Advanced); the floor below 400 is not an IEA label and is recorded here as Below Low so cut count = n_labels - 1. proficient_from is a placeholder choice for SGPc's margins layer, not an IEA designation."
     }
   },
   "cutscores": {
     "MATHEMATICS": {
       "4": [400, 475, 550, 625],
       "8": [400, 475, 550, 625]
-    },
-    "SCIENCE": {
-      "4": [400, 475, 550, 625],
-      "8": [400, 475, 550, 625]
     }
   },
   "cutscores_source": {
     "MATHEMATICS": {
-      "4": "provisional",
-      "8": "provisional"
-    },
-    "SCIENCE": {
-      "4": "provisional",
-      "8": "provisional"
+      "4": "official",
+      "8": "official"
     }
   },
-  "cutscores_provenance": "TIMSS international benchmarks (Low 400, Intermediate 475, High 550, Advanced 625); verify the cycle's benchmark definitions before promotion."
+  "cutscores_provenance": "MATHEMATICS only (maintainer first-pass). Grade 4 and grade 8 share the TIMSS International Benchmarks: Low 400, Intermediate 475, High 550, Advanced 625 (TIMSS 2019 Methods Ch. 15). TIMSS 2023 Technical Report Ch. 14 states these cut points were originally selected in TIMSS 2003 and have remained constant across cycles (Gonzalez et al., 2004); descriptions of what students can do at each point are updated each cycle. SCIENCE benchmarks are the same four points but are not filed this pass. Human promotes to reviewed (A3.4 gate)."
 }

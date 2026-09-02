@@ -4,6 +4,24 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-09-02] authoring | NAEP / TIMSS / TIMSS-L achievement-level cutscore drafts (P-A A3.4)
+
+**Action:** authoring (Tier A, `metadata/US/naep/**`, `metadata/INTL/timss/**`,
+`metadata/INTL/timss-l/**`)
+
+Draft records only (`status: draft`). MATHEMATICS first-pass. NAEP grade 4/8
+cuts (Basic 214/262, Proficient 249/299, Advanced 282/333) cited to NCES
+2018-159 Table A-3 and NCES 2026-014 Table 3 (unchanged since the early-1990s
+achievement-level setting). TIMSS International Benchmarks (Low 400 /
+Intermediate 475 / High 550 / Advanced 625) cited to TIMSS 2019 Methods Ch. 15
+and TIMSS 2023 Technical Report Ch. 14; constant across cycles since TIMSS
+2003 (Gonzalez et al., 2004). SCIENCE cuts dropped from the 2019 TIMSS sidecar
+(first-pass MATHEMATICS only). TIMSS-L 2024 authors no separate cuts — it
+inherits `timss-intl-2023`; PV prefix and linked-sample weight left as TODO
+(A0.2). Human promotes to `reviewed`.
+
+---
+
 ## [2026-09-02] decision | ADR-014 — source precedence, and the Indiana envelope of record
 
 **Action:** decision + governance edit (Tier A). The two-cell ILEARN conflict filed the
