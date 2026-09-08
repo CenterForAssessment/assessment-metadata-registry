@@ -100,6 +100,16 @@ than absorbed by a translator nobody reads.
 Per the hub rule — *file an analysis, never silently reconcile* — no data was changed to paper
 over this.
 
+## Resolution (2026-09-07)
+
+Maintainer decision: across all SGP work, kindergarten is labelled grade `0`. The
+registry continues to record the agency label (`K`) where that is what the source
+document uses. Consumers translate at their boundary; the SGPc engine boundary uses
+`0`, and the foundry projectors (`build/project_sidecars.R`) carry the `K` → `0`
+(and `KG` → `0` if it ever appears) translation for cutscores,
+`achievement_targets.per_grade_scale_score`, and `enrollment.enrolled_grades_tested`.
+No registry record changes are required.
+
 ## Related Pages
 
 - [[sgpc-registry-consumption-contract]] — the consumer that meets both spellings
