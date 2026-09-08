@@ -4,6 +4,17 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-09-07] analysis | grade-key convention — `K` in the registry, `0` at the SGPc boundary
+
+**Action:** analysis resolution (Tier B, `wiki/analyses/grade-encoding-split.md`)
+
+Filed-not-fixed since 2026-07-10: kindergarten spelled `K` in wida-access enrollment and
+`0` in accountability `per_grade_scale_score` / SGPc. Resolution: registry keeps the
+agency label; SGPc engine and foundry projectors translate `K` → `0` at the consumption
+boundary. No registry record edits.
+
+---
+
 ## [2026-09-02] authoring | NAEP / TIMSS / TIMSS-L achievement-level cutscore drafts (P-A A3.4)
 
 **Action:** authoring (Tier A, `metadata/US/naep/**`, `metadata/INTL/timss/**`,
