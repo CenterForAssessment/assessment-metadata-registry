@@ -81,8 +81,8 @@
   "achievement_levels": {
     "MATHEMATICS": {
       "labels": ["Below Low", "Low", "Intermediate", "High", "Advanced"],
-      "proficient_from": "Intermediate",
-      "notes": "Labels copied from timss-intl-2023 for the inherited International Benchmarks. IEA did not set separate TIMSS-L cut scores. proficient_from is the same placeholder as the 2023 record, not an IEA designation."
+      "proficient_from": "High",
+      "notes": "Labels copied from timss-intl-2023 for the inherited International Benchmarks. IEA did not set separate TIMSS-L cut scores. proficient_from is not an IEA designation: it follows the timss-intl-2023 record, High (>= 550), set by maintainer decision 2026-09-02. CORRECTED 2026-09-27 with maintainer approval: this record previously read 'Intermediate' while stating it matched the 2023 record, which reads 'High'."
     }
   },
   "cutscores_provenance": "No separate TIMSS-L cut scores. IEA TIMSS-L Progress Report (GA64, 2023): learning gains are measured on the TIMSS achievement scales; the 2023 grade 4/8 cohort is reassessed as grade 5/9 in 2024. MATHEMATICS International Benchmarks therefore inherit from timss-intl-2023 (Low 400 / Intermediate 475 / High 550 / Advanced 625; constant since TIMSS 2003). cutscores / cutscores_source are omitted so a consumer must resolve the linked administration rather than read a duplicated vector here.",
