@@ -36,7 +36,7 @@ Display / Explore-JSON / Raw views, a spec viewer, and a changelog). The machine
 **Quick start:**
 
 ```bash
-# Validate the canonical sidecars locally (expects 60 files, 0 errors)
+# Validate the canonical sidecars locally (expects 74 files, 0 errors)
 make validate            # or: Rscript -e 'amrr::validate_registry(".")'
 ```
 ```r
@@ -56,8 +56,9 @@ metadata/     Canonical annual sidecars: <jurisdiction>/<system>/<system>-<jur>-
 tools/        archive/ = historical one-time seed scripts (live tooling is amrr::*_registry)
 r-pkg/amrr/   R package: get_metadata() consumer + build_registry()/validate_registry() tooling
 site/         Quarto catalog (Tier C presentation): renders the derived JSON for humans
+serve/        Read-only query API + MCP backend over the derived SQLite (Tier C; ADR-012)
 wiki/         LLM wiki: decisions (ADRs), patterns, sources, analyses
-Makefile      Local dogfooding loop: make validate | build | check | test | all | site
+Makefile      Local dogfooding loop: make validate | build | check | test | all | site | serve-*
 AGENTS.md     Operating manual (read first); CLAUDE.md imports it
 ```
 
@@ -87,6 +88,7 @@ make setup               # once: install the R tooling + site packages
 make validate            # or: Rscript -e 'amrr::validate_registry(".")'
 make build               # validate, then derive Tier B into build/
 make site                # render the human-readable catalog into site/_site/
+make serve-native        # run the read-only query API (Datasette) on :8001; see serve/README.md
 ```
 
 ## Basic usage
@@ -157,10 +159,12 @@ page of the catalog.
 ## Status
 
 - **Tier A (canonical):** `amr.assessment.v2` + `amr.accountability.v2` schemas (the v1
-  schemas remain accepted during the migration window). **48 records across 3
-  jurisdictions** — Indiana (ILEARN, WIDA-ACCESS, and its accountability system) plus
-  demonstration jurisdictions SC and SD, all migrated to v2. **42 of 48 records** are
-  `status: reviewed`; **6** remain `status: draft`. v2 adds the enrollment-grade model
+  schemas remain accepted during the migration window). **74 records across 5
+  jurisdictions** — Indiana (ILEARN, ISTEP and ISTEP+, WIDA-ACCESS, and its accountability
+  system), the national and international assessments NAEP (`US`) and TIMSS and TIMSS-L
+  (`INTL`) (ADR-013), plus demonstration jurisdictions SC and SD, all on v2. **14 of 74
+  records** are `status: verified`, **43** `status: reviewed`, and **17** remain
+  `status: draft`. v2 adds the enrollment-grade model
   (`fixed`/`variable`
   + `enrolled_grades_tested`), enrolled-grade-keyed `scale_bounds`, `proficient_from`
   benchmarks, an end-of-course `"eoc"` cut key, and type-discriminated measurement
@@ -168,10 +172,12 @@ page of the catalog.
 - **Tier B (derived):** `amrr::build_registry()` → index, changelog, per-jurisdiction
   bundles, SQLite, the compact `config/` projection, and a SHA-stamped manifest; published
   to Pages by CI.
-- **Tier C (consume):** `r-pkg/amrr` 0.5.0 — `get_metadata()` with SHA pinning and target
-  re-merge, v2 accessors, and the `as_config()` / `read_config()` config view; reads from a
+- **Tier C (consume):** `r-pkg/amrr` 0.6.0 — `get_metadata()` with SHA pinning and target
+  re-merge, v2 accessors (including `amrr_design()` for the sampling-design block, ADR-013),
+  and the `as_config()` / `read_config()` config view; reads from a
   local checkout, a **reproducible `github://` remote** pinned by commit SHA (ADR-011), or a
-  derived-layer URL (latest); plus a Quarto **catalog** (`site/`) with a **Config view** page
-  (ADR-007 / ADR-010).
+  derived-layer URL (latest); a Quarto **catalog** (`site/`) with a **Config view** page
+  (ADR-007 / ADR-010); and a read-only **query API and MCP server** (`serve/`, ADR-012),
+  deployed from CI (`deploy-vercel`, `deploy-api`).
 
 See `wiki/decisions/000-registry-architecture.md` for the architecture and roadmap.
