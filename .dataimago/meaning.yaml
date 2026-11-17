@@ -1,0 +1,31 @@
+# What this place is for, stated by the repo itself.
+#
+# Drafted by an agent on 2026-11-17 from purpose.md.
+# The founder read the wording and approved it as written the same day.
+# Read by dataimago-lain to draw this place and by agent sessions at start.
+# Schema and rules: dataimago-design templates/harness/meaning.schema.json,
+# wiki/decisions/repo-meaning-file.md. Validate with
+#   node <dataimago-design>/tools/validate-harness.mjs .dataimago/meaning.yaml
+apiVersion: dataimago.ai/v1alpha1
+kind: Meaning
+metadata:
+  id: assessment-metadata-registry
+  partOf: SGPc
+  updated: 2026-11-17
+spec:
+  title: Assessment metadata registry
+  purpose: >
+    The canonical, versioned home for state assessment metadata, kept as a durable
+    public data product, with SGPc as its first consumer.
+  founding: purpose.md
+  status: active
+  serves:
+    - analysts who need to know what assessment a jurisdiction used, in what year and on what scale
+  work:
+    - data
+    - software
+  relations:
+    - kind: feeds
+      place: SGPc-rpkg
+      why: The engine reads a jurisdiction's assessment metadata from the registry.
+  parts: []
