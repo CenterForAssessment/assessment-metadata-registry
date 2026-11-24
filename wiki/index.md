@@ -2,7 +2,7 @@
 title: Assessment Metadata Registry — Wiki Index
 type: index
 created: 2026-07-02
-updated: 2026-09-02
+updated: 2026-11-24
 ---
 
 # Assessment Metadata Registry — Master Index
@@ -10,15 +10,18 @@ updated: 2026-09-02
 Master catalog of the registry's knowledge layer. Read `../AGENTS.md` and `../purpose.md`
 first. This wiki follows the **SGPc house style** (the same page-type taxonomy as SGPc's wiki).
 
-**Status:** **48 records** across 3 jurisdictions — **42** `status: reviewed`, **6**
-`status: draft`. v2 implemented and migrated (`amrr` 0.2.0), then refined per ADR-010
+**Status:** **74 records** across 5 jurisdictions (IN, NAEP `US`, TIMSS/TIMSS-L `INTL`, SC, SD) — **14**
+`status: verified`, **43** `status: reviewed`, **17** `status: draft` (the README's census,
+2026-11-15). Earlier, at 2026-09-02: 48 records across 3 jurisdictions. v2 implemented and migrated (`amrr` 0.2.0), then refined per ADR-010
 (`amrr` 0.3.0): `proficient_from` (replacing the legacy `proficient[]` mask, corpus
 folded), `verified_by`, the EOC `"eoc"` cut key, and the compact config view
 (`as_config`/`read_config`, `build/config/`, site **Config view** page). `amrr` 0.4.0
 added a derived-URL remote (latest build); 0.5.0 added a **reproducible remote** —
 `get_metadata(registry = "github://…", ref = <SHA>)` reads canonical sidecars raw-by-SHA,
 no checkout (ADR-011) — plus **local auto-discovery** (run R anywhere inside a checkout and
-no `registry` argument is needed). ADRs 000/004/007/008/009/010/011 accepted 2026-07-06.
+no `registry` argument is needed). `amrr` 0.6.0 (ADR-013, #32, 2026-09-02) added the `design`
+block, `amrr_design()` and the NAEP/TIMSS drafts. ADRs 000/004/007/008/009/010/011 accepted
+2026-07-06; ADR-013 accepted 2026-08-30 and ADR-014 2026-09-02 (all 13 ADRs accepted).
 Pending: SGPc resolver wiring (Phase G); a `read_config()` sidecar writer; real WIDA_IN /
 EOC authoring.
 WIDA_IN is the v2 dogfood corpus.

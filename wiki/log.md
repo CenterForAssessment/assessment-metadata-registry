@@ -4,6 +4,16 @@ Append-only, reverse-chronological. Newest entries on top.
 
 ---
 
+## [2026-11-24] lint | index status line refreshed
+
+**Action:** wiki correction, found by the SGPc vertical weave of 2026-11-24 (dataimago/SGPc-wiki#197).
+Pages updated: `wiki/index.md` (the status line and `updated`).
+
+Key additions: the status line still gave the 2026-09-02 census (48 records across 3 jurisdictions) and
+ended at `amrr` 0.5.0. It now gives the README's census of 2026-11-15 (74 records across 5 jurisdictions:
+14 verified, 43 reviewed, 17 draft), `amrr` 0.6.0 (#32), and the acceptance of ADR-013 and ADR-014. No
+record changed status.
+
 ## [2026-09-07] analysis | grade-key convention — `K` in the registry, `0` at the SGPc boundary
 
 **Action:** analysis resolution (Tier B, `wiki/analyses/grade-encoding-split.md`)
